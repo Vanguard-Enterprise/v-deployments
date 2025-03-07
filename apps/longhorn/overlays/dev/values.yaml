@@ -1,0 +1,5 @@
+preUpgradeChecker:
+  jobEnabled: false
+defaultSettings:
+  defaultDataPath: "/var/lib/longhorn"
+  #backupTarget: "nfs://longhorn-backups@dev"

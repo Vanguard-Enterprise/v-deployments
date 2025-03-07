@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: workloads
+  namespace: argocd
+spec:
+  description: "Manages core business applications"
+  
+  destinations:
+    - namespace: default
+      server: https://kubernetes.default.svc
+    - namespace: prod-apps
+      server: https://kubernetes.default.svc
+    - namespace: staging-apps
+      server: https://kubernetes.default.svc
+
+  sourceRepos:
+    - https://github.com/your-org/argo-repo.git
+
+  clusterResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: apps
+      kind: Deployment
+    - group: batch
+      kind: Job
+    - group: batch
+      kind: CronJob
+
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: Secret

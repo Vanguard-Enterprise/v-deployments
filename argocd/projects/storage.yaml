@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: storage
+  namespace: argocd
+spec:
+  description: "Manages all storage-related applications"
+  
+  # Only allow deploying to these clusters
+  destinations:
+  - namespace: longhorn-system
+    server: https://kubernetes.default.svc
+  
+  # Allow syncing from these repositories
+  sourceRepos:
+  - https://github.com/your-org/argo-repo.git
+  
+  # Only allow these app kinds
+  clusterResourceWhitelist:
+  - group: storage.k8s.io
+    kind: StorageClass
+  - group: apps
+    kind: Deployment

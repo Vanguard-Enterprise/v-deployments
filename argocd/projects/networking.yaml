@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: networking
+  namespace: argocd
+spec:
+  description: "Manages all networking applications"
+
+  destinations:
+  - namespace: networking
+    server: https://kubernetes.default.svc
+
+  sourceRepos:
+  - https://github.com/your-org/argo-repo.git
+
+  clusterResourceWhitelist:
+  - group: networking.k8s.io
+    kind: NetworkPolicy
+  - group: apps
+    kind: DaemonSet
+  - group: apps
+    kind: Deployment

@@ -1,4 +1,5 @@
-bases:
-  - ../../base
-patchesStrategicMerge:
-  - values.yaml
+resources:
+  - ../../resources
+
+patches:
+  - path: values.yaml

@@ -1,5 +1,5 @@
 preUpgradeChecker:
   jobEnabled: false
 defaultSettings:
-  defaultDataPath: "/mnt/longhorn"
-  #backupTarget: "s3://longhorn-backups@use1"
+  defaultDataPath: "/var/lib/longhorn"
+  #backupTarget: "s3://longhorn-backups@mgmt"

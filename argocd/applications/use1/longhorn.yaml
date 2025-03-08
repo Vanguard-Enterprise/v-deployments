@@ -6,7 +6,7 @@ metadata:
 spec:
   project: storage
   source:
-    repoURL: https://github.com/your-org/repo-root.git
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     path: applications/longhorn/overlays/use1
     targetRevision: main
   destination:

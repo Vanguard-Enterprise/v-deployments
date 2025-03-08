@@ -10,7 +10,7 @@ spec:
       server: https://kubernetes.default.svc
   sourceRepos:
     - https://charts.longhorn.io/
-    - https://github.com/your-org/repo-root.git
+    - https://github.com/Vanguard-Enterprise/v-deployments
   clusterResourceWhitelist:
     - group: storage.k8s.io
       kind: StorageClass

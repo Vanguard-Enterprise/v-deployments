@@ -1,3 +1,6 @@
+generatorOptions:
+  disableNameSuffixHash: true
+
 helmCharts:
   - name: longhorn
     repo: https://charts.longhorn.io/

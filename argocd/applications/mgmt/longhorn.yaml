@@ -9,6 +9,8 @@ spec:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     path: applications/longhorn/overlays/mgmt
     targetRevision: main
+    directory:
+      recurse: true  # ✅ This enables Kustomize to look inside subdirectories
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
@@ -18,3 +20,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - EnableHelm=true  # ✅ THIS ENABLES HELM FOR ARGOCD

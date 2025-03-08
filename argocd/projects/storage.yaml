@@ -4,20 +4,15 @@ metadata:
   name: storage
   namespace: argocd
 spec:
-  description: "Manages all storage-related applications"
-  
-  # Only allow deploying to these clusters
+  description: "Project to manage storage applications including Longhorn"
   destinations:
-  - namespace: longhorn-system
-    server: https://kubernetes.default.svc
-  
-  # Allow syncing from these repositories
+    - namespace: longhorn-system
+      server: https://kubernetes.default.svc
   sourceRepos:
-  - https://github.com/your-org/argo-repo.git
-  
-  # Only allow these app kinds
+    - https://charts.longhorn.io/
+    - https://github.com/your-org/repo-root.git
   clusterResourceWhitelist:
-  - group: storage.k8s.io
-    kind: StorageClass
-  - group: apps
-    kind: Deployment
+    - group: storage.k8s.io
+      kind: StorageClass
+    - group: apps
+      kind: Deployment

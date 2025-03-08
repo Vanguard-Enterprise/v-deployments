@@ -1,0 +1,10 @@
+helmCharts:
+  - name: longhorn
+    repo: https://charts.longhorn.io/
+    version: v1.8.1
+    releaseName: longhorn
+    namespace: longhorn-system
+    valuesFile: values.yaml
+
+resources:
+  - namespace.yaml  # Ensure namespace is created before Helm deploys Longhorn

@@ -11,12 +11,8 @@ spec:
     - namespace: metallb-system
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-    - group: networking.k8s.io
-      kind: IngressClass
-    - group: metallb.io
-      kind: IPAddressPool
-    - group: metallb.io
-      kind: L2Advertisement
+    - group: "*"
+      kind: "*"
   namespaceResourceWhitelist:
-    - group: ""
-      kind: Namespace
+    - group: "*"
+      kind: "*"

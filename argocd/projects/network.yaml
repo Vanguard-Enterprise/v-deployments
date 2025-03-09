@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: network
+  namespace: argocd
+spec:
+  description: Project for networking applications
+  sourceRepos:
+    - '*'
+  destinations:
+    - namespace: metallb-system
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: networking.k8s.io
+      kind: IngressClass
+    - group: metallb.io
+      kind: IPAddressPool
+    - group: metallb.io
+      kind: L2Advertisement
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: Namespace

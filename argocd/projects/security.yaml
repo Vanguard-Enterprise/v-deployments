@@ -13,22 +13,8 @@ spec:
     - namespace: vault
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-    - group: cert-manager.io
-      kind: Certificate
-    - group: cert-manager.io
-      kind: ClusterIssuer
-    - group: policy
-      kind: PodSecurityPolicy
-    - group: ""
-      kind: Namespace
+    - group: "*"
+      kind: "*"
   namespaceResourceWhitelist:
-    - group: ""
-      kind: ConfigMap
-    - group: ""
-      kind: Secret
-    - group: ""
-      kind: ServiceAccount
-    - group: apps
-      kind: Deployment
-    - group: batch
-      kind: Job
+    - group: "*"
+      kind: "*"

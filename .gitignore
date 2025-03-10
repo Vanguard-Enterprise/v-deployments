@@ -1,1 +1,2 @@
 *.hot
+cloudflare-token-secret.*

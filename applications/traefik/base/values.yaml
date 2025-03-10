@@ -8,11 +8,7 @@ additionalArguments:
 
 deployment:
   enabled: true
-  replicas: 3 # match with number of workers
-  annotations: {}
-  podAnnotations: {}
-  additionalContainers: []
-  initContainers: []
+  replicas: 2
 
 ports:
   web:
@@ -44,9 +40,7 @@ rbac:
 service:
   enabled: true
   type: LoadBalancer
-  annotations: {}
-  labels: {}
+  annotations:
+  labels:
   spec:
-    loadBalancerIP: 10.1.47.100 # this should be an IP in the Kube-VIP range
-  loadBalancerSourceRanges: []
-  externalIPs: []
+    loadBalancerIP: 10.1.46.175

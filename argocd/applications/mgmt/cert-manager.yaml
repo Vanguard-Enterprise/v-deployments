@@ -6,7 +6,7 @@ metadata:
 spec:
   project: security
   source:
-    repoURL: https://github.com/your-org/repo-root.git
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     path: applications/cert-manager/overlays/mgmt
     targetRevision: main
   destination:

@@ -14,6 +14,7 @@ spec:
           - 9.9.9.9
       containers:
         - name: cert-manager
+          image: quay.io/jetstack/cert-manager-controller:v1.17.1  # Ensure image is explicitly set
           args:
             - --dns01-recursive-nameservers=1.1.1.1:53,9.9.9.9:53
             - --dns01-recursive-nameservers-only

@@ -1,0 +1,5 @@
+deployment:
+  replicas: 3  # Match number of worker nodes
+service:
+  spec:
+    loadBalancerIP: 10.1.45.175 # Adjust for mgmt cluster range

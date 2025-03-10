@@ -4,3 +4,5 @@ resources:
   - ../../base
 patches:
   - path: patch.yaml
+  - path: letencrypt-prod.yaml
+  - path: vng.bet.yaml

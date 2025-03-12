@@ -9,6 +9,8 @@ spec:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     path: applications/traefik/overlays/mgmt
     targetRevision: main
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
@@ -16,3 +18,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - ServerSideApply=false
+      - CreateNamespace=true

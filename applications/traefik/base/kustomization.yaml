@@ -7,5 +7,6 @@ helmCharts:
     repo: https://traefik.github.io/charts
     version: 34.4.1  # Adjust if needed
     valuesFile: values.yaml
+
 resources:
   - namespace.yaml

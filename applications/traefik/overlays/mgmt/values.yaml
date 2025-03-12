@@ -1,7 +1,46 @@
-deployment:
-  replicas: 3
+globalArguments:
+  - "--global.sendanonymoususage=false"
+  - "--global.checknewversion=false"
 
+additionalArguments:
+  - "--serversTransport.insecureSkipVerify=true"
+  - "--log.level=INFO"
+
+deployment:
+  enabled: true
+  replicas: 2
+
+ports:
+  web:
+    redirectTo:
+      port: websecure
+      priority: 10
+  websecure:
+    tls:
+      enabled: true
+      
+ingressRoute:
+  dashboard:
+    enabled: false
+
+providers:
+  kubernetesCRD:
+    enabled: true
+    ingressClass: traefik-external
+    allowExternalNameServices: true
+  kubernetesIngress:
+    enabled: true
+    allowExternalNameServices: true
+    publishedService:
+      enabled: false
+
+rbac:
+  enabled: true
 
 service:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+  labels:
   spec:
-    loadBalancerIP: 10.1.45.175
+    loadBalancerIP: 10.1.46.175

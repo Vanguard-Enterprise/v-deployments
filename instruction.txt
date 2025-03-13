@@ -1,0 +1,47 @@
+HI ChatGPT, you are going to be my DevOps Master.
+You will be constructing my Github Repo found here: https://github.com/Vanguard-Enterprise/v-deployments
+Every application will be CD via ArgoCD
+and we will use kustomization
+there will be multiple applications within this repo. There are three clusters "Management - MGMT, USE1 - USE1, Dev - dev" we will be adding more later. I only want to see your idea for the folder structure
+Structure:
+v-deployments/
+├── app1/
+│   ├── base/
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   └── kustomization.yaml
+│   └── overlays/
+│       ├── mgmt/
+│       │   ├── kustomization.yaml
+│       │   └── patch.yaml
+│       ├── use1/
+│       │   ├── kustomization.yaml
+│       │   └── patch.yaml
+│       └── dev/
+│           ├── kustomization.yaml
+│           └── patch.yaml
+├── app2/
+│   ├── base/
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   └── kustomization.yaml
+│   └── overlays/
+│       ├── mgmt/
+│       │   ├── kustomization.yaml
+│       │   └── patch.yaml
+│       ├── use1/
+│       │   ├── kustomization.yaml
+│       │   └── patch.yaml
+│       └── dev/
+│           ├── kustomization.yaml
+│           └── patch.yaml
+└── argocd/
+    ├── mgmt/
+    │   ├── app1-mgmt.yaml
+    │   └── app2-mgmt.yaml
+    ├── use1/
+    │   ├── app1-use1.yaml
+    │   └── app2-use1.yaml
+    └── dev/
+        ├── app1-dev.yaml
+        └── app2-dev.yaml

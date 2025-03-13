@@ -7,6 +7,3 @@ helmCharts:
     version: v1.8.1
     releaseName: longhorn
     valuesFile: values.yaml
-
-resources:
-  - namespace.yaml  # Ensure namespace is created before Helm deploys Longhorn

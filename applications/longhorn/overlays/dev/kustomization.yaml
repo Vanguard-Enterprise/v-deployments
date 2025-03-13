@@ -1,4 +1,6 @@
-resources:
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
   - ../../base
-patches:
-  - path: values.yaml
+patchesStrategicMerge:
+  - ns-privileges-patch.yaml

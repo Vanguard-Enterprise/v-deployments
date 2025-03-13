@@ -4,29 +4,10 @@ metadata:
   name: longhorn-mgmt
   namespace: argocd
 spec:
-  project: storage
-  source:
-    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
-    path: applications/longhorn/overlays/mgmt
-    targetRevision: main
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: longhorn-system
-  syncPolicy:
-    automated:
-      prune: false
-      selfHeal: false
-
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: longhorn-mgmt
-  namespace: argocd
-spec:
   project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
-    targetRevision: HEAD
+    targetRevision: main
     path: applications/longhorn/overlays/mgmt
   destination:
     server: https://kubernetes.default.svc

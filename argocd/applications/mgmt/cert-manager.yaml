@@ -4,7 +4,7 @@ metadata:
   name: cert-manager-mgmt
   namespace: argocd
 spec:
-  project: security
+  project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     path: applications/cert-manager/overlays/mgmt

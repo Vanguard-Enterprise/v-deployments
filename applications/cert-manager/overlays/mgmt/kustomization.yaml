@@ -2,7 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
-  - letencrypt-prod.yaml
-  - vng.bet.yaml
+
 patches:
-  - path: patch.yaml
+  - path: namespace.yaml
+#  - path: vng.bet.yaml
+  - path: letencrypt-prod.yaml

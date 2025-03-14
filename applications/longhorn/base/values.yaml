@@ -1,4 +1,3 @@
-preUpgradeChecker:
-  jobEnabled: false
-defaultSettings:
-  defaultDataPath: "/var/lib/longhorn"
+# values.yaml for Longhorn Helm chart
+# Customize Longhorn settings as needed.
+# Currently using default chart values.

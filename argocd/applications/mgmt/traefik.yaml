@@ -7,12 +7,15 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
-    path: applications/traefik/overlays/mgmt
     targetRevision: main
+    path: applications/traefik/overlays/mgmt
+    #kustomize:
+      # Optional inline kustomize settings can be added here.
+      #nameSuffix: "-mgmt"
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: true

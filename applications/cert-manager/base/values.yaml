@@ -1,4 +1,8 @@
-installCRDs: false
+installCRDs: true
+crds:
+  # This option decides if the CRDs should be installed
+  # as part of the Helm installation.
+  enabled: true
 replicaCount: 3 # change to number of masternodes
 extraArgs: # required for querying for certificate
   - --dns01-recursive-nameservers=1.1.1.1:53,9.9.9.9:53

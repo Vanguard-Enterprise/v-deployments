@@ -5,6 +5,8 @@ globalArguments:
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
+  - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+  # The above argument tells Traefik to redirect HTTP to HTTPS
 
 deployment:
   enabled: true
@@ -16,9 +18,7 @@ deployment:
 
 ports:
   web:
-    redirectTo:
-      port: websecure
-      priority: 10
+    enabled: true
   websecure:
     tls:
       enabled: true
@@ -47,6 +47,6 @@ service:
   annotations: {}
   labels: {}
   spec:
-    loadBalancerIP: 10.1.45.175   # MGMT cluster LB IP (update accordingly)
+    loadBalancerIP: 10.1.45.175   # Replace with the cluster-specific LB IP
   loadBalancerSourceRanges: []
   externalIPs: []

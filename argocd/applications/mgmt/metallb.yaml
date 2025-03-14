@@ -4,7 +4,7 @@ metadata:
   name: metallb-mgmt
   namespace: argocd
 spec:
-  project: network
+  project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     path: applications/metallb/overlays/mgmt

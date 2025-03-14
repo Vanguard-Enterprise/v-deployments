@@ -1,5 +1,0 @@
-deployment:
-  replicas: 1  # Dev might only need one replica
-service:
-  spec:
-    loadBalancerIP: 10.1.47.175

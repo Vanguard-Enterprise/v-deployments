@@ -8,7 +8,11 @@ additionalArguments:
 
 deployment:
   enabled: true
-  replicas: 2
+  replicas: 3 
+  annotations: {}
+  podAnnotations: {}
+  additionalContainers: []
+  initContainers: []
 
 ports:
   web:
@@ -40,7 +44,9 @@ rbac:
 service:
   enabled: true
   type: LoadBalancer
-  annotations:
-  labels:
+  annotations: {}
+  labels: {}
   spec:
-    loadBalancerIP: 10.1.46.175
+    loadBalancerIP: 10.1.45.175   # MGMT cluster LB IP (update accordingly)
+  loadBalancerSourceRanges: []
+  externalIPs: []

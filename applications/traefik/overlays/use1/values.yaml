@@ -1,5 +1,0 @@
-deployment:
-  replicas: 2  # Adjust as needed
-service:
-  spec:
-    loadBalancerIP: 10.1.46.175

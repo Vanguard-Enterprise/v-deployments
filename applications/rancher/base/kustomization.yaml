@@ -9,7 +9,7 @@ resources:
 helmCharts:
   - name: rancher
     # Relative path from base/ to the chart directory:
-    repo: ../../../helm/charts/rancher
-    version: "69.420.69"
+    repo: ../../../helm/rancher/rancher-2.10.0.tgz
+    version: "2.10.0"
     releaseName: rancher
     valuesFile: values.yaml

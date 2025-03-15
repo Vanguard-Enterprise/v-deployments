@@ -4,8 +4,8 @@ namespace: cattle-system
 resources:
   - certificate.yaml
 helmCharts:
-  - name: rancher-stable
-    version: "2.10.3"   # Use the desired chart version
+  - name: rancher
+    version: 2.10.3   # Use the desired chart version
     repo: https://releases.rancher.com/server-charts/stable
     releaseName: rancher-stable
     valuesFile: values.yaml

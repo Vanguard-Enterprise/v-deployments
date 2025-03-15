@@ -7,7 +7,7 @@ resources:
 helmCharts:
   - name: rancher
     # Relative path from base/ to the chart directory:
-    repo: ../../../helm/rancher/rancher-2.10.0.tgz
+    repo: https://raw.githubusercontent.com/Vanguard-Enterprise/v-deployments/refs/heads/main/helm/rancher/Chart.yaml?token=GHSAT0AAAAAAC7YBFJLQEPSNY7J4IY5H5G6Z6U7QGQ
     releaseName: rancher
     valuesFile: values.yaml
     namespace: cattle-system

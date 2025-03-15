@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rancher
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Vanguard-Enterprise/v-deployments'
+    targetRevision: main
+    path: applications/rancher/overlays/mgmt
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: cattle-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

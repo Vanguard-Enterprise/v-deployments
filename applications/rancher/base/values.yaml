@@ -1,0 +1,7 @@
+hostname: rancher.vng.bet
+bootstrapPassword: admin
+ingress:
+  tls:
+    source: secret
+fleet:
+  enabled: false

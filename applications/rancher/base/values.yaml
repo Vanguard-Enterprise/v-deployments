@@ -3,7 +3,4 @@ bootstrapPassword: admin
 ingress:
   tls:
     source: secret
-extraEnv:
-  - name: CATTLE_FEATURES
-    value: fleet=false
-rancherImageTag: master-head
+    secretName: tls-rancher-ingress

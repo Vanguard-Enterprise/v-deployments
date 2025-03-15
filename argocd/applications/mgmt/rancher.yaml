@@ -6,11 +6,11 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/Vanguard-Enterprise/v-deployments'
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     targetRevision: main
     path: applications/rancher/overlays/mgmt
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: https://kubernetes.default.svc
     namespace: cattle-system
   syncPolicy:
     automated:

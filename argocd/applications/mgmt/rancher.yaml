@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: rancher
-  namespace: argocd
+  namespace: devtroncd
 spec:
   project: default
   source:

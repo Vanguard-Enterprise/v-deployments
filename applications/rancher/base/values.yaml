@@ -1,8 +1,0 @@
-hostname: rancher.vng.bet
-bootstrapPassword: admin
-ingress:
-  tls:
-    source: secret
-extraEnv:
-  - name: CATTLE_FEATURES
-    value: fleet=false

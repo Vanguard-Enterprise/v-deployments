@@ -19,5 +19,5 @@ spec:
         #- name: default-headers
   tls:
     store:
-      name: vng-tls
+      name: vng-store
       namespace: traefik

@@ -1,22 +1,30 @@
----
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: devtron-ingress
   namespace: devtroncd
-  annotations: 
-    kubernetes.io/ingress.class: traefik-external
+  labels:
+    app: devtron
+    release: devtron
 spec:
   entryPoints:
-    - websecure
+    - websecure # or "web" if you're using HTTP
   routes:
-    - match: Host(`infra.vng.bet`) # change to your domain
+    - match: PathPrefix(`/orchestrator`)
       kind: Rule
       services:
         - name: devtron-service
           port: 80
-      #middlewares:
-        #- name: default-headers
+    - match: PathPrefix(`/dashboard`)
+      kind: Rule
+      services:
+        - name: devtron-service
+          port: 80
+    - match: PathPrefix(`/grafana`)
+      kind: Rule
+      services:
+        - name: devtron-service
+          port: 80
   tls:
     store:
       name: vng-store

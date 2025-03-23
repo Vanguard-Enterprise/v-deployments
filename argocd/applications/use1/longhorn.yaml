@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn-use1
+  namespace: devtroncd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    targetRevision: main
+    path: applications/longhorn/overlays/use1
+    kustomize:
+      # Optional inline kustomize settings can be added here.
+      #nameSuffix: "-mgmt"
+  destination:
+    name: use1
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true

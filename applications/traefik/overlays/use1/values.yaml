@@ -20,8 +20,8 @@ ports:
   web:
     enabled: true
   websecure:
-    port: 8443
-    exposedPort: 8443
+    port: 8080
+    exposedPort: 8080
     tls:
       enabled: true
       

@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amity-n8n-use1
+  namespace: devtroncd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/amity/n8n/overlays/use1
+    targetRevision: main
+  destination:
+    name: use1
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+ #   syncOptions:
+ #     - ServerSideApply=true

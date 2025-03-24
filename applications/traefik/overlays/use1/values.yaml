@@ -16,8 +16,15 @@ deployment:
   additionalContainers: []
   initContainers: []
 
+
 ports:
+  traefik:
+    port: 8880
+    expose:
+      default: false
+    exposedPort: 8880
   web:
+    port: 80
     enabled: false
     exposedPort: 80
   websecure:

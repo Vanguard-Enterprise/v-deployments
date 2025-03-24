@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: longhorn-mgmt
+  name: traefik-use1
   namespace: devtroncd
 spec:
   project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     targetRevision: main
-    path: applications/longhorn/overlays/mgmt
-    kustomize:
+    path: applications/traefik/overlays/use1
+    #kustomize:
       # Optional inline kustomize settings can be added here.
       #nameSuffix: "-mgmt"
   destination:
-    server: https://kubernetes.default.svc
-    namespace: longhorn-system
+    name: use1
+    namespace: traefik
   syncPolicy:
     automated:
       prune: false

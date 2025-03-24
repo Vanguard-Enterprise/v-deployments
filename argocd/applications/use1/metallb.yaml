@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: rancher
+  name: metallb-use1
   namespace: devtroncd
 spec:
   project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/metallb/overlays/use1
     targetRevision: main
-    path: applications/rancher/overlays/mgmt
   destination:
-    server: https://kubernetes.default.svc
-    namespace: cattle-system
+    name: use1
+    namespace: metallb-system
   syncPolicy:
     automated:
       prune: true

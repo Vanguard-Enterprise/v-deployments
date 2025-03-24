@@ -47,7 +47,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`accounts.vng.bet`)
+    - match: Host(`test.vng.bet`)
       kind: Rule
       services:
         - name: test-nginx-service

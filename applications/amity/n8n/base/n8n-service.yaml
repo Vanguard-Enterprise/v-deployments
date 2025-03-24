@@ -8,8 +8,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: "amity-n8n"
-      port: 5678
+    - name: "n8n"
+      port: 5678s
       targetPort: 5678
       protocol: TCP
   selector:

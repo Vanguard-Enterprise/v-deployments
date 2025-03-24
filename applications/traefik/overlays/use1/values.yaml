@@ -18,7 +18,7 @@ deployment:
 
 ports:
   web:
-    enabled: true
+    enabled: false
   websecure:
     port: 8080
     exposedPort: 8080

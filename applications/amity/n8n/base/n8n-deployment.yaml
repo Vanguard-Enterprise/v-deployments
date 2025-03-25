@@ -65,7 +65,6 @@ spec:
           volumeMounts:
             - mountPath: /home/node/.n8n
               name: n8n-claim0
-      restartPolicy: Always
       volumes:
         - name: n8n-claim0
           persistentVolumeClaim:

@@ -1037,7 +1037,7 @@ ui:
   publishNotReadyAddresses: true
   # The service should only contain selectors for active Vault pod
   activeVaultPodOnly: false
-  serviceType: "ClusterIP"
+  serviceType: "LoadBalancer"
   serviceNodePort: null
   externalPort: 8200
   targetPort: 8200

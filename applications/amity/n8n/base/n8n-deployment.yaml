@@ -37,6 +37,8 @@ spec:
               value: postgresdb
             - name: DB_POSTGRESDB_HOST
               value: postgres-service
+            - name: N8N_HOST
+              value: "amity-n8n.vng.bet"
             - name: DB_POSTGRESDB_PORT
               value: "5432"
             - name: DB_POSTGRESDB_DATABASE

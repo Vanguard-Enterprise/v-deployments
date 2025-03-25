@@ -37,6 +37,8 @@ spec:
               value: postgresdb
             - name: DB_POSTGRESDB_HOST
               value: postgres-service
+            - name: N8N_EXPRESS_TRUST_PROXY
+              value: "true"
             - name: N8N_RUNNERS_ENABLED
               value: "true"
             - name: N8N_HOST

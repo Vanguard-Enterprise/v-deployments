@@ -46,7 +46,7 @@ global:
 injector:
   # True if you want to enable vault agent injection.
   # @default: global.enabled
-  enabled: "-"
+  enabled: "true"
 
   replicas: 1
 
@@ -357,7 +357,7 @@ injector:
 server:
   # If true, or "-" with global.enabled true, Vault server will be installed.
   # See vault.mode in _helpers.tpl for implementation details.
-  enabled: "-"
+  enabled: "true"
 
   # [Enterprise Only] This value refers to a Kubernetes secret that you have
   # created that contains your enterprise license. If you are not using an
@@ -824,7 +824,7 @@ server:
   # the "file" backend.  This mode is not highly available and should not be scaled
   # past a single replica.
   standalone:
-    enabled: "-"
+    enabled: "true"
 
     # config is a raw string of default configuration when using a Stateful
     # deployment. Default is to use a PersistentVolumeClaim mounted at /vault/data

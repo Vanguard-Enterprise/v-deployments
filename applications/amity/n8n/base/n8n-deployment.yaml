@@ -39,6 +39,8 @@ spec:
               value: postgres-service
             - name: N8N_HOST
               value: "amity-n8n.vng.bet"
+            - name: N8N_PROXY_HOPS
+              value: "2"
             - name: DB_POSTGRESDB_PORT
               value: "5432"
             - name: DB_POSTGRESDB_DATABASE
@@ -54,7 +56,7 @@ spec:
                   name: postgres-secret
                   key: POSTGRES_NON_ROOT_PASSWORD
             - name: N8N_PROTOCOL
-              value: http
+              value: https
             - name: N8N_PORT
               value: "5678"
           image: docker.n8n.io/n8nio/n8n

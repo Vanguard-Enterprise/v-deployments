@@ -45,6 +45,8 @@ spec:
               value: "amity-n8n.vng.bet"
             - name: N8N_PROXY_HOPS
               value: "2"
+            - name: N8N_RUNNERS_BROKER_PORT
+              value: "2096"
             - name: DB_POSTGRESDB_PORT
               value: "5432"
             - name: DB_POSTGRESDB_DATABASE

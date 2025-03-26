@@ -11,4 +11,3 @@ resources:
   - postgres-deployment.yaml
   - postgres-pvc.yaml
   - postgres-service.yaml
-  

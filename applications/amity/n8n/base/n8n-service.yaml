@@ -9,8 +9,23 @@ spec:
   type: ClusterIP
   ports:
     - name: "n8n"
-      port: 2096
-      targetPort: 2096
+      port: 5678
+      targetPort: 5678
       protocol: TCP
   selector:
     service: n8n
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n-broker
+  namespace: amity-n8n
+  labels:
+    service: n8n
+spec:
+  selector:
+    service: n8n
+  ports:
+    - protocol: TCP
+      port: 5679
+      targetPort: 5679

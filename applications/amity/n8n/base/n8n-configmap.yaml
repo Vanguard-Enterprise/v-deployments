@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-config
+  namespace: amity-n8n
+data:
+  N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "false"
+
+  DB_TYPE: "postgresdb"
+  DB_POSTGRESDB_HOST: "postgres-service"
+  DB_POSTGRESDB_PORT: "5432"
+  DB_POSTGRESDB_DATABASE: "n8n"
+  
+  N8N_EXPRESS_TRUST_PROXY: "true"
+  N8N_RUNNERS_ENABLED: "true"
+  N8N_HOST: "amity-n8n.vng.bet"
+  N8N_PROXY_HOPS: "2"
+  N8N_RUNNERS_BROKER_PORT: "5679"
+  N8N_PROTOCOL: "https"
+  N8N_PORT: "5678"

@@ -4,6 +4,7 @@ resources:
   - n8n-deployment.yaml
   - n8n-pvc.yaml
   - n8n-service.yaml
+  - n8n-configmap.yaml
   #- namespace.yaml
   #- postgres-secret.yaml
   - postgres-configmap.yaml

@@ -10,5 +10,5 @@ resources:
   - postgres-configmap.yaml
   - postgres-deployment.yaml
   - postgres-pvc.yaml
+  - n8n-configmap.yaml
   - postgres-service.yaml
-  

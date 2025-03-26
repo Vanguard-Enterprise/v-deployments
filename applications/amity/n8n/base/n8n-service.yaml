@@ -9,8 +9,8 @@ spec:
   type: ClusterIP
   ports:
     - name: "n8n"
-      port: 5678
-      targetPort: 5678
+      port: 2096
+      targetPort: 2096
       protocol: TCP
   selector:
     service: n8n

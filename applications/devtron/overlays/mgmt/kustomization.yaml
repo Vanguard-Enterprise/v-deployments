@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - infra.vng.bet.yaml
+helmCharts:
+  - name: devtron
+    version: "0.22.89"
+    repo: https://helm.devtron.ai
+    releaseName: devtron-operator
+    valuesFile: values.yaml
+    namespace: devtroncd

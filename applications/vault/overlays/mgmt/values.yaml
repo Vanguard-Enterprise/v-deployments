@@ -1,9 +1,16 @@
 global:
   enabled: true
+  namespace: "vault"
   tlsDisable: true
 
 injector:
   enabled: true
+  replicas: 2
+  port: 8080
+  leaderElector:
+    enabled: true
+  metrics:
+    enabled: false
 
 server:
   replicas: 3

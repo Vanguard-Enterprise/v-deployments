@@ -1,9 +1,0 @@
-global:
-  storageClass: "longhorn"
-components:
-  dashboard:
-    config:
-        FEATURE_EXTERNAL_FLUX_CD_ENABLE: "false"
-argo-cd:
-  applicationSet:
-    enabled: true

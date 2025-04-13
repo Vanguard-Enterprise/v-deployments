@@ -12,9 +12,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: devtroncd
-#  syncPolicy:
-#    automated:
-#      prune: true
-#      selfHeal: true
-#    syncOptions:
-#      - ServerSideApply=true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

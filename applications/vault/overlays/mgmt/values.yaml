@@ -14,6 +14,19 @@ injector:
 
 server:
   replicas: 3
+  extraEnvironmentVars:
+    AWS_ACCESS_KEY_ID:
+      valueFrom:
+        secretKeyRef:
+          name: vault-aws-creds
+          key: AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY:
+      valueFrom:
+        secretKeyRef:
+          name: vault-aws-creds
+          key: AWS_SECRET_ACCESS_KEY
+    VAULT_KMS_REGION: "us-east-1"
+    VAULT_KMS_KEY_ID: "arn:aws:kms:us-east-1:861833468329:key/e18de054-b06b-4c4f-b04c-0d4406b5ad7f"
   ha:
     enabled: true
     raft:
@@ -27,6 +40,10 @@ server:
         }
         storage "raft" {
           path = "/vault/data"
+        }
+        seal "awskms" {
+          region     = "${VAULT_KMS_REGION}"
+          kms_key_id = "${VAULT_KMS_KEY_ID}"
         }
   dataStorage:
     enabled: true

@@ -5,7 +5,6 @@ resources:
 helmCharts:
   - name: devtron-operator
     version: "0.22.89"
-    chart: devtron-operator
     repo: https://helm.devtron.ai
     releaseName: devtron-operator
     valuesFile: values.yaml

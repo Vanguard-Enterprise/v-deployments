@@ -1,25 +1,34 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: ApplicationSet
+  name: appset
   namespace: devtroncd
 spec:
   generators:
   - list:
       elements:
-      - cluster: mgmt
-        url: https://kubernetes.default.svc
-      #- cluster: use1
-      #  url: https://2.4.6.8
+      - name: mgmt
+        server: "https://kubernetes.default.svc"
+        gitPath: "argocd/applications/mgmt"
+      #- name: cluster2
+      #  server: "https://cluster2-api.example.com"
+      #  gitPath: "argocd/applications/use1"
   template:
     metadata:
-      name: '{{.cluster}}-app'
+      name: "{{name}}-app"
     spec:
       project: default
       source:
-        repoURL: https://github.com/infra-team/cluster-deployments.git
+        repoURL: "https://github.com/Vanguard-Enterprise/v-deployments"
         targetRevision: main
-        path: argocd/applications/{{.cluster}}
+        # Use the dynamic gitPath from the generator element
+        path: "{{gitPath}}"
       destination:
-        server: '{{.url}}'
-        namespace: devtroncd
+        # Deploy to the cluster specified by the generator
+        server: "{{server}}"
+        # Namespace where the application should be deployed; adjust as needed
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

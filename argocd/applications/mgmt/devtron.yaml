@@ -11,7 +11,7 @@ spec:
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: cert-manager
+    namespace: devtron
 #  syncPolicy:
 #    automated:
 #      prune: true

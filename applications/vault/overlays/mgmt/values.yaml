@@ -9,13 +9,13 @@ injector:
     repository: "hashicorp/vault-k8s"
     tag: "latest"
 
-  resources:
-      requests:
-        memory: 256Mi
-        cpu: 250m
-      limits:
-        memory: 256Mi
-        cpu: 250m
+  #resources:
+  #    requests:
+  #      memory: 256Mi
+  #      cpu: 250m
+  #    limits:
+  #      memory: 256Mi
+  #      cpu: 250m
 
 server:
   # This configures the Vault Statefulset to create a PVC for data
@@ -29,7 +29,7 @@ server:
     mountPath: "/vault/data"
     # Name of the storage class to use.  If null it will use the
     # configured default Storage Class.
-    storageClass: null
+    storageClass: longhorn
     # Access Mode of the storage device being used for the PVC
     accessMode: ReadWriteOnce
     # Annotations to apply to the PVC
@@ -42,13 +42,13 @@ server:
 
   # These Resource Limits are in line with node requirements in the
   # Vault Reference Architecture for a Small Cluster
-  resources:
-    requests:
-      memory: 2Gi
-      cpu: 2000m
-    limits:
-      memory: 4Gi
-      cpu: 2000m
+  #resources:
+  #  requests:
+  #    memory: 2Gi
+  #    cpu: 2000m
+  #  limits:
+  #    memory: 4Gi
+  #    cpu: 2000m
 
   # For HA configuration and because we need to manually init the vault,
   # we need to define custom readiness/liveness Probe settings

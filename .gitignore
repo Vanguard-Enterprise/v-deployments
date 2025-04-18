@@ -1,3 +1,3 @@
 *.hot
 cloudflare-token-secret.*
-*secret.yaml
+secret.yaml

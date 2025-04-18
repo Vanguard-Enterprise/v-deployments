@@ -5,3 +5,4 @@ resources:
   - namespace.yaml
   - vng.bet.yaml
   - letencrypt-prod.yaml
+  - external-secret.yaml

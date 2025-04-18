@@ -7,3 +7,5 @@ helmCharts:
     releaseName: external-secret
     namespace: external-secrets
     valuesFile: values.yaml
+resources:
+  - namespace.yaml

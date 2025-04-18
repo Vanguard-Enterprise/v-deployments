@@ -4,8 +4,8 @@ helmCharts:
   - name: external-secrets
     version: 0.16.1
     repo: https://charts.external-secrets.io/
-    releaseName: external-secret
+    releaseName: external-secrets
     namespace: external-secrets
-    valuesFile: values.yaml
+    #valuesFile: values.yaml
 resources:
   - namespace.yaml

@@ -10,9 +10,9 @@ helmCharts:
   #  releaseName: zitadel
   #  valuesFile: zitadel-values.yaml
   #  namespace: zitadel
-  - name: db
+  - name: postgresql
     version: "12.10.0"
     repo: https://charts.bitnami.com/bitnami
-    releaseName: postgresql
+    releaseName: db
     valuesFile: postgres-values.yaml
     namespace: zitadel

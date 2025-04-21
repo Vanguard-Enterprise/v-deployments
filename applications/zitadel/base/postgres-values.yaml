@@ -9,4 +9,4 @@ tls:
   certFilename: "tls.crt"
   certKeyFilename: "tls.key"
 auth:
-  existingSecret: "zitadel-masterkey"
+  existingSecret: "zitadel-secret"

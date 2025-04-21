@@ -1,6 +1,11 @@
+replicaCount: 3
+
 zitadel:
-  configSecretName: zitadel-secret-config
+  # These Secrets are created by ExternalSecrets above
   masterkeySecretName: zitadel-secret
+  configSecretName:  zatadel-secret-config
+
+  # Static, non‑sensitive config for the ConfigMap
   configmapConfig:
     ExternalSecure: true
     ExternalDomain: accounts.vng.bet
@@ -24,14 +29,14 @@ zitadel:
           SSL:
             Mode: verify-full
 
+  # TLS/SSL secrets for DB and application
   dbSslCaCrtSecret: postgres-cert
   dbSslAdminCrtSecret: postgres-cert
   dbSslUserCrtSecret: zitadel-cert
-  
+
 ingress:
   enabled: true
   className: traefik
-  annotations: {}
   hosts:
     - host: accounts.vng.bet
       paths:

@@ -7,7 +7,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: secret-creator
-  namespace: zitael
+  namespace: zitadel
 rules:
   - apiGroups: [ "" ]
     resources: [ "secrets" ]
@@ -17,7 +17,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: certs-creator
-  namespace: zitael
+  namespace: zitadel
 subjects:
   - kind: ServiceAccount
     name:  certs-creator

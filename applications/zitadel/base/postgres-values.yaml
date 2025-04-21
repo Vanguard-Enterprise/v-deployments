@@ -1,3 +1,6 @@
+fullnameOverride: postgres
+global:
+  storageClass: longhorn
 volumePermissions:
   enabled: true
 tls:

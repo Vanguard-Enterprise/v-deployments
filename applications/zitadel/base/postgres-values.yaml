@@ -9,4 +9,5 @@ tls:
   certFilename: "tls.crt"
   certKeyFilename: "tls.key"
 auth:
+  user: "postgres"
   existingSecret: "zitadel-secret"

@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - cert-job.yaml
+helmCharts:
+  - name: zitadel
+    version: "v2.67.2"
+    repo: https://charts.zitadel.com
+    releaseName: zitadel
+    valuesFile: zitadel-values.yaml
+    namespace: zitadel
+  - name: postgresql
+    version: "12.10.0"
+    repo: https://charts.zitadel.com
+    releaseName: postgresql
+    valuesFile: postgres-values.yaml
+    namespace: zitadel

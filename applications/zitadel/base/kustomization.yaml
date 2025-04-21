@@ -4,13 +4,13 @@ resources:
   - cert-job.yaml
   - namespace.yaml
 helmCharts:
-  - name: zitadel
-    version: "8.13.1"
-    repo: https://charts.zitadel.com
-    releaseName: zitadel
-    valuesFile: zitadel-values.yaml
-    namespace: zitadel
-  - name: postgresql
+  #- name: zitadel
+  #  version: "8.13.1"
+  #  repo: https://charts.zitadel.com
+  #  releaseName: zitadel
+  #  valuesFile: zitadel-values.yaml
+  #  namespace: zitadel
+  - name: db
     version: "12.10.0"
     repo: https://charts.bitnami.com/bitnami
     releaseName: postgresql

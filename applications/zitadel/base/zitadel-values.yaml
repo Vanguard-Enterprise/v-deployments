@@ -1,6 +1,6 @@
 zitadel:
   configSecretName: zitadel-secret-config
-  masterkeySecretName: zitadel-masterkey
+  masterkeySecretName: zitadel-secret
   configmapConfig:
     ExternalSecure: true
     ExternalDomain: accounts.vng.bet

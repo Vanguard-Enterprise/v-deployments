@@ -36,7 +36,7 @@ zitadel:
 
 ingress:
   enabled: true
-  className: traefik-external
+  className: traefik
   hosts:
     - host: accounts.vng.bet
       paths:

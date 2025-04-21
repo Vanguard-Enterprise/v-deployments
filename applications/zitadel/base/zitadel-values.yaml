@@ -4,7 +4,7 @@ replicaCount: 3
 zitadel:
   # These Secrets are created by ExternalSecrets above
   masterkeySecretName: zitadel-secret
-  configSecretName:  zitadel-secret-config
+  #configSecretName:  zitadel-secret-config
 
   # Static, non‑sensitive config for the ConfigMap
   configmapConfig:
@@ -29,7 +29,13 @@ zitadel:
           Username: postgres
           SSL:
             Mode: verify-full
-
+  secretConfig:
+    Database:
+      Postgres:
+        User:
+          Password: xyz
+        Admin:
+          Password: abc
   # TLS/SSL secrets for DB and application
   dbSslCaCrtSecret: postgres-cert
   dbSslAdminCrtSecret: postgres-cert

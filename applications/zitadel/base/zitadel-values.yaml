@@ -1,5 +1,6 @@
 replicaCount: 3
 
+
 zitadel:
   # These Secrets are created by ExternalSecrets above
   masterkeySecretName: zitadel-secret

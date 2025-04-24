@@ -1,5 +1,5 @@
 apiVersion: traefik.io/v1alpha1
-kind: IngressRouteTCP
+kind: IngressRoute
 metadata:
   name: kube-apiserver
   namespace: default
@@ -7,10 +7,10 @@ spec:
   entryPoints:
     - kube-apiserver
   routes:
-    - match: HostSNI(`api-use1.vng.bet`)
+    - match: Host(`api-use1.vng.bet`)
+      kind: Rule
       services:
         - name: kubernetes
-          namespace: default
           port: 443
   tls:
     passthrough: true 

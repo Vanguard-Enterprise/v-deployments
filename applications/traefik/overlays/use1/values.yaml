@@ -6,11 +6,11 @@ additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
   - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
-  # The above argument tells Traefik to redirect HTTP to HTTPS
+  - "--entryPoints.kube-apiserver.address=:6443"
 
 deployment:
   enabled: true
-  replicas: 3 
+  replicas: 3
   annotations: {}
   podAnnotations: {}
   additionalContainers: []
@@ -22,10 +22,6 @@ ports:
   websecure:
     tls:
       enabled: true
-      
-ingressRoute:
-  dashboard:
-    enabled: false
 
 providers:
   kubernetesCRD:
@@ -47,6 +43,6 @@ service:
   annotations: {}
   labels: {}
   spec:
-    loadBalancerIP: 10.1.46.175   # Replace with the cluster-specific LB IP
+    loadBalancerIP: 10.1.46.175   # Cluster-specific LB IP
   loadBalancerSourceRanges: []
   externalIPs: []

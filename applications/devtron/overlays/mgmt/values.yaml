@@ -1,0 +1,29 @@
+global:
+  storageClass: "longhorn"
+installer:
+  modules: 
+    - cicd
+configs:
+  BASE_URL: "infra.vng.bet"
+  GITOPS_REPO_PREFIX: "infra"
+components:
+  dashboard:
+    config:
+      extraConfigs:
+        HIDE_DISCORD: "true"
+  devtron:
+    service:
+      type: ClusterIP
+      port: 80
+argo-cd:
+  enabled: true
+  fullnameOverride: "argocd"
+  global:
+    image:
+      tag: "latest"
+  applicationSet:
+    enabled: true
+security:
+  enabled: true
+  trivy:
+    enabled: true

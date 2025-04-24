@@ -7,10 +7,10 @@ spec:
   entryPoints:
     - kube-apiserver
   routes:
-    - match: HostSNI(`api.use1.vng.bet`)
+    - match: HostSNI(`api.cluster1.example.com`)
       services:
         - name: kubernetes       # built-in Service in "default"
           namespace: default
           port: 443
   tls:
-    passthrough: {}
+    passthrough: true

@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - default-store.yaml
+  - api-use1.vng.bet.yaml
 helmCharts:
   - name: traefik-crds
     version: "1.5.0"

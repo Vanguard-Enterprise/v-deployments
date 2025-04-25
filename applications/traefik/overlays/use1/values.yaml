@@ -6,7 +6,6 @@ additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
   - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
-  - "--entryPoints.kube-apiserver.address=:6443"
 
 deployment:
   enabled: true

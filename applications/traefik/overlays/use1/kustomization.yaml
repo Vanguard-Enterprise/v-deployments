@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - default-store.yaml
-  - api-ingress.yaml
 helmCharts:
   - name: traefik-crds
     version: "1.5.0"

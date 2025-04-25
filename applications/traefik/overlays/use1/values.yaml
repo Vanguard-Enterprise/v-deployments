@@ -15,6 +15,10 @@ deployment:
   additionalContainers: []
   initContainers: []
 
+entryPoints:
+  kubeapi:
+    address: ":6443"
+
 ports:
   web:
     enabled: true

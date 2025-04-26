@@ -16,25 +16,7 @@ server:
     storageClass: longhorn
     accessMode: ReadWriteOnce
     annotations: {}
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: traefik-external
-      traefik.ingress.kubernetes.io/router.entrypoints: websecure
-      traefik.ingress.kubernetes.io/router.tls: "true"
-      traefik.ingress.kubernetes.io/router.tls.store: default
-      traefik.ingress.kubernetes.io/router.tls.store.namespace: traefik
-    ingressClassName: traefik-external
-    pathType: Prefix
-
-    hosts:
-      - host: vault.vng.bet
-        paths:
-          - "/"        # <-- must be an absolute path
-
-    tls: []          # let Traefik bind your “default” TLSStore
-
-
+    
   image:
     repository: "hashicorp/vault"
     tag: "latest"

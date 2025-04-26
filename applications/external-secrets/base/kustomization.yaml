@@ -6,6 +6,6 @@ helmCharts:
     repo: https://charts.external-secrets.io/
     releaseName: external-secrets
     namespace: external-secrets
-    #valuesFile: values.yaml
+    valuesFile: values.yaml
 resources:
   - namespace.yaml

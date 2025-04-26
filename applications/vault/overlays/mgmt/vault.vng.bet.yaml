@@ -12,7 +12,7 @@ spec:
     - match: Host(`vault.vng.bet`)
       kind: Rule
       services:
-        - name: vault-ui
+        - name: vault
           port: 8200
   tls:
     store:

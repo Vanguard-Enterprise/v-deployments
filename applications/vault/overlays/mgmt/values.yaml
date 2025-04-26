@@ -45,7 +45,6 @@ server:
 
   ha:
     enabled: true
-    apiAddr: vault.vng.bet
     replicas: 3
     raft:
       enabled: true

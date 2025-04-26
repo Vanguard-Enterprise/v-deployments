@@ -13,6 +13,4 @@ spec:
           namespace: default
           port: 443
   tls:
-    store:
-      name: default
-      namespace: traefik
+    passthrough: true

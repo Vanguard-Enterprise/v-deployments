@@ -1,2 +1,18 @@
+installCRDs: true
+
 serviceAccount:
-  name: "external-secrets"
+  create: true
+  name: external-secrets
+
+rbac:
+  create: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+logLevel: info

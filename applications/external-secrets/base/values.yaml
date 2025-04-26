@@ -2,7 +2,7 @@ installCRDs: true
 
 serviceAccount:
   create: true
-  name: external-secrets
+  name: external-secrets-sa
 
 rbac:
   create: true

@@ -1,6 +1,6 @@
 # Cluster Application Statuses
 ## United States - Management Cluster (MGMT)
-https://argocd.vng.bet/api/badge?name=cert-manager-mgmt&revision=true&showAppName=true
+[![cert-manager](https://argocd.vng.bet/api/badge?name=cert-manager-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/cert-manager-mgmt)
 https://argocd.vng.bet/api/badge?name=external-secrets-mgmt&revision=true&showAppName=true
 https://argocd.vng.bet/api/badge?name=longhorn-mgmt&revision=true&showAppName=true
 https://argocd.vng.bet/api/badge?name=metallb-mgmt&revision=true&showAppName=true

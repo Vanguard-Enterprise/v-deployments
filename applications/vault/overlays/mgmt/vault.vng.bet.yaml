@@ -13,7 +13,7 @@ spec:
       kind: Rule
       services:
         - name: vault-active
-          port: 8200
+          port: 8201
   tls:
     store:
       name: default

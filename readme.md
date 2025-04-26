@@ -1,6 +1,7 @@
 # Cluster Application Statuses
 ## United States - Management Cluster (MGMT) 
-### App of Apps [![App of Apps](https://argocd.vng.bet/api/badge?name=mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/mgmt)
+### App of Apps
+[![App of Apps](https://argocd.vng.bet/api/badge?name=mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/mgmt)
 ---
 ### Applications
 [![cert-manager](https://argocd.vng.bet/api/badge?name=cert-manager-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/cert-manager-mgmt)
@@ -12,7 +13,8 @@
 [![zitadel](https://argocd.vng.bet/api/badge?name=zitadel-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/zitadel-mgmt)
 
 ## United States - East 1 (USE1) 
-### App of Apps [![App of Apps](https://argocd.vng.bet/api/badge?name=use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/use1)
+### App of Apps
+[![App of Apps](https://argocd.vng.bet/api/badge?name=use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/use1)
 ---
 ### Applications
 [![N8N - Amity](https://argocd.vng.bet/api/badge?name=amity-n8n-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/amity-n8n-use1)

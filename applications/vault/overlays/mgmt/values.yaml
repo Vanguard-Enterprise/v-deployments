@@ -82,7 +82,7 @@ server:
 
 ui:
   enabled: true
-  serviceType: "ClusterIP"
+  serviceType: "LoadBalancer"
   serviceNodePort: null
   externalPort: 8200
 

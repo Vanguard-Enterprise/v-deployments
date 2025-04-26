@@ -18,6 +18,7 @@
 ---
 ### Applications
 [![N8N - Amity](https://argocd.vng.bet/api/badge?name=amity-n8n-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/amity-n8n-use1)
+[![external-secrets](https://argocd.vng.bet/api/badge?name=external-secrets-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/devtroncd/external-secrets-use1?view=tree)
 [![cert-manager](https://argocd.vng.bet/api/badge?name=cert-manager-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/cert-manager-use1)
 [![longhorn](https://argocd.vng.bet/api/badge?name=longhorn-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/longhorn-use1)
 [![metallb](https://argocd.vng.bet/api/badge?name=metallb-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/metallb-use1)

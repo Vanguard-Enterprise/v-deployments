@@ -35,11 +35,4 @@ zitadel:
   dbSslUserCrtSecret: zitadel-cert
 
 ingress:
-  enabled: true
-  className: traefik
-  hosts:
-    - host: accounts.vng.bet
-      paths:
-        - path: /
-          pathType: Prefix
-  tls: []
+  enabled: false

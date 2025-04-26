@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - kubeapi
   routes:
-    - match: HostSNI(`api-use1.vng.bet`)
+    - match: HostSNI(`api-use2.vng.bet`)
       services:
         - name: kubernetes
           namespace: default

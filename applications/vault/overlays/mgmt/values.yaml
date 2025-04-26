@@ -18,27 +18,18 @@ server:
     annotations: {}
   ingress:
     enabled: true
-
-    # Use the external Traefik controller and bind to the secure entrypoint
     annotations:
       kubernetes.io/ingress.class: traefik
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
       traefik.ingress.kubernetes.io/router.tls: "true"  
-      traefik.ingress.kubernetes.io/router.tls.store: default                   # reference the TLSStore “default” :contentReference[oaicite:0]{index=0}
+      traefik.ingress.kubernetes.io/router.tls.store: default
       traefik.ingress.kubernetes.io/router.tls.store.namespace: traefik
-
-    # If you prefer ingressClassName over the deprecated annotation:
-    ingressClassName: traefik-external
-
-    # Required since Kubernetes 1.19+
+    ingressClassName: traefik
     pathType: Prefix
-
     hosts:
       - host: vault.vng.bet
         paths:
           - path: /
-
-    # Leave the TLS list empty so Traefik will fall back to your TLSStore “default”  
     tls: []                                                                  # no secretName → use default TLSStore :contentReference[oaicite:1]{index=1}
 
 

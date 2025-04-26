@@ -30,8 +30,6 @@ server:
       - host: vault.vng.bet
         paths:
           - path: /
-    tls: []                                                                  # no secretName → use default TLSStore :contentReference[oaicite:1]{index=1}
-
 
   image:
     repository: "hashicorp/vault"

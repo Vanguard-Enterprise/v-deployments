@@ -34,7 +34,7 @@ zitadel:
         User:
           Password: temp-1
         Admin:
-          Password: temp-1
+          Password: temp-2
   # TLS/SSL secrets for DB and application
   dbSslCaCrtSecret: postgres-cert
   dbSslAdminCrtSecret: postgres-cert

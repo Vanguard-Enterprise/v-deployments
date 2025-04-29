@@ -4,7 +4,6 @@ metadata:
   name: outline-config
   namespace: outline
 data:
-
   #PG SHUTUP
   PGSSLMODE: "disable"
   # Application settings
@@ -12,6 +11,15 @@ data:
   NODE_ENV: "production"
   FORCE_HTTPS: "true"
   ENABLE_UPDATES: "true"
+  #WEB_CONCURRENCY: "1"
+  #DEBUG: "http"
+  #LOG_LEVEL: "info"
+
+  # Rate limiter
+  #RATE_LIMITER_ENABLED: "true"
+  #RATE_LIMITER_REQUESTS: "1000"
+  #RATE_LIMITER_DURATION: "60" # window in seconds
+
   # Service endpoint
   COLLABORATION_URL: "https://docs.vng.bet"
   URL: "https://docs.vng.bet"
@@ -24,7 +32,7 @@ data:
   AWS_S3_UPLOAD_BUCKET_NAME: "outline"
   AWS_S3_ACL: "private"
   AWS_S3_UPLOAD_MAX_SIZE: "26214400"
-
+  # OIDC authentication (Zitadel)
   DISCORD_CLIENT_ID: "1366871093884883000"
   DISCORD_SERVER_ID: "1226395331198193675"
   DISCORD_SERVER_ROLES: "1366876372508872917"

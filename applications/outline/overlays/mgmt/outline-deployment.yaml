@@ -27,8 +27,6 @@ spec:
             name: redis-secret
         - secretRef:
             name: outline-secret
-
-s:
         readinessProbe:
           httpGet:
             path: /health

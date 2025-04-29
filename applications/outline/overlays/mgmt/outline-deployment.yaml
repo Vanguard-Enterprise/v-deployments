@@ -27,14 +27,6 @@ spec:
             name: redis-secret
         - secretRef:
             name: outline-secret
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
         volumeMounts:
         - name: outline-data
           mountPath: /var/lib/outline/data

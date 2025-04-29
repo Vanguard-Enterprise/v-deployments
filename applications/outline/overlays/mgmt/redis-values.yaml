@@ -6,15 +6,9 @@ namespaceOverride: "outline"
 architecture: standalone
 auth:
   enabled: true
-  existingSecret: ""
+  existingSecret: "redis-secret"
 existingConfigmap: ""
 master:
   count: 1
   persistence:
-    size: 1Gi
-replica:
-  kind: StatefulSet
-  replicaCount: 1
-  persistence:
-    enabled: true
-    size: 1Gi
+    size: 2Gi

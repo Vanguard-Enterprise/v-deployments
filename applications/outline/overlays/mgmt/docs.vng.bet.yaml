@@ -13,7 +13,7 @@ spec:
     kind: Rule
     services:
     - name: outline
-      port: 3000
+      port: 443
   tls:
     store:
       name: default

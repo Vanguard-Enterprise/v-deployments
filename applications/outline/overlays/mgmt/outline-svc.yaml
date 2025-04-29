@@ -9,5 +9,5 @@ spec:
     app: outline
   ports:
   - name: outline
-    port: 3000
-    targetPort: 3000
+    port: 443
+    targetPort: 443

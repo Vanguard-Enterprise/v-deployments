@@ -17,7 +17,7 @@ spec:
       - name: outline
         image: docker.getoutline.com/outlinewiki/outline:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 443
         envFrom:
         - configMapRef:
             name: outline-config

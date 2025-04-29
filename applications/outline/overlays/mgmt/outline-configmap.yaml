@@ -9,7 +9,7 @@ data:
   # Application settings
   DEFAULT_LANGUAGE: "en_US"
   NODE_ENV: "production"
-  #FORCE_HTTPS: "true"
+  FORCE_HTTPS: "true"
   ENABLE_UPDATES: "true"
   WEB_CONCURRENCY: "1"
   DEBUG: "http"
@@ -21,8 +21,8 @@ data:
   RATE_LIMITER_DURATION: "60" # window in seconds
 
   # Service endpoint
-  URL: "http://docs.vng.bet"
-  PORT: "3000"
+  URL: "https://docs.vng.bet"
+  PORT: "443"
 
   # File storage (S3)
   FILE_STORAGE: "s3"

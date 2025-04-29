@@ -8,6 +8,6 @@ spec:
   selector:
     app: outline
   ports:
-  - name: http
+  - name: outline
     port: 3000
     targetPort: 3000

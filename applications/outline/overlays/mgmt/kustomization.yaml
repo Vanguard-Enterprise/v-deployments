@@ -4,6 +4,12 @@ resources:
 - ../../base
 - external-redis-secret.yaml
 - external-postgresql-secret.yaml
+- external-outline-secret.yaml
+- outline-configmap.yaml
+- outline-deployment.yaml
+- outline-pvc.yaml
+- outline-svc.yaml
+- docs.vng.bet.yaml
 helmCharts:
 - name: redis
   version: "20.13.3"

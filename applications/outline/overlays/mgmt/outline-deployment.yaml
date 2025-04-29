@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outline
+  namespace: outline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: outline
+  template:
+    metadata:
+      labels:
+        app: outline
+    spec:
+      containers:
+      - name: outline
+        image: docker.getoutline.com/outlinewiki/outline:latest
+        ports:
+        - containerPort: 443
+        envFrom:
+        - configMapRef:
+            name: outline-config
+        - secretRef:
+            name: postgresql-secret
+        - secretRef:
+            name: redis-secret
+        - secretRef:
+            name: outline-secret
+
+s:
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 443
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 443
+        volumeMounts:
+        - name: outline-data
+          mountPath: /var/lib/outline/data
+      volumes:
+      - name: outline-data
+        persistentVolumeClaim:
+          claimName: outline-data

@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: outline-config
+  namespace: outline
+data:
+  # Outline extra options
+  DEFAULT_LANGUAGE: en_US
+  NODE_ENV: production
+  FORCE_HTTPS: true
+  ENABLE_UPDATES: true
+  WEB_CONCURRENCY: 1
+  DEBUG: http
+  LOG_LEVEL: info
+  RATE_LIMITER_ENABLED: true
+  RATE_LIMITER_REQUESTS: 1000
+  RATE_LIMITER_DURATION: WINDOW=60
+  #DROPBOX_APP_KEY:
+  #SLACK_VERIFICATION_TOKEN: your_token
+  #SLACK_APP_ID: A0XXXXXXX
+  #SLACK_MESSAGE_ACTIONS: true
+  #CDN_URL:
+  #SSL_KEY:
+  #SSL_CERT:
+  #NOTION_CLIENT_ID:
+  #NOTION_CLIENT_SECRET:
+  #DISCORD_CLIENT_ID:
+  #DISCORD_CLIENT_SECRET:
+  # DISCORD_SERVER_ID should be the ID of the Discord server that Outline is
+  # integrated with. 
+  # Used to verify that the user is a member of the server as well as server
+  # metadata such as nicknames, server icon and name.
+  #DISCORD_SERVER_ID:
+  # DISCORD_SERVER_ROLES should be a comma separated list of role IDs that are
+  # allowed to access Outline. If this is not set, all members of the server
+  # will be allowed to access Outline.
+  # DISCORD_SERVER_ID and DISCORD_SERVER_ROLES must be set together.
+  #DISCORD_SERVER_ROLES:
+  #LINEAR_CLIENT_ID:
+  #LINEAR_CLIENT_SECRET:
+  #GITHUB_CLIENT_ID:
+  #GITHUB_CLIENT_SECRET:
+  #GITHUB_APP_NAME:
+  #GITHUB_APP_ID:
+  #GITHUB_APP_PRIVATE_KEY:
+  URL: docs.vng.bet
+  PORT: 443
+  #COLLABORATION_URL: 
+  #SLACK_CLIENT_ID: get_a_key_from_slack
+  #SLACK_CLIENT_SECRET: get_the_secret_of_above_key
+  #GOOGLE_CLIENT_ID:
+  #GOOGLE_CLIENT_SECRET:
+  #AZURE_CLIENT_ID=
+  #AZURE_CLIENT_SECRET=
+  #AZURE_RESOURCE_APP_ID=
+  FILE_STORAGE: s3
+  #FILE_STORAGE_WORKSPACE_IMPORT_MAX_SIZE: 
+  #FILE_STORAGE_IMPORT_MAX_SIZE: 
+  #FILE_STORAGE_UPLOAD_MAX_SIZE:
+  #FILE_STORAGE_LOCAL_ROOT_DIR: /var/lib/outline/data
+  AWS_REGION: us-east-1
+  AWS_S3_UPLOAD_BUCKET_URL: https://s3.vng.bet:443
+  AWS_S3_UPLOAD_BUCKET_NAME: outline
+  #AWS_S3_FORCE_PATH_STYLE: true
+  #AWS_S3_ACL: private
+
+  # Redirect URI is https://<URL>/auth/oidc.callback
+  OIDC_AUTH_URI: https://accounts.vng.bet/oauth/v2/authorize
+  OIDC_TOKEN_URI: https://accounts.vng.bet/oauth/v2/token
+  OIDC_USERINFO_URI: https://accounts.vng.bet/oidc/v1/userinfo
+  OIDC_LOGOUT_URI: https://accounts.vng.bet/oidc/v1/end_session
+  OIDC_USERNAME_CLAIM: preferred_username
+  OIDC_DISPLAY_NAME: OpenID Connect
+  OIDC_SCOPES: openid profile email

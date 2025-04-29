@@ -23,7 +23,7 @@ data:
   # Service endpoint
   COLLABORATION_URL: "http://docs.vng.bet"
   URL: "http://docs.vng.bet"
-  PORT: "80"
+  PORT: "3000"
 
   # File storage (S3)
   FILE_STORAGE: "s3"

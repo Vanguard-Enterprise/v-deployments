@@ -22,7 +22,7 @@ data:
 
   # Service endpoint
   URL: "https://docs.vng.bet"
-  PORT: "443"
+  PORT: "3000"
 
   # File storage (S3)
   FILE_STORAGE: "s3"

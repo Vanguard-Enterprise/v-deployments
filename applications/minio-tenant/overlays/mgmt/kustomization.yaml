@@ -3,12 +3,6 @@ kind: Kustomization
 resources:
 - ../../base
 helmCharts:
-- name: operator
-  version: 7.1.1
-  repo: https://operator.min.io
-  releaseName: operator
-  namespace: minio-operator
-  #valuesFile: values.yaml
 - name: tenant
   version: 7.1.1
   repo: https://operator.min.io

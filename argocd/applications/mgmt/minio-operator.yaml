@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
-    path: applications/minio/overlays/mgmt
+    path: applications/minio-operator/overlays/mgmt
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc

@@ -1,0 +1,7 @@
+global:
+  defaultStorageClass: "longhorn"
+  storageClass: "longhorn"
+fullnameOverride: "postgresql"
+namespaceOverride: "outline"
+auth:
+  existingSecret: ""

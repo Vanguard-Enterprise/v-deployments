@@ -1,0 +1,20 @@
+global:
+  defaultStorageClass: "longhorn"
+  storageClass: "longhorn"
+fullnameOverride: "redis"
+namespaceOverride: "outline"
+architecture: standalone
+auth:
+  enabled: true
+  existingSecret: ""
+existingConfigmap: ""
+master:
+  count: 1
+  persistence:
+    size: 1Gi
+replica:
+  kind: StatefulSet
+  replicaCount: 1
+  persistence:
+    enabled: true
+    size: 1Gi

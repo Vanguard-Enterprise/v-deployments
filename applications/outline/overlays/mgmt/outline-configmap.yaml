@@ -27,7 +27,7 @@ data:
 
   # File storage (S3)
   FILE_STORAGE: "s3"
-  AWS_REGION: "us-east-1"
+  AWS_REGION: "usast-1"
   AWS_S3_UPLOAD_BUCKET_URL: "https://s3.vng.bet"
   AWS_S3_UPLOAD_BUCKET_NAME: "outline"
   AWS_S3_ACL: "private"
@@ -36,7 +36,6 @@ data:
   OIDC_AUTH_URI: "https://accounts.vng.bet/oauth/v2/authorize"
   OIDC_TOKEN_URI: "https://accounts.vng.bet/oauth/v2/token"
   OIDC_USERINFO_URI: "https://accounts.vng.bet/oidc/v1/userinfo"
-  OIDC_LOGOUT_URI: "https://accounts.vng.bet/oidc/v1/end_session"
   OIDC_USERNAME_CLAIM: "preferred_username"
-  OIDC_DISPLAY_NAME: "Zitadel"
-  OIDC_SCOPES: "openid offline_access profile email"
+  OIDC_DISPLAY_NAME: Zitadel
+  OIDC_SCOPES: "openid profile email"

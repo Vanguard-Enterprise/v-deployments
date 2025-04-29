@@ -9,3 +9,9 @@ helmCharts:
   releaseName: operator
   namespace: minio-operator
   #valuesFile: values.yaml
+- name: tenant
+  version: 7.1.1
+  repo: https://operator.min.io
+  releaseName: tenant
+  namespace: minio-tenant
+  valuesFile: tenant-values.yaml

@@ -21,7 +21,7 @@ data:
   RATE_LIMITER_DURATION: "60" # window in seconds
 
   # Service endpoint
-  URL: "https://docs.vng.bet"
+  URL: "http://docs.vng.bet"
   PORT: "3000"
 
   # File storage (S3)

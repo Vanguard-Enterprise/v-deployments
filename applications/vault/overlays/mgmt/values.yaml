@@ -11,7 +11,7 @@ injector:
 server:
   dataStorage:
     enabled: true
-    size: 5Gi
+    size: 512Mi
     mountPath: "/vault/data"
     storageClass: longhorn
     accessMode: ReadWriteOnce
@@ -31,7 +31,7 @@ server:
 
   auditStorage:
     enabled: true
-    size: 1Gi
+    size: 256Mi
 
   standalone:
     enabled: false

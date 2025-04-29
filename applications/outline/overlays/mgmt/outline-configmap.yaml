@@ -11,18 +11,18 @@ data:
   NODE_ENV: "production"
   FORCE_HTTPS: "false"
   ENABLE_UPDATES: "true"
-  WEB_CONCURRENCY: "1"
-  DEBUG: "http"
-  LOG_LEVEL: "info"
+  #WEB_CONCURRENCY: "1"
+  #DEBUG: "http"
+  #LOG_LEVEL: "info"
 
   # Rate limiter
-  RATE_LIMITER_ENABLED: "true"
-  RATE_LIMITER_REQUESTS: "1000"
-  RATE_LIMITER_DURATION: "60" # window in seconds
+  #RATE_LIMITER_ENABLED: "true"
+  #RATE_LIMITER_REQUESTS: "1000"
+  #RATE_LIMITER_DURATION: "60" # window in seconds
 
   # Service endpoint
   URL: "http://docs.vng.bet"
-  PORT: "443"
+  PORT: "80"
 
   # File storage (S3)
   FILE_STORAGE: "s3"

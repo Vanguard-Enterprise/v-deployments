@@ -21,6 +21,7 @@ data:
   #RATE_LIMITER_DURATION: "60" # window in seconds
 
   # Service endpoint
+  COLLABORATION_URL: "http://docs.vng.bet"
   URL: "http://docs.vng.bet"
   PORT: "80"
 
@@ -38,5 +39,5 @@ data:
   OIDC_USERINFO_URI: "https://accounts.vng.bet/oidc/v1/userinfo"
   OIDC_LOGOUT_URI: "https://accounts.vng.bet/oidc/v1/end_session"
   OIDC_USERNAME_CLAIM: "preferred_username"
-  OIDC_DISPLAY_NAME: "OpenID Connect"
-  OIDC_SCOPES: "openid profile email"
+  OIDC_DISPLAY_NAME: "Zitadel"
+  OIDC_SCOPES: "openid offline_access profile email"

@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - ../../base
 - external-redis-secret.yaml
+- external-postgresql-secret.yaml
 helmCharts:
 - name: redis
   version: "20.13.3"

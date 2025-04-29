@@ -4,9 +4,8 @@ global:
 fullnameOverride: "postgresql"
 namespaceOverride: "outline"
 auth:
-  existingSecret: ""
-  username: "user"
-  password: "userpass"
+  existingSecret: "postgresql-secret"
+  username: "outline"
   database: "outline"
 persistence:
   storageClass: "longhorn"

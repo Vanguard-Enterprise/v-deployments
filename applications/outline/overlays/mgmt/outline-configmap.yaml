@@ -9,7 +9,7 @@ data:
   # Application settings
   DEFAULT_LANGUAGE: "en_US"
   NODE_ENV: "production"
-  FORCE_HTTPS: "true"
+  FORCE_HTTPS: "false"
   ENABLE_UPDATES: "true"
   #WEB_CONCURRENCY: "1"
   #DEBUG: "http"
@@ -21,7 +21,7 @@ data:
   #RATE_LIMITER_DURATION: "60" # window in seconds
 
   # Service endpoint
-  URL: "https://docs.vng.bet"
+  URL: "http://docs.vng.bet"
   PORT: "80"
 
   # File storage (S3)
@@ -29,7 +29,8 @@ data:
   AWS_REGION: "us-east-1"
   AWS_S3_UPLOAD_BUCKET_URL: "https://s3.vng.bet"
   AWS_S3_UPLOAD_BUCKET_NAME: "outline"
-
+  AWS_S3_ACL: "private"
+  AWS_S3_UPLOAD_MAX_SIZE: "26214400"
   # OIDC authentication (Zitadel)
   redirect_uri: "https://docs.vng.bet/auth/oidc.callback"
   OIDC_AUTH_URI: "https://accounts.vng.bet/oauth/v2/authorize"

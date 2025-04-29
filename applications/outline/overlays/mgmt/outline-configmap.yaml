@@ -4,6 +4,8 @@ metadata:
   name: outline-config
   namespace: outline
 data:
+  #PG SHUTUP
+  PGSSLMODE: "disable"
   # Application settings
   DEFAULT_LANGUAGE: "en_US"
   NODE_ENV: "production"

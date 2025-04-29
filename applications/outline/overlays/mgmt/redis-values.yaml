@@ -5,8 +5,7 @@ fullnameOverride: "redis"
 namespaceOverride: "outline"
 architecture: standalone
 auth:
-  enabled: true
-  existingSecret: "redis-secret"
+  enabled: false
 existingConfigmap: ""
 master:
   count: 1

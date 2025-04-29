@@ -31,6 +31,7 @@ data:
   AWS_S3_UPLOAD_BUCKET_NAME: "outline"
 
   # OIDC authentication (Zitadel)
+  redirect_uri: "https://docs.vng.bet/auth/oidc.callback"
   OIDC_AUTH_URI: "https://accounts.vng.bet/oauth/v2/authorize"
   OIDC_TOKEN_URI: "https://accounts.vng.bet/oauth/v2/token"
   OIDC_USERINFO_URI: "https://accounts.vng.bet/oidc/v1/userinfo"

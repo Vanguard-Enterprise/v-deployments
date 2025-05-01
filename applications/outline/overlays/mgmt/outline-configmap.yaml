@@ -7,10 +7,10 @@ data:
   #PG SHUTUP
   PGSSLMODE: "disable"
   # Application settings
-  #DEFAULT_LANGUAGE: "en_US"
-  #NODE_ENV: "production"
-  #FORCE_HTTPS: "true"
-  #ENABLE_UPDATES: "true"
+  DEFAULT_LANGUAGE: "en_US"
+  NODE_ENV: "production"
+  FORCE_HTTPS: "true"
+  ENABLE_UPDATES: "true"
   # Service endpoint
   COLLABORATION_URL: "https://docs.vng.bet"
   URL: "https://docs.vng.bet"

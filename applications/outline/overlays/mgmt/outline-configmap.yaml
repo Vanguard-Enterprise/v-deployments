@@ -5,24 +5,24 @@ metadata:
   namespace: outline
 data:
   #PG SHUTUP
-  PGSSLMODE: "disable"
+  #PGSSLMODE: "disable"
   # Application settings
-  DEFAULT_LANGUAGE: "en_US"
-  NODE_ENV: "production"
-  FORCE_HTTPS: "true"
-  ENABLE_UPDATES: "true"
+  #DEFAULT_LANGUAGE: "en_US"
+  #NODE_ENV: "production"
+  #FORCE_HTTPS: "true"
+  #ENABLE_UPDATES: "true"
   # Service endpoint
-  COLLABORATION_URL: "https://docs.vng.bet"
-  URL: "https://docs.vng.bet"
-  PORT: "3000"
+  #COLLABORATION_URL: "https://docs.vng.bet"
+  #URL: "https://docs.vng.bet"
+  #PORT: "3000"
 
   # File storage (S3)
-  FILE_STORAGE: "s3"
-  AWS_REGION: "us-east-1"
-  AWS_S3_UPLOAD_BUCKET_URL: "https://s3.vng.bet"
-  AWS_S3_UPLOAD_BUCKET_NAME: "outline"
-  AWS_S3_ACL: "private"
-  AWS_S3_UPLOAD_MAX_SIZE: "26214400"
+  FILE_STORAGE: "local"
+  #AWS_REGION: "us-east-1"
+  #AWS_S3_UPLOAD_BUCKET_URL: "https://s3.vng.bet"
+  #AWS_S3_UPLOAD_BUCKET_NAME: "outline"
+  #AWS_S3_ACL: "private"
+  #AWS_S3_UPLOAD_MAX_SIZE: "26214400"
 
   SLACK_CLIENT_ID: "8828602795379.8828634269555"
   SLACK_CLIENT_SECRET: "3bdd09dc841b82f3355587ca1b104768"

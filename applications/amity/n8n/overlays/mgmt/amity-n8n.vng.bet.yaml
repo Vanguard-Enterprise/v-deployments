@@ -3,22 +3,22 @@ kind: IngressRoute
 metadata:
   name: amity-n8n-ingress
   namespace: amity-n8n
-  annotations: 
+  annotations:
     kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
-    - websecure
+  - websecure
   routes:
-    - match: Host(`amity-n8n.vng.bet`) && PathPrefix(`/broker`)
-      kind: Rule
-      services:
-        - name: n8n-broker
-          port: 5679
-    - match: Host(`amity-n8n.vng.bet`)
-      kind: Rule
-      services:
-        - name: n8n
-          port: 5678
+  - match: Host(`amity-n8n.vng.bet`) && PathPrefix(`/broker`)
+    kind: Rule
+    services:
+    - name: n8n-broker
+      port: 5679
+  - match: Host(`amity-n8n.vng.bet`)
+    kind: Rule
+    services:
+    - name: n8n
+      port: 5678
   tls:
     store:
       name: default

@@ -24,12 +24,6 @@ data:
   AWS_S3_ACL: "private"
   AWS_S3_UPLOAD_MAX_SIZE: "26214400"
 
-  #SLACK_CLIENT_ID: "8828602795379.8828634269555"
-  #SLACK_CLIENT_SECRET: "3bdd09dc841b82f3355587ca1b104768"
-  #DISCORD_CLIENT_ID: "1366871093884882955"
-  #DISCORD_CLIENT_SECRET: "w_N3diR8lj06vE-lvrtWAcIgills5CPc"
-  #DISCORD_SERVER_ID: "1226395331198193675"
-  #DISCORD_SERVER_ROLES: "1366876372508872917"
   #no fucks given
   OIDC_CLIENT_ID: "317816302024590493"
   OIDC_AUTH_URI: "https://accounts.vng.bet/oauth/v2/authorize"
@@ -37,5 +31,5 @@ data:
   OIDC_USERINFO_URI: "https://accounts.vng.bet/oidc/v1/userinfo"
   OIDC_LOGOUT_URI: "https://accounts.vng.bet/oidc/v1/end_session"
   OIDC_USERNAME_CLAIM: "preferred_username"
-  OIDC_DISPLAY_NAME: "Zitadel"
+  OIDC_DISPLAY_NAME: "V-Enterprise"
   OIDC_SCOPES: "openid profile email"

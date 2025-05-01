@@ -9,7 +9,7 @@ data:
   # Application settings
   DEFAULT_LANGUAGE: "en_US"
   NODE_ENV: "production"
-  FORCE_HTTPS: "true"
+  FORCE_HTTPS: "false"
   ENABLE_UPDATES: "true"
   # Service endpoint
   COLLABORATION_URL: "https://docs.vng.bet"

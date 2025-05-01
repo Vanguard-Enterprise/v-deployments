@@ -35,6 +35,6 @@ data:
   OIDC_AUTH_URI: "https://accounts.vng.bet/oauth/v2/authorize"
   OIDC_TOKEN_URI: "https://accounts.vng.bet/oauth/v2/token"
   OIDC_USERINFO_URI: "https://accounts.vng.bet/oidc/v1/userinfo"
-  OIDC_LOGOUT_URI: "https://docs.vng.bet"
+  OIDC_LOGOUT_URI: "https://accounts.vng.bet/oidc/v1/end_session"
   OIDC_DISPLAY_NAME: "Zitadel"
   OIDC_SCOPES: "openid profile email"

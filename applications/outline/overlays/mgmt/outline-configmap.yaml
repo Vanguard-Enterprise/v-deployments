@@ -17,7 +17,7 @@ data:
   PORT: "3000"
 
   # File storage (S3)
-  FILE_STORAGE: "local"
+  FILE_STORAGE: "s3"
   AWS_REGION: "us-east-1"
   AWS_S3_UPLOAD_BUCKET_URL: "https://s3.vng.bet"
   AWS_S3_UPLOAD_BUCKET_NAME: "outline"

@@ -1,0 +1,40 @@
+read:
+  replicas: 1 #scale
+  persistence:
+    storageClass: longhorn
+write:
+  replicas: 1 #scale
+  persistence:
+    storageClass: longhorn
+backend:
+  replicas: 1 #scale
+  persistence:
+    storageClass: longhorn
+loki:
+  auth_enabled: true #requires tenant_id http header
+  commonConfig:
+    replication_factor: 1 #scale
+  schemaConfig:
+    configs:
+    - from: 2024-04-01
+      store: tsdb
+      object_store: s3
+      schema: v13
+      index:
+        prefix: index_
+        period: 48h
+      chunks:
+        period: 48h
+  storage:
+    bucketNames:
+      chunks: loki-chunks
+      ruler: loki-ruler
+      admin: loki-admin
+    type: s3
+    s3:
+      endpoint: https://s3.vng.bet
+      region: us-east-1
+      #ROLL BELOW VALUES ONCE IN PROD
+      secretAccessKey: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
+      accessKeyId: HIE6uDchmspjOprk0EaT
+      s3ForcePathStyle: true

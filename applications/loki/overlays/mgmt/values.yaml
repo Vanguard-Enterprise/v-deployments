@@ -22,9 +22,9 @@ loki:
       schema: v13
       index:
         prefix: index_
-        period: 48h
+        period: 24h #TSDB REQUIRES 24h
       chunks:
-        period: 48h
+        period: 24h #TSDB REQUIRES 24h
   storage:
     bucketNames:
       chunks: loki-chunks

@@ -11,7 +11,8 @@ backend:
   persistence:
     storageClass: longhorn
 loki:
-  auth_enabled: true #requires tenant_id http header
+  configStorageType: Secret
+  auth_enabled: false #requires tenant_id http header *enable later*
   commonConfig:
     replication_factor: 1 #scale
   schemaConfig:

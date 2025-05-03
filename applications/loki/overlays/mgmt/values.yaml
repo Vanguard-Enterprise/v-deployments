@@ -14,7 +14,7 @@ read:
 backend:
   replicas: 1 # Modify Number of replicas if you want. The default number of replicas for the backend is 3
   persistence:
-    storageClass: standard # Choose the storageClass you wanna use
+    storageClass: longhorn # Choose the storageClass you wanna use
   extraVolumes:
   - name: retention
     emptyDir: {}
@@ -24,7 +24,7 @@ backend:
 write:
   replicas: 1 # # Modify Number of replicas if you want. The default number of replicas for the write is 3
   persistence:
-    storageClass: standard # Choose the storageClass you wanna use
+    storageClass: longhorn # Choose the storageClass you wanna use
 loki:
   limits_config:
     max_query_lookback: 25h # To avoid querying of data beyond the retention period,max_query_lookback config in limits_config must be set to a value less than or equal to what is set in <<table_manager.retention_period>>
@@ -55,5 +55,7 @@ loki:
       endpoint: https://s3.vng.bet
       region: us-east-1
       s3ForcePathStyle: true
+      access_key_id: HIE6uDchmspjOprk0EaT
+      secret_access_key: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
       insecure: false # if your instance does NOT support <<https>>, change it to true
   auth_enabled: false

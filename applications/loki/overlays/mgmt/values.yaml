@@ -1,40 +1,19 @@
-global:
-  extraEnvFrom:
-  - secretRef:
-      name: s3
-test:
-  enabled: false
-monitoring:
-  selfMonitoring:
-    enabled: false
-    grafanaAgent:
-      installOperator: false # Loki Helm chart, deploys grafana agent as the collector by default, but i prefer to use my own grafana agent collector which has been deployed separately, therefore i set <<installOperator>> to <<false>>
 read:
-  replicas: 1 # Modify Number of replicas if you want. The default number of replicas for the read is 3
-backend:
-  replicas: 1 # Modify Number of replicas if you want. The default number of replicas for the backend is 3
+  replicas: 1 #scale
   persistence:
-    storageClass: longhorn # Choose the storageClass you wanna use
-  extraVolumes:
-  - name: retention
-    emptyDir: {}
-  extraVolumeMounts:
-  - name: retention
-    mountPath: /data # if you look at <<compactor.working_directory>> section, we need to set a volumeMount for that specific directory
+    storageClass: longhorn
 write:
-  replicas: 1 # # Modify Number of replicas if you want. The default number of replicas for the write is 3
+  replicas: 1 #scale
   persistence:
-    storageClass: longhorn # Choose the storageClass you wanna use
+    storageClass: longhorn
+backend:
+  replicas: 1 #scale
+  persistence:
+    storageClass: longhorn
 loki:
-  limits_config:
-    max_query_lookback: 25h # To avoid querying of data beyond the retention period,max_query_lookback config in limits_config must be set to a value less than or equal to what is set in <<table_manager.retention_period>>
-    retention_period: 25h # which is applied globally for all log streams.
-  compactor:
-    working_directory: /data/retention # is the directory where marked chunks and temporary tables will be saved
-    delete_request_store: s3 # should be set to configure the store for delete requests. This is required when retention is enabled
-    retention_enabled: true
+  auth_enabled: true #requires tenant_id http header
   commonConfig:
-    replication_factor: 1 # If you prefer to use 3 replicas for the ingester(its default number of replicas is 3), therefore you do NOT need to set replication_factor to <<1>> . its default value is <<3>>
+    replication_factor: 1 #scale
   schemaConfig:
     configs:
     - from: 2024-04-01
@@ -43,19 +22,19 @@ loki:
       schema: v13
       index:
         prefix: index_
-        period: 24h
+        period: 24h #TSDB REQUIRES 24h
       chunks:
-        period: 24h
+        period: 24h #TSDB REQUIRES 24h
   storage:
     bucketNames:
-      chunks: loki-chunks # create this bucket inside your minio instance
-      ruler: loki-ruler # create this bucket inside your minio instance
-      admin: loki-admin # create this bucket inside your minio instance    type: s3
+      chunks: loki-chunks
+      ruler: loki-ruler
+      admin: loki-admin
+    type: s3
     s3:
       endpoint: https://s3.vng.bet
       region: us-east-1
+      #ROLL BELOW VALUES ONCE IN PROD
+      secretAccessKey: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
+      accessKeyId: HIE6uDchmspjOprk0EaT
       s3ForcePathStyle: true
-      access_key_id: HIE6uDchmspjOprk0EaT
-      secret_access_key: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
-      insecure: false # if your instance does NOT support <<https>>, change it to true
-  auth_enabled: false

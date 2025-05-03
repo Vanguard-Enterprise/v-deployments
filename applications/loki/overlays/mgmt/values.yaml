@@ -1,7 +1,7 @@
 global:
   extraEnvFrom:
   - secretRef:
-      name: s3-secret
+      name: s3
 read:
   replicas: 1 #scale
   persistence:

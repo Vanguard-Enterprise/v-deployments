@@ -8,11 +8,17 @@ metadata:
 spec:
   pipelineStages:
   - docker: {}
+  #- match:
+  #  selector: '{namespace="nginx"}'
+  #  stages: |
+  #    - regex:
+  #        expression: "(?P<method>)"
   namespaceSelector:
     matchNames:
     - default
     - traefik
     - outline
     - grafana
+    - nginx
   selector:
     matchLabels: {}

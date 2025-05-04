@@ -12,6 +12,7 @@ datasources:
 persistence:
   type: pvc
   enabled: true
+  volumeName: "grafana"
   accessModes:
   - ReadWriteOnce
   size: 2Gi

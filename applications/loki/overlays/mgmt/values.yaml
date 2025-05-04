@@ -2,17 +2,17 @@ read:
   replicas: 1 #scale
   persistence:
     storageClass: longhorn
-      size: 1Gi
+    size: 1Gi
 write:
   replicas: 1 #scale
   persistence:
     storageClass: longhorn
-      size: 1Gi
+    size: 1Gi
 backend:
   replicas: 1 #scale
   persistence:
     storageClass: longhorn
-      size: 1Gi
+    size: 1Gi
 loki:
   auth_enabled: false #requires tenant_id http header
   commonConfig:

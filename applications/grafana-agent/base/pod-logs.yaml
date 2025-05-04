@@ -3,6 +3,8 @@ kind: PodLogs
 metadata:
   name: kubernetes-pods
   namespace: grafana-agent
+  labels:
+    instance: primary
 spec:
   pipelineStages:
   - docker: {}

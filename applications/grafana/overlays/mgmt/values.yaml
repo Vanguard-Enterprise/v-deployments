@@ -10,9 +10,6 @@ datasources:
       editable: true
 
 persistence:
-  type: pvc
+  storageClassName: longhorn
   enabled: true
-  volumeName: "grafana"
-  accessModes:
-  - ReadWriteOnce
   size: 2Gi

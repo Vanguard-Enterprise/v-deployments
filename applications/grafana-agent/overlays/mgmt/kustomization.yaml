@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
 - ../../base
 helmCharts:
-- name: collector
+- name: grafana-agent
   version: "0.5.1"
   repo: https://grafana.github.io/helm-charts
   releaseName: grafana-agent-operator

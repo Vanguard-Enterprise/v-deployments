@@ -5,3 +5,11 @@ resources:
 - grafana-agent.yaml
 - log-instance.yaml
 - pod-logs.yaml
+- https://raw.githubusercontent.com/grafana/agent/refs/heads/main/operations/agent-static-operator/crds/monitoring.grafana.com_podlogs.yaml
+- https://raw.githubusercontent.com/grafana/agent/refs/heads/main/operations/agent-static-operator/crds/monitoring.grafana.com_metricsinstances.yaml
+- https://raw.githubusercontent.com/grafana/agent/refs/heads/main/operations/agent-static-operator/crds/monitoring.grafana.com_logsinstances.yaml
+- https://raw.githubusercontent.com/grafana/agent/refs/heads/main/operations/agent-static-operator/crds/monitoring.grafana.com_integrations.yaml
+- https://raw.githubusercontent.com/grafana/agent/refs/heads/main/operations/agent-static-operator/crds/monitoring.grafana.com_grafanaagents.yaml
+- https://raw.githubusercontent.com/grafana/agent/refs/heads/main/operations/agent-static-operator/crds/monitoring.coreos.com_servicemonitors.yaml
+- https://raw.githubusercontent.com/grafana/agent/refs/heads/main/operations/agent-static-operator/crds/monitoring.coreos.com_probes.yaml
+- https://raw.githubusercontent.com/grafana/agent/refs/heads/main/operations/agent-static-operator/crds/monitoring.coreos.com_podmonitors.yaml

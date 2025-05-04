@@ -20,6 +20,7 @@ data:
   FILE_STORAGE: "s3"
   AWS_REGION: "us-east-1"
   AWS_S3_UPLOAD_BUCKET_URL: "https://s3.vng.bet"
+  AWS_S3_ACCELERATE_URL: "https://s3.vng.bet"
   AWS_S3_UPLOAD_BUCKET_NAME: "outline"
   AWS_S3_ACL: "private"
   AWS_S3_UPLOAD_MAX_SIZE: "26214400"

@@ -8,11 +8,13 @@ metadata:
 spec:
   pipelineStages:
   - docker: {}
-  #- match:
-  #  selector: '{namespace="nginx"}'
-  #  stages: |
-  #    - regex:
-  #        expression: "(?P<method>)"
+  - match:
+    selector: '{namespace="nginx"}'
+    stages: |
+      - regex:
+          expression: "(?P<method>GET|PUT|DELETE|POST)"
+      - labels:
+          method: 
   namespaceSelector:
     matchNames:
     - default

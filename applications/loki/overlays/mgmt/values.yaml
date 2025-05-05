@@ -1,7 +1,7 @@
 global:
   extraEnvFrom:
   - secretRef:
-      name: loki-s3-creds
+      name: loki-s3
 read:
   replicas: 1 #scale
   persistence:

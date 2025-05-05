@@ -1,7 +1,15 @@
 global:
-  extraEnvFrom:
-  - secretRef:
-      name: loki-s3
+  extraEnv:
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: loki-s3
+        key: AWS_ACCESS_KEY_ID
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: loki-s3
+        key: AWS_SECRET_ACCESS_KEY
 read:
   replicas: 1 #scale
   persistence:

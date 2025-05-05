@@ -1,3 +1,7 @@
+global:
+  extraEnvFrom:
+  - secretRef:
+      name: loki-s3-creds
 read:
   replicas: 1 #scale
   persistence:
@@ -37,7 +41,8 @@ loki:
     s3:
       endpoint: https://s3.vng.bet
       region: us-east-1
-      #ROLL BELOW VALUES ONCE IN PROD
-      secretAccessKey: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
-      accessKeyId: HIE6uDchmspjOprk0EaT
       s3ForcePathStyle: true
+      #secretAccessKey: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
+      #accessKeyId: HIE6uDchmspjOprk0EaT
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccesskey: ${AWS_SECRET_ACCESS_KEY}

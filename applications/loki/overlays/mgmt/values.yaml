@@ -1,13 +1,15 @@
 global:
   extraArgs:
-  - '-config.expand-env=true'
+  - -config.expand-env=true
   extraEnv:
-  - name: AWS_ACCESS_KEY_ID
+  - name: LOKIS3ENDPOINT
+    value: s3.vng.bet
+  - name: LOKIS3ACCESSKEYID
     valueFrom:
       secretKeyRef:
         name: loki-s3
         key: AWS_ACCESS_KEY_ID
-  - name: AWS_SECRET_ACCESS_KEY
+  - name: LOKIS3SECRETACCESSKEY
     valueFrom:
       secretKeyRef:
         name: loki-s3
@@ -47,12 +49,12 @@ loki:
       chunks: loki-chunks
       ruler: loki-ruler
       admin: loki-admin
-    type: s3
+    type:
     s3:
-      endpoint: https://s3.vng.bet
-      region: us-east-1
       s3ForcePathStyle: true
       #secretAccessKey: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
       #accessKeyId: HIE6uDchmspjOprk0EaT
-      accessKeyId: ${AWS_ACCESS_KEY_ID}
-      secretAccesskey: ${AWS_SECRET_ACCESS_KEY}
+      endpoint: "${LOKIS3ENDPOINT}"
+      region: us-east-1
+      accessKeyId: "${LOKIS3ACCESSKEYID}"
+      secretAccessKey: "${LOKIS3SECRETACCESSKEY}"

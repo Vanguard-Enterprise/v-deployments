@@ -44,5 +44,5 @@ loki:
       s3ForcePathStyle: true
       #secretAccessKey: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
       #accessKeyId: HIE6uDchmspjOprk0EaT
-      accessKeyId: ${accessKeyId}
-      secretAccesskey: ${secretAccesskey}
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccesskey: ${AWS_SECRET_ACCESS_KEY}

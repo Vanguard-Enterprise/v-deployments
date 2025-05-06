@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
-    path: applications/mimif/overlays/mgmt
+    path: applications/mimir/overlays/mgmt
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc

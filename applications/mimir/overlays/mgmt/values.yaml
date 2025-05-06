@@ -33,6 +33,8 @@ minio:
 
 mimir:
   structuredConfig:
+    usage_stats:
+      enabled: false
     common:
       storage:
         backend: s3

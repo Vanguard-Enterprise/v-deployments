@@ -7,7 +7,7 @@ read:
   - -config.expand-env=true
   extraEnvFrom:
   - secretRef:
-      name: loki-aws-credentials
+      name: loki-s3
 
 write:
   replicas: 1
@@ -18,7 +18,7 @@ write:
   - -config.expand-env=true
   extraEnvFrom:
   - secretRef:
-      name: loki-aws-credentials
+      name: loki-s3
 
 backend:
   replicas: 1
@@ -29,7 +29,7 @@ backend:
   - -config.expand-env=true
   extraEnvFrom:
   - secretRef:
-      name: loki-aws-credentials
+      name: loki-s3
 
 loki:
   auth_enabled: false

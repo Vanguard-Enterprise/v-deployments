@@ -1,38 +1,40 @@
-global:
+read:
+  replicas: 1
+  persistence:
+    storageClass: longhorn
+    size: 1Gi
   extraArgs:
   - -config.expand-env=true
-  extraEnv:
-  - name: LOKIS3ENDPOINT
-    value: s3.vng.bet
-  - name: LOKIS3ACCESSKEYID
-    valueFrom:
-      secretKeyRef:
-        name: loki-s3
-        key: AWS_ACCESS_KEY_ID
-  - name: LOKIS3SECRETACCESSKEY
-    valueFrom:
-      secretKeyRef:
-        name: loki-s3
-        key: AWS_SECRET_ACCESS_KEY
-read:
-  replicas: 1 #scale
-  persistence:
-    storageClass: longhorn
-    size: 1Gi
+  extraEnvFrom:
+  - secretRef:
+      name: loki-aws-credentials
+
 write:
-  replicas: 1 #scale
+  replicas: 1
   persistence:
     storageClass: longhorn
     size: 1Gi
+  extraArgs:
+  - -config.expand-env=true
+  extraEnvFrom:
+  - secretRef:
+      name: loki-aws-credentials
+
 backend:
-  replicas: 1 #scale
+  replicas: 1
   persistence:
     storageClass: longhorn
     size: 1Gi
+  extraArgs:
+  - -config.expand-env=true
+  extraEnvFrom:
+  - secretRef:
+      name: loki-aws-credentials
+
 loki:
-  auth_enabled: false #requires tenant_id http header
+  auth_enabled: false
   commonConfig:
-    replication_factor: 1 #scale
+    replication_factor: 1
   schemaConfig:
     configs:
     - from: 2024-04-01
@@ -41,20 +43,18 @@ loki:
       schema: v13
       index:
         prefix: index_
-        period: 24h #TSDB REQUIRES 24h
+        period: 24h
       chunks:
-        period: 24h #TSDB REQUIRES 24h
+        period: 24h
   storage:
     bucketNames:
       chunks: loki-chunks
       ruler: loki-ruler
       admin: loki-admin
-    type:
+    type: s3
     s3:
       s3ForcePathStyle: true
-      #secretAccessKey: X4IxabE6cPlLCbp18Ll5V7vbNhJ0gBzNKs0AmKsP
-      #accessKeyId: HIE6uDchmspjOprk0EaT
-      endpoint: "${LOKIS3ENDPOINT}"
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+      endpoint: "https://s3.vng.bet"
       region: us-east-1
-      accessKeyId: "${LOKIS3ACCESSKEYID}"
-      secretAccessKey: "${LOKIS3SECRETACCESSKEY}"

@@ -44,6 +44,7 @@ mimir:
           bucket_name: mimir-ruler
           endpoint: https://s3.vng.bet
           insecure: false
+          region: us-east-1
     blocks_storage:
       s3:
         bucket_name: mimir-tsdb

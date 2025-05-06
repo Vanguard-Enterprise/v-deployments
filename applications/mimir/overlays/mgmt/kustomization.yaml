@@ -4,9 +4,9 @@ resources:
 - ../../base
 - external-secret.yaml
 helmCharts:
-- name: mimir
-  #version: "5.7.0"
+- name: mimir-distributed
+  version: "5.7.0"
   repo: https://grafana.github.io/helm-charts
-  releaseName: mimir-distributed
+  releaseName: mimir
   namespace: mimir
   valuesFile: values.yaml

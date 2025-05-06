@@ -2,7 +2,7 @@ read:
   replicas: 1
   persistence:
     storageClass: longhorn
-    size: 1Gi
+    size: 256Mi
   extraArgs:
   - -config.expand-env=true
   extraEnvFrom:
@@ -13,7 +13,7 @@ write:
   replicas: 1
   persistence:
     storageClass: longhorn
-    size: 1Gi
+    size: 256Mi
   extraArgs:
   - -config.expand-env=true
   extraEnvFrom:
@@ -24,7 +24,7 @@ backend:
   replicas: 1
   persistence:
     storageClass: longhorn
-    size: 1Gi
+    size: 256Mi
   extraArgs:
   - -config.expand-env=true
   extraEnvFrom:

@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+- external-secret.yaml
+helmCharts:
+- name: mimir
+  version: "6.29.0"
+  repo: https://grafana.github.io/helm-charts
+  releaseName: mimir-distributed
+  namespace: mimir
+  valuesFile: values.yaml

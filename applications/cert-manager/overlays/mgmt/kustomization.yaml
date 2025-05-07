@@ -9,3 +9,6 @@ resources:
 
 - amityrust.com.yaml
 - clusterissuer-amity.yaml
+
+- mortem.ltd.yaml
+- delectabledecants.com.yaml

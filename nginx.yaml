@@ -79,3 +79,24 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: amity-grafana-ingress
+  namespace: nginx
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`grafana.amityrust.com`)
+    kind: Rule
+    services:
+    - name: nginx1
+      port: 80
+  tls:
+    store:
+      name: amity-store
+      namespace: traefik

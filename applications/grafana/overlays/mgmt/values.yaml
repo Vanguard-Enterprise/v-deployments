@@ -12,3 +12,9 @@ persistence:
   storageClassName: longhorn
   enabled: true
   size: 1Gi
+
+grafana.ini:
+  server:
+    domain: "grafana.vng.bet"
+    server:
+      root_url: "grafana.vng.bet"

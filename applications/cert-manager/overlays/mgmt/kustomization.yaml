@@ -5,5 +5,5 @@ resources:
 - namespace.yaml
 - vng.bet.yaml
 - clusterissuer-amity.yaml
-- clsuterissuer-vent.yaml
+- clusterissuer-vent.yaml
 - external-secret.yaml

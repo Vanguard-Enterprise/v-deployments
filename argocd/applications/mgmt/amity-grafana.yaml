@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amity-grafana-mgmt
+  namespace: devtroncd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/grafana/overlays/amity
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amity-grafana
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

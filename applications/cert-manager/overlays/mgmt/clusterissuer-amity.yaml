@@ -5,16 +5,16 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: fantofillip
+    email: fantofilip@gmail.com
     privateKeySecretRef:
       name: letsencrypt-production
     solvers:
     - dns01:
         cloudflare:
-          email: frankdobrovolny@outlook.com
+          email: fantofilip@gmail.com
           apiTokenSecretRef:
             name: cloudflare-token-secret
-            key: vng-cloudflare-token
+            key: amity-cloudflare-token
       selector:
         dnsZones:
-        - vng.bet
+        - amityrust.com

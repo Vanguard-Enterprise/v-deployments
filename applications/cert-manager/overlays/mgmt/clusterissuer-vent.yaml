@@ -17,4 +17,4 @@ spec:
             key: vng-cloudflare-token
       selector:
         dnsZones:
-        - "vng.bet"
+        - vng.bet

@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: amity-tls # change to your secretname
   issuerRef:
-    name: amity-production
+    name: letsencrypt-amity
     kind: ClusterIssuer
   commonName: "*.amityrust.com" # change to your domain
   dnsNames:

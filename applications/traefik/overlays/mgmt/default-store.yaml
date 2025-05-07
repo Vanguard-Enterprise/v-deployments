@@ -5,4 +5,4 @@ metadata:
   namespace: traefik
 spec:
   defaultCertificate:
-    secretName: vng-tls
+    secretName: "vng-tls, amity-tls"

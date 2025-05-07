@@ -6,9 +6,3 @@ resources:
 - vng.bet.yaml
 - clusterissuer-vent.yaml
 - external-secret.yaml
-
-- amityrust.com.yaml
-- clusterissuer-amity.yaml
-
-- mortem.ltd.yaml
-- delectabledecants.com.yaml

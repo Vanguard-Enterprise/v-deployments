@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - ../../base
 - grafana.vng.bet.yaml
+- grafana.amityrust.com.yaml
 helmCharts:
 - name: grafana
   version: "9.0.0"

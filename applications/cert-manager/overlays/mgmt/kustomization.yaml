@@ -6,3 +6,6 @@ resources:
 - vng.bet.yaml
 - clusterissuer-vent.yaml
 - external-secret.yaml
+
+- clusterissuer-amity.yaml
+- amityrust.com.yaml

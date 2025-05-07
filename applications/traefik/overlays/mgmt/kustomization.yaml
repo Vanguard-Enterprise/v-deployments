@@ -1,17 +1,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - namespace.yaml
-  - default-store.yaml
+- namespace.yaml
+- default-store.yaml
+- amity-store.yaml
 helmCharts:
-  - name: traefik-crds
-    version: "1.5.0"
-    repo: https://helm.traefik.io/traefik
-    releaseName: traefik-crds
-    namespace: traefik
-  - name: traefik
-    version: "34.4.1"
-    repo: https://helm.traefik.io/traefik
-    releaseName: traefik
-    valuesFile: values.yaml
-    namespace: traefik
+- name: traefik-crds
+  version: "1.5.0"
+  repo: https://helm.traefik.io/traefik
+  releaseName: traefik-crds
+  namespace: traefik
+- name: traefik
+  version: "34.4.1"
+  repo: https://helm.traefik.io/traefik
+  releaseName: traefik
+  valuesFile: values.yaml
+  namespace: traefik

@@ -1,0 +1,14 @@
+datasources:
+  datasources.yaml:
+    datasources:
+    - name: loki
+      type: loki
+      url: http://loki-gateway.loki
+      access: proxy
+      isDefault: true
+      editable: true
+
+persistence:
+  storageClassName: longhorn
+  enabled: true
+  size: 1Gi

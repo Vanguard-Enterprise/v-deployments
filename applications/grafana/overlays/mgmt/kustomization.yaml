@@ -3,10 +3,9 @@ kind: Kustomization
 resources:
 - ../../base
 - grafana.vng.bet.yaml
-#- grafana.amityrust.com.yaml
 helmCharts:
 - name: grafana
-  version: "8.14.2"
+  version: "9.0.0"
   repo: https://grafana.github.io/helm-charts
   releaseName: grafana
   namespace: grafana

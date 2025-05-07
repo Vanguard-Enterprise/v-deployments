@@ -4,5 +4,6 @@ resources:
 - ../../base
 - namespace.yaml
 - vng.bet.yaml
-- letencrypt-prod.yaml
+- clusterissuer-amity.yaml
+- clsuterissuer-vent.yaml
 - external-secret.yaml

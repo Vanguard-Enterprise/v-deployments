@@ -5,9 +5,9 @@ resources:
 - namespace.yaml
 #- grafana.amityrust.com.yaml
 helmCharts:
-- name: amity-grafana
+- name: grafana
   version: "9.0.0"
   repo: https://grafana.github.io/helm-charts
-  releaseName: grafana
+  releaseName: amity-grafana
   namespace: amity-grafana
   valuesFile: values.yaml

@@ -18,5 +18,3 @@ spec:
       selector:
         dnsZones:
         - vng.bet
-        - mortem.ltd
-        - delectabledecants.com

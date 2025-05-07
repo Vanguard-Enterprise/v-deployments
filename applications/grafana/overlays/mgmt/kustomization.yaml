@@ -5,6 +5,7 @@ resources:
 - grafana.vng.bet.yaml
 - grafana.amityrust.com.yaml
 - amityrust.com.yaml
+- mortem.ltd.yaml
 #- external-secret.yaml
 helmCharts:
 - name: grafana

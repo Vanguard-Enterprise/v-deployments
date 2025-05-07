@@ -4,6 +4,7 @@ resources:
 - ../../base
 - namespace.yaml
 - vng.bet.yaml
+- amityrust.com.yaml
 - clusterissuer-amity.yaml
 - clusterissuer-vent.yaml
 - external-secret.yaml

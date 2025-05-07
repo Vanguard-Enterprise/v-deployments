@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
 #- ../../base
 - namespace.yaml
-- grafana.amityrust.com.yaml
+#- grafana.amityrust.com.yaml
 helmCharts:
-- name: grafana
+- name: amity-grafana
   version: "9.0.0"
   repo: https://grafana.github.io/helm-charts
   releaseName: grafana

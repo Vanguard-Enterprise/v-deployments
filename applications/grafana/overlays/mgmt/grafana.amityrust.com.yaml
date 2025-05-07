@@ -12,7 +12,7 @@ spec:
   - match: Host(`grafana.amityrust.com`)
     kind: Rule
     services:
-    - name: grafana
+    - name: nginx1
       port: 80
   tls:
     secretName: amity-tls

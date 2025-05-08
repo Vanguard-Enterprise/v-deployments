@@ -15,6 +15,4 @@ persistence:
 
 grafana.ini:
   server:
-    domain: "grafana.amityrust.com"
-    server:
-      root_url: "grafana.amityrust.com"
+    root_url: https://grafana.amityrust.com

@@ -15,4 +15,4 @@ persistence:
 
 grafana.ini:
   server:
-    root_url: https://grafana.amityrust.com
+    root_url: https://grafana.amityrust.com:443

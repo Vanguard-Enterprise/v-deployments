@@ -6,7 +6,7 @@ metadata:
   name: n8n
   namespace: amity-n8n
 spec:
-  replicas: 0
+  replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:

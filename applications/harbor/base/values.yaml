@@ -1,0 +1,58 @@
+expose:
+  # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
+  # and fill the information in the corresponding section
+  type: clusterIP
+externalURL: https://registry.vng.bet
+persistence:
+  enabled: true
+  resourcePolicy: "keep"
+  persistentVolumeClaim:
+    registry:
+      storageClass: "longhorn"
+      size: 5Gi
+      annotations: {}
+    jobservice:
+      jobLog:
+        storageClass: "longhorn"
+        size: 1Gi
+    redis:
+      storageClass: "longhorn"
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    trivy:
+      storageClass: "longhorn"
+      accessMode: ReadWriteOnce
+      size: 5Gi
+  imageChartStorage:
+    disableredirect: true
+    type: S3
+    s3:
+      existingSecret: "harbor-s3"
+      region: us-west-1
+      bucket: bucketname
+      regionendpoint: https://minio.vng.bet
+harborAdminPassword: "Harbor123456"
+
+internalTLS:
+  enabled: true
+  strong_ssl_ciphers: true
+ipFamily:
+  ipv6:
+    enabled: false
+
+imagePullPolicy: IfNotPresent
+
+metrics:
+  enabled: true
+  core:
+    path: /metrics
+    port: 8001
+  registry:
+    path: /metrics
+    port: 8001
+  jobservice:
+    path: /metrics
+    port: 8001
+  exporter:
+    path: /metrics
+    port: 8001

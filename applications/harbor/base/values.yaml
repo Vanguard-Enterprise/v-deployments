@@ -34,8 +34,8 @@ persistence:
 harborAdminPassword: "Harbor123456"
 
 internalTLS:
-  enabled: true
-  strong_ssl_ciphers: true
+  enabled: false
+  strong_ssl_ciphers: false
 ipFamily:
   ipv6:
     enabled: false

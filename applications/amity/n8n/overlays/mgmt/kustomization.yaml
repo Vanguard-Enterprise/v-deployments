@@ -3,4 +3,3 @@ kind: Kustomization
 resources:
 - ../../base
 - amity-n8n.vng.bet.yaml
-- external-secret.yaml

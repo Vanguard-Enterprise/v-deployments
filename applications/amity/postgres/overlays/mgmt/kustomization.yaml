@@ -5,7 +5,7 @@ resources:
 helmCharts:
 - name: postgresql
   version: "16.7.8"
-  repo: https://grafana.github.io/helm-charts
+  repo: https://charts.bitnami.com/bitnami
   releaseName: postgresql
   namespace: amity-postgres
   valuesFile: values.yaml

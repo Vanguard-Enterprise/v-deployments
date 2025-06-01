@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ticket-config
+  namespace: amity-tickets
+data:
+  # Discord Servers
+  #   Priavte Ticket GUILD (Max: 1)
+  TICKET_SERVER_ID: "1355136115627131000"
+  #   Public GUILDs (MAX: 99)
+  PUBLIC_SERVER_IDS: "1356440322804023407,1356446942313582683"
+
+  # Transcription Storage
+  S3_BUCKET: "transcriptions"
+  S3_ENDPOINT: "https://s3.vng.bet"
+  S3_REGION: "us-east-1"
+  S3_FORCE_PATH_STYLE: "true"
+
+  # ORG Settings
+  BRAND_NAME: "Amity Support"
+
+  # Rate Limits
+  MAX_MESSAGE_PER_MINUTE: "6"
+  MAX_TICKETS_PER_DAY: "2"
+
+  # color formatting:
+
+  BRAND_COLOR: "9EFF1E"
+  BRAND_COLOR_SECONDARY: "808080"
+  BRAND_COLOR_ERROR: "ff5757"
+  BRAND_COLOR_SUCCESS: "9EFF1E"
+
+  # image settings
+
+  BRAND_FOOTER: "https://i.imgur.com/SLXVPT5.png"
+  BRAND_LOGO: "https://i.imgur.com/SLXVPT5.png"
+  BRAND_BANNER: "https://i.imgur.com/SLXVPT5.png"
+
+  # button settings (IF NOT SET DON’T USE EMOJI FOR BUTTONS)
+
+  PRIMARY_EMOJI_ID: "1359579505638899700"
+  SECONDARY_EMOJI_ID: "1359579505638899700"
+  SUCCESS_EMOJI_ID: "1375597804570939400"
+  DANGER_EMOJI_ID: "1375597748623114500"
+  LINK_EMOJI_ID: "1359579505638899700"
+
+  # Dropdown Editor Emojis
+  SETTINGS_EMOJI_ID: "1377912482408042500" #Used for edit as well
+  CREATE_EMOJI_ID: "1377912556533842000"
+  DELETE_EMOJI_ID: "1377911261286895600"
+  PUBLISH_EMOJI_ID: "1377912877872058400"
+
+  # Anonymous Emoji ID's
+  ANONYMOUS_ON_EMOJI_ID: "1377912637345632300"
+  ANONYMOUS_OFF_EMOJI_ID: "1377912618001498000"
+
+  # Continue Emoji ID
+  CONTINUE_EMOJI_ID: "1377912618001498000"

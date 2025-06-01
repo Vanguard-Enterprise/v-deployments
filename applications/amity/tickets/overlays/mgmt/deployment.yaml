@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets
+  namespace: amity-tickets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: amity-tickets
+  template:
+    metadata:
+      labels:
+        app: amity-tickets
+    spec:
+      containers:
+      - name: amity-tickets
+      image: vanguardenterprise/tickets:latest
+      ports:
+      - containerPort: 3000
+      envFrom:
+      - configMapRef:
+          name: ticket-config
+      - secretRef:
+          name: ticket-secret

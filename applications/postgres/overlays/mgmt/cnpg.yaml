@@ -1,0 +1,100 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg-prod-cluster
+  namespace: pg-01
+  labels:
+    app: postgres
+    env: production
+  annotations:
+    cnpg.io/reload: "true"
+    prometheus.io/scrape: "false" # Set to "true" if you want Prometheus to scrape metrics
+    prometheus.io/port: "9187"
+spec:
+  # ---------------------------------------------------------------------
+  # 1. Cluster topology
+  # ---------------------------------------------------------------------
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+
+  # ---------------------------------------------------------------------
+  # 2. Image – PostgreSQL 17.5 packaged by CNPG
+  # ---------------------------------------------------------------------
+  # Ensure this image tag is compatible with your CNPG operator version
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.5
+
+  # ---------------------------------------------------------------------
+  # 3. PostgreSQL configuration (only allowed GUCs)
+  # ---------------------------------------------------------------------
+  postgresql:
+    parameters:
+      log_connections: "on"
+      log_disconnections: "on"
+      log_line_prefix: "%m [%p] %q%u@%d "
+      # Add any other necessary PostgreSQL parameters here
+      # Example: shared_buffers: "1GB"
+
+      # ---------------------------------------------------------------------
+      # 4. Storage
+      # ---------------------------------------------------------------------
+  storage:
+    size: 10Gi
+    storageClass: longhorn # Ensure this StorageClass exists in your cluster
+  walStorage:
+    size: 1Gi
+    storageClass: longhorn # Ensure this StorageClass exists for WAL if different
+
+  # ---------------------------------------------------------------------
+  # 5. Secrets & certificates (TLS)
+  # ---------------------------------------------------------------------
+  superuserSecret:
+    name: pg-prod-superuser # Ensure this secret exists or will be created with the superuser credentials
+  certificates:
+    serverTLSSecret: pg-prod-tls # Secret containing server cert+key
+    serverCASecret: pg-prod-ca # Secret containing CA certificate
+
+  # ---------------------------------------------------------------------
+  # 6. Scheduling (affinity, resources)
+  # ---------------------------------------------------------------------
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+  resources:
+    requests:
+      cpu: "1"
+      memory: "2Gi"
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+
+  # ---------------------------------------------------------------------
+  # 7. Backup – Barman-Cloud on MinIO (Object Store Configuration)
+  # ---------------------------------------------------------------------
+  backup:
+    retentionPolicy: "7d" # Consider migrating to ScheduledBackup for future CNPG versions
+    target: prefer-standby # 'primary' or 'prefer-standby'
+    barmanObjectStore:
+      destinationPath: "s3://pg-01/backup" # Path within your S3 bucket
+      endpointURL: "https://minio.vng.bet" # Your MinIO/S3 endpoint
+      s3Credentials:
+        accessKeyId:
+          name: pgbackrest-s3-repo # Name of the Kubernetes Secret for S3 credentials
+          key: aws-access-key-id # Key within the Secret for Access Key ID
+        secretAccessKey:
+          name: pgbackrest-s3-repo # Name of the Kubernetes Secret for S3 credentials
+          key: aws-secret-access-key # Key within the Secret for Secret Access Key
+          # region: "us-east-1" # This is generally not required for MinIO when endpointURL is specified.
+          # If your MinIO setup explicitly needs a region, uncomment and verify its necessity
+          # with your S3 provider and CNPG documentation.
+          # walCompression: gzip # Default is gzip. Options: bzip2, snappy, zstd
+          # encryption: AES256 # Example: server-side encryption
+
+          # ---------------------------------------------------------------------
+          # 8. Bootstrap – initial role/database
+          # ---------------------------------------------------------------------
+  bootstrap:
+    initdb:
+      owner: app # Owner of the initial database
+      database: app # Name of the initial database
+      secret:
+        name: pg-prod-cluster-app # Secret containing credentials for the 'app' user

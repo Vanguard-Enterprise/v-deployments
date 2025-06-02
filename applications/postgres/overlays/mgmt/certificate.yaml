@@ -1,0 +1,33 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: pg-prod-ca # Defines your main CA certificate
+  namespace: pg-01
+spec:
+  secretName: pg-prod-ca # The secret storing your main CA cert and key
+  isCA: true
+  commonName: pg-prod-cluster-ca
+  issuerRef:
+    name: pg-selfsigned-issuer # Signed by the self-signed issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: pg-prod-cert # Defines your server certificate
+  namespace: pg-01
+spec:
+  secretName: pg-prod-tls # The secret storing your server cert and key
+  issuerRef:
+    name: pg-main-ca-issuer # <<< CHANGED: Issued by your main CA
+    kind: Issuer
+  commonName: "pg-prod-cluster.pg-01.svc.cluster.local"
+  dnsNames:
+  - "pg-prod-cluster.pg-01.svc.cluster.local"
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth

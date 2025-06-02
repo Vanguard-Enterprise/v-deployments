@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pg-sa-binding
+  namespace: pg-01
+subjects:
+- kind: ServiceAccount
+  name: pg-sa
+  namespace: pg-01
+roleRef:
+  kind: Role
+  name: pg-sa-role
+  apiGroup: rbac.authorization.k8s.io

@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
 - ../../base
 helmCharts:
-- name: postgres
+- name: cloudnative-pg
   version: "0.24.0"
   repo: https://cloudnative-pg.io/charts/
   releaseName: cloudnative-pg
-  namespace: postgres
+  namespace: cnpg-system
   valuesFile: values.yaml

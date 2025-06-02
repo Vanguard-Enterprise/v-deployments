@@ -1,0 +1,7 @@
+IniDZyk1rSaWujLPSAHOrwnmXmmDN9Vs ticket-bot
+
+postgresql://ticket-bot:IniDZyk1rSaWujLPSAHOrwnmXmmDN9Vs@pg-prod-cluster-rw.pg-01.svc.cluster.local:5432/sigma?schema=public
+
+postgresql://ticket-bot:IniDZyk1rSaWujLPSAHOrwnmXmmDN9Vs@pg-prod-cluster-rw.pg-01.svc.cluster.local:5432/ticket-bot?schema=public
+
+postgresql://ticket-bot-development:ON4E8EY9JvPm2NL5Y9uj9mD7GhUfC0X7@10.1.45.150:5432/ticket-bot-development?schema=public

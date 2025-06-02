@@ -1,11 +1,26 @@
 global:
   storageClass: "longhorn"
 installer:
-  modules: 
-    - cicd
+  release: "v1.6.0"
+  source: "github"
+  modules:
+  - cicd
+  production_overrides: "true" # Set true if you want to use this Devtron stack in Production (This will require more resources)
+# Change the below values for full mode only
+#Use secrets in plaintext, they'll be encoded to base64 automatically.
+secrets:
+  BLOB_STORAGE_S3_ACCESS_KEY: ""
+  BLOB_STORAGE_S3_SECRET_KEY: ""
+
 configs:
+  BLOB_STORAGE_PROVIDER: "S3"
+  DEFAULT_CACHE_BUCKET: "devtron-build-cache"
+  DEFAULT_CACHE_BUCKET_REGION: "us-east-1"
+  DEFAULT_BUILD_LOGS_BUCKET: "devtron-build-log"
+  DEFAULT_CD_LOGS_BUCKET_REGION: "us-east-1"
   BASE_URL: "infra.vng.bet"
   GITOPS_REPO_PREFIX: "infra"
+
 components:
   dashboard:
     config:
@@ -15,15 +30,19 @@ components:
     service:
       type: ClusterIP
       port: 80
+  postgres:
+    persistence:
+      volumeSize: "5Gi"
+  gitsensor:
+    persistence:
+      volumeSize: 2Gi
+
+  nats:
+    persistence:
+      storage: 5Gi
+
 argo-cd:
   enabled: true
-  fullnameOverride: "argocd"
   global:
     image:
-      tag: "latest"
-  applicationSet:
-    enabled: true
-security:
-  enabled: true
-  trivy:
-    enabled: true
+      tag: "v3.0.5"

@@ -12,4 +12,4 @@ resources:
 #    valuesFile: values.yaml
 #    namespace: devtroncd
 # kubectl apply -f applications\devtron\base\namespace.yaml
-# helm install devtron devtron/devtron-operator --namespace devtroncd --values .\applications\devtron\overlays\mgmt\values.yaml
+# helm install devtron devtron/devtron-operator --namespace devtroncd --values values.yaml

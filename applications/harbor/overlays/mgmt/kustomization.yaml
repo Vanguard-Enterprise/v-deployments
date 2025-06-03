@@ -4,3 +4,10 @@ resources:
 - ../../base
 - external-secret-harbor-s3.yaml
 - registry.vng.bet.yaml
+helmCharts:
+- name: harbor
+  version: "1.17.1"
+  repo: https://helm.goharbor.io
+  releaseName: harbor
+  valuesFile: values.yaml
+  namespace: harbor

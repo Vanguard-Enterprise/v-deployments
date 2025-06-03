@@ -19,6 +19,7 @@ configs:
   DEFAULT_BUILD_LOGS_BUCKET: "devtron-build-log"
   DEFAULT_CD_LOGS_BUCKET_REGION: "us-east-1"
   BASE_URL: "infra.vng.bet"
+  BASE_URL_SCHEME: "https"
   GITOPS_REPO_PREFIX: "infra"
 
 components:

@@ -3,18 +3,47 @@ kind: IngressRoute
 metadata:
   name: devtron
   namespace: devtroncd
-  annotations: 
+  annotations:
     kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
-    - websecure
+  - websecure
   routes:
-    - match: Host(`infra.vng.bet`)
-      kind: Rule
-      services:
-        - name: devtron-service
-          port: 80
+  - match: Host(`infra.vng.bet`) && PathPrefix(`/orchestrator`)
+    kind: Rule
+    services:
+    - name: devtron-service
+      port: 80
+  - match: Host(`infra.vng.bet`) && PathPrefix(`/dashboard`)
+    kind: Rule
+    services:
+    - name: devtron-service
+      port: 80
+  - match: Host(`infra.vng.bet`) && PathPrefix(`/grafana`)
+    kind: Rule
+    services:
+    - name: devtron-service
+      port: 80
+  # Optional: If you want the root path (infra.vng.bet/) to also go to devtron-service,
+  # or potentially redirect to /dashboard, you might add another rule.
+  # For example, to send the root path to devtron-service:
+  - match: Host(`infra.vng.bet`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: devtron-service
+      port: 80
+  #
+  # Or, if you want infra.vng.bet/ to redirect to infra.vng.bet/dashboard,
+  # you would typically use a RedirectScheme or ReplacePath middleware.
+  # The Nginx app-root annotation might imply a redirect for the root.
+  # If you need this, it requires a slightly different approach with middleware.
+  # For now, only the explicitly requested paths are added.
   tls:
     store:
-      name: default
-      namespace: traefik
+      name: default # Assuming 'default' is your configured Traefik TLS Store
+      # namespace: traefik # tls.store.namespace is not a standard field.
+      # TLSStore is typically cluster-wide or in Traefik's own namespace.
+      # If 'default' is a namespaced CertManager issuer or a Secret,
+      # certResolver or secretName would be used respectively.
+      # For a TLSStore, it's usually just the name.
+      # Verify your TLSStore configuration in Traefik.

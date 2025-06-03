@@ -65,7 +65,6 @@ persistence:
       region: us-east-1
       bucket: harbor
       regionendpoint: https://minio.vng.bet
-harborAdminPassword: "Harbor1234567910"
 
 cache:
   enabled: true

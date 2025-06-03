@@ -12,7 +12,7 @@ spec:
   - match: Host(`registry.vng.bet`)
     kind: Rule
     services:
-    - name: harbor
+    - name: harbor-portal
       port: 80
   tls:
     store:

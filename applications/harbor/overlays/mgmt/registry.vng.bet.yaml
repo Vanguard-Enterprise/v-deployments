@@ -13,7 +13,7 @@ spec:
     kind: Rule
     services:
     - name: harbor
-      port: 8080
+      port: 80
   tls:
     store:
       name: default

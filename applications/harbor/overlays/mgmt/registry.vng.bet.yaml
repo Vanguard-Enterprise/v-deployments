@@ -14,13 +14,12 @@ spec:
     services:
     - name: harbor-portal
       port: 80
-    - kind: Rule
-      match: Host(`harbor.example.com`) && (PathPrefix(`/api`) || PathPrefix(`/service`) || PathPrefix(`/v2`) || PathPrefix(`/chartrepo`) || PathPrefix(`/c`))
-      services:
-      - kind: Service
-        name: harbor-core
-        port: 80
-        scheme: http
+  - match: Host(`harbor.example.com`) && (PathPrefix(`/api`) || PathPrefix(`/service`) || PathPrefix(`/v2`) || PathPrefix(`/chartrepo`) || PathPrefix(`/c`))
+    kind: Rule
+    services:
+    - name: harbor-core
+      port: 80
+      scheme: http
   tls:
     store:
       name: default

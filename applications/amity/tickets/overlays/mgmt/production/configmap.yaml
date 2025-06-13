@@ -15,7 +15,7 @@ data:
   S3_REGION: "us-east-1"
   S3_FORCE_PATH_STYLE: "true"
   # ORG Settings
-  BRAND_NAME: "Amity Support"
+  BRAND_NAME: "Amity"
   # Rate Limits
   MAX_MESSAGE_PER_MINUTE: "10"
   MAX_TICKETS_PER_DAY: "10"

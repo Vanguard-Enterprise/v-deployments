@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vngenterprise
+  namespace: traefik
+spec:
+  secretName: vngenterprise-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "*.vngenterprise.com"
+  dnsNames:
+    - "*.vngenterprise.com"
+    - vngenterprise.com

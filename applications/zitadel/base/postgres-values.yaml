@@ -10,3 +10,5 @@ tls:
   certKeyFilename: "tls.key"
 auth:
   existingSecret: "zitadel-secret"
+persistence:
+  size: 1Gi

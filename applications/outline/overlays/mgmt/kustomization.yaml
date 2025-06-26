@@ -12,7 +12,7 @@ resources:
   - docs.vng.bet.yaml
 helmCharts:
   - name: redis
-    version: "21.2.4"
+    version: "21.2.6"
     repo: https://charts.bitnami.com/bitnami
     releaseName: redis
     valuesFile: redis-values.yaml

@@ -1,14 +1,12 @@
 replicaCount: 3
-
 zitadel:
   # These Secrets are created by ExternalSecrets above
   masterkeySecretName: zitadel-secret
   configSecretName: zitadel-secret-config
-
   # Static, non‑sensitive config for the ConfigMap
   configmapConfig:
     ExternalSecure: true
-    ExternalDomain: accounts.vng.bet
+    ExternalDomain: accounts.vngenterprise.com
     TLS:
       Enabled: false
     Database:
@@ -32,6 +30,5 @@ zitadel:
   dbSslCaCrtSecret: postgres-cert
   dbSslAdminCrtSecret: postgres-cert
   dbSslUserCrtSecret: zitadel-cert
-
 ingress:
   enabled: false

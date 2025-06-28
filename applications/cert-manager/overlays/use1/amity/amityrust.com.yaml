@@ -1,0 +1,15 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: amity # change to your domain
+  namespace: traefik # add to traefik namespace so it can use it (you DO NOT need it in each app namespace!!!)
+spec:
+  secretName: amity-tls # change to your secretname
+  issuerRef:
+    name: letsencrypt-production-amity
+    kind: ClusterIssuer
+  commonName: "*.amityrust.com" # change to your domain
+  dnsNames:
+  - "*.amityrust.com" # change to your domain
+  - amityrust.com # change to your domain

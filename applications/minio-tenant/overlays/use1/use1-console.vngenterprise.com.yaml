@@ -12,7 +12,7 @@ spec:
     - match: Host(`use1-console.vngenterprise.com`)
       kind: Rule
       services:
-        - name: mgmt-console
+        - name: use1-console
           port: 9443
   tls:
     store:

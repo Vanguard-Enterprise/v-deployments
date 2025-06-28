@@ -1,8 +1,8 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: pg-prod-cluster
-  namespace: pg-01
+  name: cnpg-01
+  namespace: cnpg-01
 spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:17.5
@@ -10,4 +10,4 @@ spec:
     size: 1Gi
   enableSuperuserAccess: true
   superuserSecret:
-    name: pg-superuser-secret
+    name: cnpg-superuser-secret

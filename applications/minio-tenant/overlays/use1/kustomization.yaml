@@ -3,6 +3,9 @@ kind: Kustomization
 resources:
   - ../../base
   - external-secret.yaml
+  - use1-s3.vngenterprise.com.yaml
+  - use1-console.vngenterprise.com.yaml
+  - s3.vngenterprise.com.yaml
 helmCharts:
   - name: tenant
     version: 7.1.1

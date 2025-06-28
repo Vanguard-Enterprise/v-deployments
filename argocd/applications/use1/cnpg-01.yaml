@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
-    path: applications/cnpg-cluster/use1/cnpg-01/overlays/use1
+    path: applications/cnpg-cluster/overlays/use1/
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc

@@ -14,7 +14,7 @@ spec:
             email: frankdobrovolny@outlook.com # add your email to your cloudflare account
             apiTokenSecretRef:
               name: cloudflare-token-secret
-              key: cloudflare-token
+              key: vanguard-cloudflare-token
         selector:
           dnsZones:
             - "vngenterprise.com"

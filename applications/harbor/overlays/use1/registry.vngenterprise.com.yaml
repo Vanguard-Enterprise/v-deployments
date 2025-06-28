@@ -1,0 +1,27 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: harbor-external
+  namespace: harbor
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`registry.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: harbor-portal
+          port: 80
+          scheme: http
+    - match: Host(`registry.vngenterprise.com`) && (PathPrefix(`/api`) || PathPrefix(`/service`) || PathPrefix(`/v2`) || PathPrefix(`/chartrepo`) || PathPrefix(`/c`))
+      kind: Rule
+      services:
+        - name: harbor-core
+          port: 80
+          scheme: http
+  tls:
+    store:
+      name: default
+      namespace: traefik

@@ -1,0 +1,59 @@
+expose:
+  type: ingress
+  tls:
+    enabled: true
+  ingress:
+    hosts:
+      core: registry.vngenterprise.com
+    controller: default
+    kubeVersionOverride: ""
+    className: "traefik"
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+externalURL: https://registry.vngenterprise.com
+persistence:
+  enabled: true
+  resourcePolicy: "keep"
+  persistentVolumeClaim:
+    registry:
+      existingClaim: ""
+      storageClass: "longhorn"
+      size: 10Gi
+    jobservice:
+      jobLog:
+        existingClaim: ""
+        storageClass: "longhorn"
+        subPath: ""
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        annotations: {}
+    redis:
+      existingClaim: ""
+      storageClass: "longhorn"
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      annotations: {}
+    trivy:
+      existingClaim: ""
+      storageClass: "longhorn"
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+      annotations: {}
+harborAdminPassword: "Harbor12345"
+cache:
+  # default is not enabled.
+  enabled: false
+  # default keep cache for one day.
+  expireHours: 24
+database:
+  type: external
+  external:
+    host: "cnpg-01-rw.cnpg-01.svc.cluster.local"
+    port: "5432"
+    username: "harbor"
+    coreDatabase: "registry"
+    existingSecret: "harbor-password"
+    sslmode: "disable"

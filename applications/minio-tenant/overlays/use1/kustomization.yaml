@@ -3,8 +3,6 @@ kind: Kustomization
 resources:
   - ../../base
   - external-secret.yaml
-  - minio.vng.bet.yaml
-  - s3.vng.bet.yaml
 helmCharts:
   - name: tenant
     version: 7.1.1

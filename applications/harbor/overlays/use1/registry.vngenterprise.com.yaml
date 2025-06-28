@@ -15,7 +15,7 @@ spec:
         - name: harbor-portal
           port: 80
           scheme: http
-    - match: Host(`registry.vngenterprise.com`) && (PathPrefix(`/api`) || PathPrefix(`/service`) || PathPrefix(`/v2`) || PathPrefix(`/chartrepo`) || PathPrefix(`/c`))
+    - match: Host(`registry.vngenterprise.com`) && (PathPrefix(`/api`) || PathPrefix(`/service`) || PathPrefix(`/v2`) || PathPrefix(`/c`))
       kind: Rule
       services:
         - name: harbor-core

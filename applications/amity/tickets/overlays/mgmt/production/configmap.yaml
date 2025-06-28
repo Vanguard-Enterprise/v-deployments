@@ -10,9 +10,9 @@ data:
   #   Public GUILDs (MAX: 99)
   PUBLIC_SERVER_IDS: "1331665852839231579,1351289458376577124,1292860184321851533"
   # Transcription Storage
-  S3_BUCKET: "transcriptions"
-  S3_ENDPOINT: "https://s3.vng.bet"
-  S3_REGION: "us-east-1"
+  S3_BUCKET: "amity-tickets"
+  S3_ENDPOINT: "https://s3.vngenterprise.com"
+  S3_REGION: "use1"
   S3_FORCE_PATH_STYLE: "true"
   # ORG Settings
   BRAND_NAME: "Amity Support"

@@ -9,7 +9,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`use1-s3.vngenterprise.com.yaml`)
+    - match: Host(`s3.vngenterprise.com.yaml`)
       kind: Rule
       services:
         - name: minio

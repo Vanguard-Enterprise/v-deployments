@@ -1,4 +1,6 @@
 primary:
+  readinessProbe:
+    enabled: false
   persistence:
     enabled: true
     storageClass: "longhorn"

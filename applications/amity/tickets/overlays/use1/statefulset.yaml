@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ticket-bot
+  namespace: amity-tickets
+spec:
+  selector:
+    matchLabels:
+      app: ticket-bot
+  serviceName: ticket-bot
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ticket-bot
+    spec:
+      imagePullSecrets:
+        - name: harbor-pull-secret
+      containers:
+        - name: bot
+          image: registry.vngenterprise.com/k8s/ticket-bot:latest
+          envFrom:
+            - secretRef:
+                name: amity-tickets
+            - configMapRef:
+                name: ticket-config

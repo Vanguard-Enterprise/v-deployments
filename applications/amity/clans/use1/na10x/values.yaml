@@ -1,0 +1,5 @@
+primary:
+  persistence:
+    enabled: true
+    storageClass: "longhorn"
+    size: 1Gi

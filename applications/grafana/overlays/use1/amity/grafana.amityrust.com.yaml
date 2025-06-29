@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: amity-grafana-ingress
+  namespace: amity-grafana
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`grafana.amityrust.com`)
+    kind: Rule
+    services:
+    - name: amity-grafana
+      port: 80
+  tls:
+    store:
+      name: amity
+      namespace: traefik

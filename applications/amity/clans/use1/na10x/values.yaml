@@ -1,4 +1,6 @@
 primary:
+  startupProbe:
+    enabled: false
   livenessProbe:
     enabled: false
   readinessProbe:

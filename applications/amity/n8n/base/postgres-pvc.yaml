@@ -5,7 +5,7 @@ metadata:
   namespace: amity-n8n
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 16Gi
+      storage: 1Gi

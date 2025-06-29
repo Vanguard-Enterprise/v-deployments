@@ -1,4 +1,6 @@
 primary:
+  livenessProbe:
+    enabled: false
   readinessProbe:
     enabled: false
   persistence:

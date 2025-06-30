@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amity-clans-eu10x
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/amity/clans/use1/eu10x
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amity-clans-eu10x
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

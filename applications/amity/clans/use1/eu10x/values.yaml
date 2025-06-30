@@ -1,0 +1,14 @@
+primary:
+  startupProbe:
+    enabled: false
+  livenessProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+  persistence:
+    enabled: true
+    storageClass: "longhorn"
+    size: 1Gi
+auth:
+  existingSecret: "mysql-credentials"
+  createDatabase: false

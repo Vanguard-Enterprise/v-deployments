@@ -13,6 +13,4 @@ persistence:
   size: 1Gi
 grafana.ini:
   server:
-    domain: "grafana.vngenterprise.com"
-    server:
-      root_url: "grafana.vngenterprise.com"
+    root_url: https://grafana.amityrust.com

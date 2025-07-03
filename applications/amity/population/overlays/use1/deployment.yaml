@@ -18,14 +18,15 @@ spec:
       containers:
         - name: population
           image: registry.vngenterprise.com/k8s/population:latest
-          volumeMounts:
-            - name: config-volume
-              mountPath: /usr/src/app/src/config.json
-              readOnly: true
-      volumes:
-        - name: config-volume
-          secret:
-            secretName: population
-            items:
-              - key: config.json
-                path: config.json
+volumeMounts:
+  - name: config-volume
+    mountPath: /usr/src/app/src/config.json
+    subPath: config.json
+    readOnly: true
+volumes:
+  - name: config-volume
+    secret:
+      secretName: population
+      items:
+        - key: config.json
+          path: config.json

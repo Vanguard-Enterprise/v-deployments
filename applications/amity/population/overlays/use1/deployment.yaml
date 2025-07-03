@@ -20,16 +20,16 @@ spec:
           image: registry.vngenterprise.com/k8s/population:dev-02
           envFrom:
             - configMapRef:
-                name: cfg-path
-volumeMounts:
-  - name: config-volume
-    mountPath: /etc/config.json # destination path inside container
-    subPath: config.json # name of the key/file in the Secret
-    readOnly: true
-volumes:
-  - name: config-volume
-    secret:
-      secretName: population
-      items:
-        - key: config.json
-          path: config.json
+                name: cfg-path # sets CONFIG_PATH=/etc/config.json
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config.json # file inside the container
+              subPath: config.json # key in the Secret
+              readOnly: true
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: population
+            items:
+              - key: config.json
+                path: config.json

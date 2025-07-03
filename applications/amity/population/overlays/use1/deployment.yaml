@@ -20,7 +20,7 @@ spec:
           image: registry.vngenterprise.com/k8s/population:latest
           volumeMounts:
             - name: config-volume
-              mountPath: /app/src/config.json
+              mountPath: /usr/src/app/src/config.json
               readOnly: true
       volumes:
         - name: config-volume

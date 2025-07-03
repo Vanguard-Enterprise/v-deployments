@@ -17,10 +17,13 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: population
-          image: registry.vngenterprise.com/k8s/population:dev-01
+          image: registry.vngenterprise.com/k8s/population:dev-02
+          envFrom:
+            - configMapRef:
+                name: cfg-path
 volumeMounts:
   - name: config-volume
-    mountPath: /usr/src/app/src/config.json
+    mountPath: config.json
     subPath: config.json
     readOnly: true
 volumes:

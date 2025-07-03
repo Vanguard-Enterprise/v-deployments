@@ -17,7 +17,7 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: bot
-          image: registry.vngenterprise.com/k8s/amity-clan-manager:eu10xb
+          image: registry.vngenterprise.com/k8s/amity-clan-manager:eu10xc
           env:
             - name: DB_URL
               valueFrom:

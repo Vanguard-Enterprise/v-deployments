@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - deployment.yaml
   - external-secret.yaml
+  - registry-pull-secret.yaml
 helmCharts:
   - name: mysql
     version: 13.0.2

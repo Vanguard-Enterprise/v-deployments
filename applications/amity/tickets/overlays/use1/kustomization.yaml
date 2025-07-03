@@ -4,3 +4,4 @@ resources:
   - configmap.yaml
   - external-secret.yaml
   - statefulset.yaml
+  - registry-pull-secret.yaml

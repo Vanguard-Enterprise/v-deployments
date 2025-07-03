@@ -23,7 +23,7 @@ spec:
                 name: cfg-path
 volumeMounts:
   - name: config-volume
-    mountPath: config.json
+    mountPath: /usr/src/app/config.json
     subPath: config.json
     readOnly: true
 volumes:

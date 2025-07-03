@@ -4,4 +4,4 @@ metadata:
   name: cfg-path
   namespace: amity-population
 data:
-  CONFIG_PATH: ""
+  CONFIG_PATH: "/etc/config.json"

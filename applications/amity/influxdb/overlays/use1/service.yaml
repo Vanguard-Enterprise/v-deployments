@@ -5,7 +5,7 @@ metadata:
   namespace: amity-influx
 spec:
   type: LoadBalancer
-  loadBalancerIP: 10.1.50.175
+  loadBalancerIP: 10.1.50.165
   ports:
     - port: 8086
       name: http

@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - external-secret.yaml
   - configmap.yaml
-  - ingress.yaml
+  - certificate.yaml
   - service.yaml
   - statefulset.yaml
   - ../../base

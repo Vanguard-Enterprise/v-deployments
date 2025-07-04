@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: influxdb-tls
+  namespace: amity-influx
+spec:
+  secretName: influxdb-tls-secret
+  dnsNames:
+    - influx-use1.vngenterprise.com
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer

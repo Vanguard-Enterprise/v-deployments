@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: influxdb
+  namespace: amity-influx
+spec:
+  serviceName: influxdb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+        - name: influxdb
+          image: influxdb:1.8
+          args:
+            - "-config"
+            - "/etc/influxdb/influxdb.conf"
+          ports:
+            - containerPort: 8086
+              name: http
+          env:
+            - name: INFLUXDB_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-credentials
+                  key: admin-user
+            - name: INFLUXDB_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-credentials
+                  key: admin-password
+            - name: INFLUXDB_DB
+              value: "na10x"
+            - name: INFLUXDB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-credentials
+                  key: user
+            - name: INFLUXDB_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-credentials
+                  key: password
+          volumeMounts:
+            - name: config
+              mountPath: /etc/influxdb/influxdb.conf
+              subPath: influxdb.conf
+            - name: data
+              mountPath: /var/lib/influxdb
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1
+              memory: 2Gi
+      volumes:
+        - name: config
+          configMap:
+            name: influxdb-config
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi

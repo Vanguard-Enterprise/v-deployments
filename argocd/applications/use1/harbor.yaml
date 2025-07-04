@@ -21,6 +21,5 @@ spec:
   ignoreDifferences:
     - group: networking.k8s.io
       kind: Ingress
-      name: harbor-ingress
       jsonPointers:
-        - '/status/loadBalancer'
+        - /status

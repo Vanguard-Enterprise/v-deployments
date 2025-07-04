@@ -6,7 +6,7 @@ metadata:
 spec:
   secretName: influxdb-tls-secret
   dnsNames:
-    - influx-use1.vngenterprise.com
+    - amity-influx-use1.vngenterprise.com
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer

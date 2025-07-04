@@ -9,8 +9,11 @@ data:
       dir = "/var/lib/influxdb/meta"
 
     [data]
+      # Data directory
       dir = "/var/lib/influxdb/data"
-      engine-path = ""
+      # Engine and WAL directories
+      engine-path = "/var/lib/influxdb/engine"
+      wal-dir = "/var/lib/influxdb/wal"
       index-version = "tsi1"
       max-values-per-tag = 0
       max-series-per-database = 0

@@ -4,11 +4,11 @@ metadata:
   name: influxdb-ingress
   namespace: amity-influx
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production-amity
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   rules:
-    - host: influx-use1.amityrust.com
+    - host: influx-use1.vngenterprise.com
       http:
         paths:
           - path: /
@@ -20,5 +20,5 @@ spec:
                   number: 8086
   tls:
     - hosts:
-        - influx-use1.amityrust.com
+        - influx-use1.vngenterprise.com
       secretName: influxdb-tls-secret

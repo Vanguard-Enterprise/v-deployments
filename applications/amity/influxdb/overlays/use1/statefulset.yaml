@@ -50,6 +50,9 @@ spec:
             - name: config
               mountPath: /etc/influxdb/influxdb.conf
               subPath: influxdb.conf
+            - name: tls
+              mountPath: /etc/ssl/influxdb
+              readOnly: true
             - name: data
               mountPath: /var/lib/influxdb
           resources:
@@ -63,6 +66,9 @@ spec:
         - name: config
           configMap:
             name: influxdb-config
+        - name: tls
+          secret:
+            secretName: influxdb-tls-secret
   volumeClaimTemplates:
     - metadata:
         name: data

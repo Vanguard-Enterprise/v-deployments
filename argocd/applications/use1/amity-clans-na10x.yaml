@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
-    path: applications/amity/clans/use1/na10x
+    path: applications/amity/clans/overlay/use1/na10x
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc

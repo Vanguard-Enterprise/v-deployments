@@ -1,29 +1,29 @@
 # Cluster Application Statuses
-## United States - Management Cluster (MGMT) 
+## United States - United States East 1 (USE1) 
 ### App of Apps
-[![App of Apps](https://argocd.vng.bet/api/badge?name=mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/mgmt)
+[![App of Apps](https://argocd.vngenterprise.com/api/badge?name=use1&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/use1)
 ---
 ### Applications
-[![cert-manager](https://argocd.vng.bet/api/badge?name=cert-manager-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/cert-manager-mgmt)
-[![external-secrets](https://argocd.vng.bet/api/badge?name=external-secrets-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/devtroncd/external-secrets-mgmt?view=tree)
-[![longhorn](https://argocd.vng.bet/api/badge?name=longhorn-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/longhorn-mgmt)
-[![metallb](https://argocd.vng.bet/api/badge?name=metallb-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/metallb-mgmt)
-[![traefik](https://argocd.vng.bet/api/badge?name=traefik-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/traefik-mgmt)
-[![vault](https://argocd.vng.bet/api/badge?name=vault-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/vault-mgmt)
-[![zitadel](https://argocd.vng.bet/api/badge?name=zitadel-mgmt&revision=true&showAppName=true)](https://argocd.vng.bet/applications/zitadel-mgmt)
+[![cert-manager](https://argocd.vngenterprise.com/api/badge?name=cert-manager&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/cert-manager)
+[![external-secrets](https://argocd.vngenterprise.com/api/badge?name=external-secrets&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/devtroncd/external-secrets?view=tree)
+[![longhorn](https://argocd.vngenterprise.com/api/badge?name=longhorn&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/longhorn)
+[![metallb](https://argocd.vngenterprise.com/api/badge?name=metallb&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/metallb)
+[![traefik](https://argocd.vngenterprise.com/api/badge?name=traefik&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/traefik)
+[![vault](https://argocd.vngenterprise.com/api/badge?name=vault&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/vault)
+[![zitadel](https://argocd.vngenterprise.com/api/badge?name=zitadel&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/zitadel)
+[![cloud native pg-01](https://argocd.vngenterprise.com/api/badge?name=cnpg-01&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/cnpg-01)
+[![cnpg operator](https://argocd.vngenterprise.com/api/badge?name=cnpg-operator&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/cnpg-operator)
+[![external-secrets](https://argocd.vngenterprise.com/api/badge?name=external-secrets&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/external-secrets)
+[![grafana](https://argocd.vngenterprise.com/api/badge?name=grafana&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/grafana)
+[![grafana](https://argocd.vngenterprise.com/api/badge?name=grafana&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/grafana)
+[![minio-tenant](https://argocd.vngenterprise.com/api/badge?name=minio-tenant&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/minio-tenant)
+[![minio-operator](https://argocd.vngenterprise.com/api/badge?name=minio-operator&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/minio-operator)
+[![harbor](https://argocd.vngenterprise.com/api/badge?name=harbor&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/harbor)
 
-## United States - East 1 (USE1) 
-### App of Apps
-[![App of Apps](https://argocd.vng.bet/api/badge?name=use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/use1)
 ---
-### Applications
-[![N8N - Amity](https://argocd.vng.bet/api/badge?name=amity-n8n-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/amity-n8n-use1)
-[![external-secrets](https://argocd.vng.bet/api/badge?name=external-secrets-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/devtroncd/external-secrets-use1?view=tree)
-[![cert-manager](https://argocd.vng.bet/api/badge?name=cert-manager-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/cert-manager-use1)
-[![longhorn](https://argocd.vng.bet/api/badge?name=longhorn-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/longhorn-use1)
-[![metallb](https://argocd.vng.bet/api/badge?name=metallb-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/metallb-use1)
-[![traefik](https://argocd.vng.bet/api/badge?name=traefik-use1&revision=true&showAppName=true)](https://argocd.vng.bet/applications/traefik-use1)
-
-
-## Utility Commands
-`kubectl port-forward svc/argocd-server -n devtroncd 8080:443`
+# Tenants
+### Amity Rust Servers
+[![amity-population](https://argocd.vngenterprise.com/api/badge?name=amity-population&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-population)
+[![amity-n8n](https://argocd.vngenterprise.com/api/badge?name=amity-n8n&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-n8n)
+[![amity-clans-na10x](https://argocd.vngenterprise.com/api/badge?name=amity-clans-na10x&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-clans-na10x)
+[![amity-clans-eu10x](https://argocd.vngenterprise.com/api/badge?name=amity-clans-eu10x&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-clans-eu10x)

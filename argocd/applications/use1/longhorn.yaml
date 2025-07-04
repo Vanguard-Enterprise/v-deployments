@@ -12,7 +12,20 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
+  ignoreDifferences:
+    - group: longhorn.io
+      kind: Volume
+      jsonPointers:
+        - /status
+        - /spec/unknownFieldThatFloatsAround
+    - group: longhorn.io
+      kind: Replica
+      jsonPointers:
+        - /status
   syncPolicy:
     automated:
-      prune: true
       selfHeal: true
+      prune: true
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - RespectIgnoreDifferences=true

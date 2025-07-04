@@ -18,17 +18,3 @@ spec:
       selfHeal: true
     syncOptions:
       - ApplyOutOfSyncOnly=true
-      - RespectIgnoreDifferences=true
-  ignoreDifferences:
-    - group: admissionregistration.k8s.io
-      kind: MutatingWebhookConfiguration
-      name: vault-agent-injector-cfg
-      # Ignore CA bundle diffs for the Vault injector
-      jqPathExpressions:
-        - '.webhooks[]?.clientConfig.caBundle'
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-      name: validating-webhook-configuration
-      # Ignore CA bundle diffs for MetalLB's BGP peer webhook
-      jqPathExpressions:
-        - '.webhooks[]?.clientConfig.caBundle'

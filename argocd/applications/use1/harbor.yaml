@@ -18,3 +18,9 @@ spec:
       selfHeal: true
     syncOptions:
       - ApplyOutOfSyncOnly=true
+  ignoreDifferences:
+    - group: networking.k8s.io
+      kind: Ingress
+      name: harbor-ingress
+      jsonPointers:
+        - '/status/loadBalancer'

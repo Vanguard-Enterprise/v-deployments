@@ -23,6 +23,22 @@ spec:
               mountPath: /app/config.json # file inside the container
               subPath: config.json # key in the Secret
               readOnly: true
+          env:
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bot-credentials
+                  key: BOT_TOKEN
+            - name: BM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bot-credentials
+                  key: BM_TOKEN
+            - name: STEAM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bot-credentials
+                  key: STEAM_API_KEY
       volumes:
         - name: config-volume
           secret:

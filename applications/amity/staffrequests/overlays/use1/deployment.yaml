@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: population
+  namespace: amity-staffrequests
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: staffrequests
+  template:
+    metadata:
+      labels:
+        app: staffrequests
+    spec:
+      imagePullSecrets:
+        - name: harbor-pull-secret
+      containers:
+        - name: staffrequests
+          image: registry.vngenterprise.com/k8s/amity-staffrequests:latest
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config.json # file inside the container
+              subPath: config.json # key in the Secret
+              readOnly: true
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: staffrequests
+            items:
+              - key: config.json
+                path: config.json

@@ -27,3 +27,5 @@
 [![amity-n8n](https://argocd.vngenterprise.com/api/badge?name=amity-n8n&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-n8n)
 [![amity-clans-na10x](https://argocd.vngenterprise.com/api/badge?name=amity-clans-na10x&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-clans-na10x)
 [![amity-clans-eu10x](https://argocd.vngenterprise.com/api/badge?name=amity-clans-eu10x&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-clans-eu10x)
+[![amity-playerchecker](https://argocd.vngenterprise.com/api/badge?name=amity-playerchecker&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-playerchecker)
+[![amity-staffrequests](https://argocd.vngenterprise.com/api/badge?name=amity-staffrequests&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-staffrequests)

@@ -24,7 +24,7 @@ spec:
               subPath: config.json # key in the Secret
               readOnly: true
           env:
-            - name: BOT_TOKEN
+            - name: TOKEN
               valueFrom:
                 secretKeyRef:
                   name: bot-credentials

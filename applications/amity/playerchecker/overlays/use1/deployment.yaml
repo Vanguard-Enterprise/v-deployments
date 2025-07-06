@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: population
+  namespace: amity-playerchecker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playerchecker
+  template:
+    metadata:
+      labels:
+        app: playerchecker
+    spec:
+      imagePullSecrets:
+        - name: harbor-pull-secret
+      containers:
+        - name: playerchecker
+          image: registry.vngenterprise.com/k8s/amity-playerchecker:latest
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config.json # file inside the container
+              subPath: config.json # key in the Secret
+              readOnly: true
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: playerchecker
+            items:
+              - key: config.json
+                path: config.json

@@ -29,3 +29,9 @@
 [![amity-clans-eu10x](https://argocd.vngenterprise.com/api/badge?name=amity-clans-eu10x&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-clans-eu10x)
 [![amity-playerchecker](https://argocd.vngenterprise.com/api/badge?name=amity-playerchecker&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-playerchecker)
 [![amity-staffrequests](https://argocd.vngenterprise.com/api/badge?name=amity-staffrequests&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-staffrequests)
+
+## European Union - Europe Union East 1 (EUE1) 
+### App of Apps
+[![App of Apps](https://argocd.vngenterprise.com/api/badge?name=eue1&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/eue1)
+---
+### Applications

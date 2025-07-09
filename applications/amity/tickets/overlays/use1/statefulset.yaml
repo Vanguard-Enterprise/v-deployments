@@ -22,7 +22,7 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: bot
-          image: registry.vngenterprise.com/k8s/ticket-bot:4b9f5887fc6b4b6cb05e6c6a4696f0e8eb353bd0
+          image: registry.vngenterprise.com/k8s/ticket-bot:934212f2ffedcb7243ca7c2883626d7e44d27c1d
           envFrom:
             - secretRef:
                 name: amity-tickets

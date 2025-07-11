@@ -17,7 +17,7 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: staffrequests
-          image: registry.vngenterprise.com/k8s/amity-staffrequests:latest
+          image: registry.vngenterprise.com/k8s/amity-staffrequests:latest2
           volumeMounts:
             - name: config-volume
               mountPath: /app/config.json # file inside the container

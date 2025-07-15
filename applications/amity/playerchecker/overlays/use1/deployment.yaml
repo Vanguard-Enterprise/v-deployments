@@ -17,7 +17,7 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: playerchecker
-          image: registry.vngenterprise.com/k8s/amity-playerchecker:latest
+          image: registry.vngenterprise.com/k8s/amity-playerchecker:main
           volumeMounts:
             - name: config-volume
               mountPath: /app/config.json # file inside the container

@@ -9,6 +9,7 @@ spec:
       app: ticket-bot
   serviceName: ticket-bot
   replicas: 1
+  podManagementPolicy: OrderedReady
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
@@ -18,11 +19,16 @@ spec:
       labels:
         app: ticket-bot
     spec:
+      terminationGracePeriodSeconds: 15
       imagePullSecrets:
         - name: harbor-pull-secret
       containers:
         - name: bot
           image: registry.vngenterprise.com/k8s/ticket-bot:624c25234e5fca1bb6ed0e66b368ff4f69c17782
+          lifecycle:
+            preStop:
+              exec:
+                command: ["bash", "-c", "kill -s SIGTERM 1 && sleep 5"]
           envFrom:
             - secretRef:
                 name: amity-tickets

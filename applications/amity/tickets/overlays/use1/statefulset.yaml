@@ -24,7 +24,7 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: bot
-          image: registry.vngenterprise.com/k8s/ticket-bot:9fe6da110725caad45ff8c6e563dd40d6de52e70
+          image: registry.vngenterprise.com/k8s/ticket-bot:1910e0e7f5b35829c9cedd9aca54f08fe1fb3f2e
           lifecycle:
             preStop:
               exec:

@@ -24,11 +24,11 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: bot
-          image: registry.vngenterprise.com/k8s/ticket-bot:d1d1df3c5383de6fb38e4708d3a51ea7efe18e82
+          image: registry.vngenterprise.com/k8s/ticket-bot:9fe6da110725caad45ff8c6e563dd40d6de52e70
           lifecycle:
             preStop:
               exec:
-                command: ["bash", "-c", "kill -s SIGTERM 1 && sleep 5"]
+                command: ["sh", "-c", "kill -s SIGTERM 1 && sleep 5"]
           envFrom:
             - secretRef:
                 name: amity-tickets

@@ -4,7 +4,7 @@ metadata:
   name: amity-web
   namespace: amity-web
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: amity-web

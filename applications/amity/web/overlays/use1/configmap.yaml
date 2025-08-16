@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amity-web-config
+  namespace: amity-web
+data:
+  NEXTAUTH_URL: "https://amityrust.com"
+  NEXT_PUBLIC_DOMAIN: "amityrust.com"

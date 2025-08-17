@@ -18,6 +18,8 @@ spec:
       labels:
         app: amity-web
     spec:
+      imagePullSecrets:
+        - name: harbor-pull-secret
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

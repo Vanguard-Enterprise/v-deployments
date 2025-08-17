@@ -4,7 +4,7 @@ metadata:
   name: amity-web
   namespace: amity-web
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: amity-web
@@ -38,7 +38,7 @@ spec:
                 name: amity-web-secrets
           ports:
             - name: https
-              containerPort: 443
+              containerPort: 3000
           resources:
             requests:
               cpu: "100m"

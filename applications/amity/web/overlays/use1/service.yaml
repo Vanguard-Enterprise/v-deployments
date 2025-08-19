@@ -7,5 +7,5 @@ spec:
   selector:
     app: amity-web
   ports:
-  - port: 443
+  - port: 80
     targetPort: 443

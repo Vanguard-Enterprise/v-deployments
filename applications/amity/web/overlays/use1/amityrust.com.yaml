@@ -13,7 +13,7 @@ spec:
     kind: Rule
     services:
     - name: amity-web
-      port: 443
+      port: 80
   tls:
     store:
       name: amity

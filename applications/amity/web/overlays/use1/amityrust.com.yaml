@@ -12,7 +12,7 @@ spec:
   - match: Host(`amityrust.com`)
     kind: Rule
     services:
-    - name: https
+    - name: amity-web
       port: 443
   tls:
     store:

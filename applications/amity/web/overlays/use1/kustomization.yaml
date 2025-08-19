@@ -7,4 +7,4 @@ resources:
   - registry-pull-secret.yaml
   - configmap.yaml
   - service.yaml
-  - ingress.yaml
+  - amityrust.com.yaml

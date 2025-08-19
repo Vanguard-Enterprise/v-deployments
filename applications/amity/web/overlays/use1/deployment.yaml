@@ -39,7 +39,7 @@ spec:
             - secretRef:
                 name: amity-web-secrets
           ports:
-            - name: https
+            - name: http
               containerPort: 443
           resources:
             requests:

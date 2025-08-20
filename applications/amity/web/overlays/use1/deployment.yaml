@@ -32,7 +32,7 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: website
-          image: registry.vngenterprise.com/k8s/amity-web:ee31615
+          image: registry.vngenterprise.com/k8s/amity-web:ee31616
           envFrom:
             - configMapRef:
                 name: amity-web-config

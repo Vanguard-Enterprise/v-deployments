@@ -33,6 +33,17 @@ spec:
       containers:
         - name: website
           image: registry.vngenterprise.com/k8s/amity-web:ee31631
+          env:
+            - name: pnapi_v1_Ht3Ab45GKDvDH6i1SpRiHZKXhrZPJ9Y1GtoJ41xY2Vgo
+              valueFrom:
+                secretKeyRef:
+                  name: amity-web-secrets
+                  key: PAYNOW_KEY
+            - name: PAYNOW_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: amity-web-secrets
+                  key: PAYNOW_KEY
           envFrom:
             - configMapRef:
                 name: amity-web-config

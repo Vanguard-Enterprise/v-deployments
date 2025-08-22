@@ -11,3 +11,6 @@ spec:
   enableSuperuserAccess: true
   superuserSecret:
     name: cnpg-superuser-secret
+  postgresql:
+    parameters:
+      max_connections: "200"

@@ -33,17 +33,6 @@ spec:
       containers:
         - name: website
           image: registry.vngenterprise.com/k8s/amity-web:ee31631
-          env:
-            - name: NEXT_PUBLIC_PAYNOW_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: amity-web-secrets
-                  key: PAYNOW_KEY
-            - name: PAYNOW_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: amity-web-secrets
-                  key: PAYNOW_KEY
           envFrom:
             - configMapRef:
                 name: amity-web-config

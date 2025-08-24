@@ -18,3 +18,6 @@ spec:
       containers:
         - name: blacklist
           image: registry.vngenterprise.com/k8s/blacklist:ee31644
+          envFrom:
+            - secretRef:
+                name: blacklist

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: amity-staffrequests
+  name: amity-blacklist
   namespace: argocd
 spec:
   project: default

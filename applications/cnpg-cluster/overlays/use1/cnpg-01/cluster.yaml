@@ -7,7 +7,7 @@ spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:17.5
   storage:
-    size: 1Gi
+    size: 3Gi
   enableSuperuserAccess: true
   superuserSecret:
     name: cnpg-superuser-secret

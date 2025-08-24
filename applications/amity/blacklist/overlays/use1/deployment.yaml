@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blacklist
+  namespace: amity-blacklist
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blacklist
+  template:
+    metadata:
+      labels:
+        app: blacklist
+    spec:
+      imagePullSecrets:
+        - name: harbor-pull-secret
+      containers:
+        - name: blacklist
+          image: registry.vngenterprise.com/k8s/blacklist:ee31644

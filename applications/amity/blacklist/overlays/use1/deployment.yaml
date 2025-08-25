@@ -17,7 +17,7 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: blacklist
-          image: registry.vngenterprise.com/k8s/blacklist:ee31645
+          image: registry.vngenterprise.com/k8s/blacklist:ee31646
           envFrom:
             - secretRef:
                 name: blacklist

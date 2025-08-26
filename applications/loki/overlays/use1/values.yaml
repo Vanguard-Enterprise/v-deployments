@@ -73,4 +73,5 @@ loki:
       accessKeyId: ${AWS_ACCESS_KEY_ID}
       secretAccesskey: ${AWS_SECRET_ACCESS_KEY}
       s3ForcePathStyle: true
+      insecure: false
   auth_enabled: false

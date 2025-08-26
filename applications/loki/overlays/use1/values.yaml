@@ -1,0 +1,76 @@
+global:
+  extraEnvFrom:
+  - secretRef:
+      name: loki-s3-creds
+
+monitoring:
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+
+test:
+  enabled: false
+
+read:
+  replicas: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+backend:
+  replicas: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+  persistence:
+    storageClass: longhorn
+  extraVolumes:
+    - name: retention
+      emptyDir: {}
+  extraVolumeMounts:
+    - name: retention
+      mountPath: /data
+write:
+  replicas: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+  persistence:
+    storageClass: longhorn
+loki:
+  limits_config:
+    max_query_lookback: 25h
+    retention_period: 25h
+  compactor:
+    working_directory: /data/retention
+    delete_request_store: s3
+    retention_enabled: true
+  commonConfig:
+    replication_factor: 1
+  schemaConfig:
+    configs:
+      - from: 2024-04-01
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+        chunks:
+          period: 24h
+  storage:
+    bucketNames:
+      chunks: loki-chunks
+      ruler: loki-ruler
+      admin: loki-admin
+    type: s3
+    s3:
+      endpoint: s3.vngenterprise.com
+      region: use1
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccesskey: ${AWS_SECRET_ACCESS_KEY}
+      s3ForcePathStyle: true
+  auth_enabled: false

@@ -76,4 +76,5 @@ loki:
       secretAccessKey: ${secretAccessKey}
       s3ForcePathStyle: true
       insecure: false
-  auth_enabled: false
+  tenants: ${tenants}
+  auth_enabled: true

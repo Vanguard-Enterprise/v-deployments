@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activity
+  namespace: amity-activity
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: activity
+  template:
+    metadata:
+      labels:
+        app: activity
+    spec:
+      imagePullSecrets:
+        - name: harbor-pull-secret
+      containers:
+        - name: activity
+          image: registry.vngenterprise.com/k8s/activity:ee31651
+          envFrom:
+            - secretRef:
+                name: activity

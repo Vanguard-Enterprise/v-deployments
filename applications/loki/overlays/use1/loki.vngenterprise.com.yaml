@@ -1,19 +1,19 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: minio-gslb-api
-  namespace: minio-tenant
+  name: loki-gateway
+  namespace: loki
   annotations:
     kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`s3.vngenterprise.com`)
+    - match: Host(`loki.vngenterprise.com`)
       kind: Rule
       services:
-        - name: minio
-          port: 443
+        - name: loki-gateway
+          port: 80
   tls:
     store:
       name: default

@@ -72,8 +72,8 @@ loki:
     s3:
       endpoint: s3.vngenterprise.com
       region: use1
-      accessKeyId: ${AWS_ACCESS_KEY_ID}
-      secretAccesskey: ${AWS_SECRET_ACCESS_KEY}
+      accessKeyId: ${accessKeyId}
+      secretAccessKey: ${secretAccessKey}
       s3ForcePathStyle: true
       insecure: false
   auth_enabled: false

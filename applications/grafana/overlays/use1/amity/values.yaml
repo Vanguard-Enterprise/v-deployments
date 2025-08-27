@@ -15,3 +15,6 @@ persistence:
 grafana.ini:
   server:
     root_url: https://grafana.amityrust.com
+
+deploymentStrategy:
+  type: Recreate

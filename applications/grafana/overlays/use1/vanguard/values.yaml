@@ -14,3 +14,6 @@ persistence:
 grafana.ini:
   server:
     root_url: https://grafana.vngenterprise.com
+
+deploymentStrategy:
+  type: Recreate

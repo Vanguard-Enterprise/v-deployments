@@ -5,7 +5,6 @@ metadata:
   namespace: amity-web
 data:
   NEXTAUTH_URL: "https://amityrust.com"
-  AUTH_URL: "https://amityrust.com"
   NEXT_PUBLIC_DOMAIN: "amityrust.com"
   NEXT_PUBLIC_UPLOADS_ENABLED: "true"
   NEXT_PUBLIC_R2_PUBLIC_URL: "https://cdn.amityrust.com/"

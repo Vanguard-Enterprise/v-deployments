@@ -5,3 +5,4 @@ resources:
   - deployment.yaml
   - ../../base
   - registry-pull-secret.yaml
+  - configmap.yaml

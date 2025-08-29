@@ -21,3 +21,5 @@ spec:
           envFrom:
             - secretRef:
                 name: activity
+            - configMapRef:
+                name: activity

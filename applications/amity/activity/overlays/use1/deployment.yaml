@@ -4,7 +4,7 @@ metadata:
   name: activity
   namespace: amity-activity
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: activity

@@ -17,7 +17,7 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: activity
-          image: registry.vngenterprise.com/k8s/activity:fe42ab61a37588d86099960dc87edf38f6d2726b
+          image: registry.vngenterprise.com/k8s/activity:80da098e245a8560efbc88d3df51e4c68a6d7619
           envFrom:
             - secretRef:
                 name: activity

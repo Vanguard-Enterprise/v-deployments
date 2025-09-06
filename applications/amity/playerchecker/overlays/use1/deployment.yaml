@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: population
+  name: playerchecker
   namespace: amity-playerchecker
 spec:
   replicas: 1

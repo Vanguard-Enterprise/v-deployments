@@ -5,7 +5,3 @@ metadata:
   namespace: amity-population
 data:
   CONFIG_PATH: "/etc/config.json"
-  GUILDID: "1417958374787514601"
-  MEMBERID: "610442575215853581"
-  BOTSELECTOR: "Website"
-  Leave: "false"

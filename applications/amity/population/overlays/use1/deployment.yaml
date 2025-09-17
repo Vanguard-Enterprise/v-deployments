@@ -17,7 +17,7 @@ spec:
         - name: harbor-pull-secret
       containers:
         - name: population
-          image: registry.vngenterprise.com/k8s/population:ee31679
+          image: registry.vngenterprise.com/k8s/population:ee31680
           envFrom:
             - configMapRef:
                 name: cfg-path # sets CONFIG_PATH=/etc/config.json

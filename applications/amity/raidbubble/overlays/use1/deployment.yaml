@@ -32,15 +32,15 @@ spec:
         - name: PORT
           valueFrom:
             configmapRef:
-              name: raidbubble-config
+              name: raidbubble
               key: PORT
         - name: DISCORD_GUILD_ID
           valueFrom:
             configmapRef:
-              name: raidbubble-config
+              name: raidbubble
               key: DISCORD_GUILD_ID
         - name: DISCORD_RAID_CHANNEL_ID
           valueFrom:
             configmapRef:
-              name: raidbubble-config
+              name: raidbubble
               key: DISCORD_RAID_CHANNEL_ID

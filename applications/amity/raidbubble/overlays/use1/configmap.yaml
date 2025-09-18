@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: raidbubble-config
+  name: config
   namespace: amity-raidbubble
   data:
   DISCORD_RAID_CHANNEL_ID: "1332506522592477306"

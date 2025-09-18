@@ -18,29 +18,8 @@ spec:
       containers:
         - name: raidbubble
           image: registry.vngenterprise.com/k8s/rb:ef32123
-      env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: raidbubble
-              key: DATABASE_URL
-        - name: DISCORD_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: raidbubble
-              key: DISCORD_TOKEN
-        - name: PORT
-          valueFrom:
-            configmapRef:
-              name: raidbubble
-              key: PORT
-        - name: DISCORD_GUILD_ID
-          valueFrom:
-            configmapRef:
-              name: raidbubble
-              key: DISCORD_GUILD_ID
-        - name: DISCORD_RAID_CHANNEL_ID
-          valueFrom:
-            configmapRef:
-              name: raidbubble
-              key: DISCORD_RAID_CHANNEL_ID
+    envFrom:
+      - configMapRef:
+          name: config
+      - secretRef:
+          name: raidbubble

@@ -6,5 +6,5 @@ resources:
   - ../../base
   - registry-pull-secret.yaml
   - configmap.yaml
-  - sevice.yaml
+  - service.yaml
   - raids.amityrust.com.yaml

@@ -18,8 +18,8 @@ spec:
       containers:
         - name: raidbubble
           image: registry.vngenterprise.com/k8s/rb:ef32123
-    envFrom:
-      - configMapRef:
-          name: config
-      - secretRef:
-          name: raidbubble
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: raidbubble

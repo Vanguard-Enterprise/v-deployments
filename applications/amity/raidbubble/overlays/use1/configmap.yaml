@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: config
-  namespace: amity-raidbubble
-data:
-  DISCORD_RAID_CHANNEL_ID: "1332506522592477306"
-  DISCORD_GUILD_ID: "1331665852839231579"
-  PORT: "3000"

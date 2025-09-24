@@ -4,7 +4,7 @@ metadata:
   name: blacklist
   namespace: amity-blacklist
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: blacklist

@@ -4,7 +4,7 @@ metadata:
   name: playerchecker
   namespace: amity-playerchecker
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: playerchecker

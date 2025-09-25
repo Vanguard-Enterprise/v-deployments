@@ -57,11 +57,11 @@ spec:
               mountPath: /var/lib/influxdb
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 5000m
+              memory: 4Gi
             limits:
-              cpu: 1
-              memory: 2Gi
+              cpu: 10000m
+              memory: 8Gi
       volumes:
         - name: config
           configMap:

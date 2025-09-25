@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: ticket-bot
   serviceName: ticket-bot
-  replicas: 1
+  replicas: 0
   podManagementPolicy: OrderedReady
   updateStrategy:
     type: RollingUpdate

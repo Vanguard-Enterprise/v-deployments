@@ -55,13 +55,6 @@ spec:
               readOnly: true
             - name: data
               mountPath: /var/lib/influxdb
-          resources:
-            requests:
-              cpu: 1000m
-              memory: 4Gi
-            limits:
-              cpu: 5000m
-              memory: 8Gi
       volumes:
         - name: config
           configMap:

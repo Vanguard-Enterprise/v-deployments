@@ -5,7 +5,7 @@ metadata:
   namespace: amity-influx
 spec:
   serviceName: influxdb
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: influxdb

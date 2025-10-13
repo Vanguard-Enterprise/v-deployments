@@ -20,17 +20,5 @@
 [![minio-operator](https://argocd.vngenterprise.com/api/badge?name=minio-operator&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/minio-operator)
 [![harbor](https://argocd.vngenterprise.com/api/badge?name=harbor&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/harbor)
 
-## Tenants
-
-### Amity Rust Servers
-[![amity-population](https://argocd.vngenterprise.com/api/badge?name=amity-population&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-population)
-[![amity-n8n](https://argocd.vngenterprise.com/api/badge?name=amity-n8n&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-n8n)
-[![amity-clans-na10x](https://argocd.vngenterprise.com/api/badge?name=amity-clans-na10x&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-clans-na10x)
-[![amity-clans-eu10x](https://argocd.vngenterprise.com/api/badge?name=amity-clans-eu10x&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-clans-eu10x)
-[![amity-playerchecker](https://argocd.vngenterprise.com/api/badge?name=amity-playerchecker&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-playerchecker)
-[![amity-staffrequests](https://argocd.vngenterprise.com/api/badge?name=amity-staffrequests&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/amity-staffrequests)
-
-## European Union - Europe Union East 1 (EUE1)
-
 ### App of Apps
 [![App of Apps](https://argocd.vngenterprise.com/api/badge?name=eue1&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/eue1)

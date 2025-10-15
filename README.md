@@ -1,5 +1,15 @@
 # Cluster Application Statuses
 
+This repository hosts the Argo CD application definitions that manage the platform
+deployments for multiple regions. The badges below mirror the live status of each
+application so operators can quickly determine whether a deployment is healthy.
+
+## Regions
+
+| Region | Description | App of Apps |
+| ------ | ----------- | ----------- |
+| [USE1](#united-states---united-states-east-1-use1) | United States East 1 | [![App of Apps](https://argocd.vngenterprise.com/api/badge?name=use1&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/use1) |
+
 ## United States - United States East 1 (USE1)
 
 ### App of Apps
@@ -19,6 +29,3 @@
 [![minio-tenant](https://argocd.vngenterprise.com/api/badge?name=minio-tenant&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/minio-tenant)
 [![minio-operator](https://argocd.vngenterprise.com/api/badge?name=minio-operator&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/minio-operator)
 [![harbor](https://argocd.vngenterprise.com/api/badge?name=harbor&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/harbor)
-
-### App of Apps
-[![App of Apps](https://argocd.vngenterprise.com/api/badge?name=eue1&revision=true&showAppName=true)](https://argocd.vngenterprise.com/applications/eue1)

@@ -4,7 +4,7 @@ resources:
   - ../../base
   - argocd.vngenterprise.com.yaml
 helmCharts:
-  - name: argocd
+  - name: argo-cd
     version: "9.0.5"
     repo: https://argoproj.github.io/argo-helm
     releaseName: argo-cd

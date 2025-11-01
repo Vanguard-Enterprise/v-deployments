@@ -2,7 +2,7 @@
 global:
   enabled: true
 injector:
-  enabled: true
+  enabled: false
   image:
     repository: "hashicorp/vault-k8s"
     tag: "latest"

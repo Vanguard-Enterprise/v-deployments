@@ -1,0 +1,52 @@
+redis:
+  enabled: false
+
+redis-ha:
+  enabled: true
+
+controller:
+  replicas: 1
+
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    targetCPUUtilizationPercentage: 80
+
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    targetCPUUtilizationPercentage: 80
+
+applicationSet:
+  replicas: 2
+
+global:
+  domain: argocd.vngenterprise.com
+
+configs:
+  cm:
+    url: https://argocd.vngenterprise.com
+    admin.enabled: false
+    kustomize.buildOptions: --enable-helm
+    statusbadge.enabled: "true"
+    oidc.config: |
+      name: Zitadel
+      issuer: https://accounts.vngenterprise.com
+      clientID: "326386307850896434"
+      requestedScopes:
+        - openid
+        - profile
+        - email
+        - groups
+      logoutURL: https://accounts.vngenterprise.com/oidc/v1/end_session
+      enablePKCEAuthentication: true
+
+  rbac:
+    create: true
+    policy.csv: |
+      g, argocd_administrators, role:admin
+      g, argocd_users, role:readonly
+    policy.default: ""
+    scopes: "[groups]"

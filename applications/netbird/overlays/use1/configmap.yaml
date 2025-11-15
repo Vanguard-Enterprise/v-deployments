@@ -14,7 +14,7 @@ data:
   AUTH_REDIRECT_URI: "/nb-auth"
   AUTH_SILENT_REDIRECT_URI: "/nb-silent-auth"
   NGINX_SSL_PORT: "443"
-  LETSENCRYPT_DOMAIN: "vngenterprise.com"
+  LETSENCRYPT_DOMAIN: "netbird.vngenterprise.com"
   LETSENCRYPT_EMAIL: "frankd@vngenterprise.com"
 ---
 apiVersion: v1

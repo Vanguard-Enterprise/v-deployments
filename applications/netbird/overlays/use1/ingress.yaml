@@ -15,6 +15,7 @@ spec:
       services:
         - name: netbird-dashboard
           port: 443
+          scheme: https
     - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/management.ManagementService/`)
       kind: Rule
       services:

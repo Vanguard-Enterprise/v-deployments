@@ -151,7 +151,7 @@ spec:
             claimName: netbird-mgmt-pvc
         - name: management-config
           secret:
-            name: netbird-management-config
+            secretName: netbird-management-config
             items:
               - key: management.json
                 path: management.json

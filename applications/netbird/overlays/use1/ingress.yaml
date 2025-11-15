@@ -14,7 +14,7 @@ spec:
       kind: Rule
       services:
         - name: netbird-dashboard
-          port: 80
+          port: 443
     - match: Host(`netbird.amityrust.com`) && PathPrefix(`/management.ManagementService/`)
       kind: Rule
       services:

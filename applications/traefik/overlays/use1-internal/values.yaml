@@ -1,0 +1,42 @@
+globalArguments:
+  - "--global.sendanonymoususage=false"
+  - "--global.checknewversion=false"
+additionalArguments:
+  - "--serversTransport.insecureSkipVerify=true"
+  - "--log.level=INFO"
+  - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+deployment:
+  enabled: true
+  replicas: 3
+  annotations: {}
+  podAnnotations: {}
+  additionalContainers: []
+  initContainers: []
+ports:
+  web:
+    enabled: true
+  websecure:
+    tls:
+      enabled: true
+providers:
+  kubernetesCRD:
+    enabled: true
+    allowCrossNameServices: true
+    ingressClass: traefik-internal
+    allowExternalNameServices: true
+  kubernetesIngress:
+    enabled: true
+    allowExternalNameServices: true
+    publishedService:
+      enabled: false
+rbac:
+  enabled: true
+service:
+  enabled: true
+  type: LoadBalancer
+  annotations: {}
+  labels: {}
+  spec:
+    loadBalancerIP: 10.1.50.176 # Cluster-specific LB IP for internal class
+  loadBalancerSourceRanges: []
+  externalIPs: []

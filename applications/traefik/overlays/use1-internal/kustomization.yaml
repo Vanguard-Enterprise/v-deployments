@@ -1,12 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources:
-  - ../../base
-  - default-store.yaml
+#resources:
+#  - ../../base
 helmCharts:
   - name: traefik
     version: "37.3.0"
     repo: https://helm.traefik.io/traefik
-    releaseName: traefik
+    releaseName: traefik-internal
     valuesFile: values.yaml
     namespace: traefik

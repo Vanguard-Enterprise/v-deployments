@@ -1,0 +1,206 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbird-dashboard
+  namespace: netbird
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netbird-dashboard
+  template:
+    metadata:
+      labels:
+        app: netbird-dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: netbirdio/dashboard:latest
+          envFrom:
+            - configMapRef:
+                name: netbird-dashboard-env
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          ports:
+            - name: http
+              containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbird-signal
+  namespace: netbird
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netbird-signal
+  template:
+    metadata:
+      labels:
+        app: netbird-signal
+    spec:
+      containers:
+        - name: signal
+          image: netbirdio/signal:latest
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          volumeMounts:
+            - name: signal-data
+              mountPath: /var/lib/netbird
+          ports:
+            - name: grpc
+              containerPort: 10000
+      volumes:
+        - name: signal-data
+          persistentVolumeClaim:
+            claimName: netbird-signal-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbird-relay
+  namespace: netbird
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netbird-relay
+  template:
+    metadata:
+      labels:
+        app: netbird-relay
+    spec:
+      containers:
+        - name: relay
+          image: netbirdio/relay:latest
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          envFrom:
+            - configMapRef:
+                name: netbird-relay-env
+            - secretRef:
+                name: netbird-relay-env
+          ports:
+            - name: http
+              containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbird-management
+  namespace: netbird
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netbird-management
+  template:
+    metadata:
+      labels:
+        app: netbird-management
+    spec:
+      containers:
+        - name: management
+          image: netbirdio/management:latest
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          args:
+            - "--port"
+            - "80"
+            - "--log-file"
+            - "console"
+            - "--log-level"
+            - "info"
+            - "--disable-anonymous-metrics=false"
+            - "--single-account-mode-domain=intra.vngenterprise.com"
+            - "--dns-domain=intra.vngenterprise.com"
+            - "--idp-sign-key-refresh-enabled"
+          volumeMounts:
+            - name: management-data
+              mountPath: /var/lib/netbird
+            - name: management-config
+              mountPath: /etc/netbird/management.json
+              subPath: management.json
+          ports:
+            - name: http
+              containerPort: 80
+      volumes:
+        - name: management-data
+          persistentVolumeClaim:
+            claimName: netbird-mgmt-pvc
+        - name: management-config
+          secret:
+            name: netbird-management-config
+            items:
+              - key: management.json
+                path: management.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbird-coturn
+  namespace: netbird
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netbird-coturn
+  template:
+    metadata:
+      labels:
+        app: netbird-coturn
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: coturn
+          image: coturn/coturn:latest
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          args:
+            - "-c"
+            - "/etc/turnserver.conf"
+          volumeMounts:
+            - name: turn-config
+              mountPath: /etc/turnserver.conf
+              subPath: turnserver.conf
+          ports:
+            - name: stun
+              containerPort: 3478
+              protocol: UDP
+            - name: turn-tls
+              containerPort: 5349
+              protocol: TCP
+      volumes:
+        - name: turn-config
+          secretName:
+            name: netbird-turn-config
+            items:
+              - key: turnserver.conf
+                path: turnserver.conf

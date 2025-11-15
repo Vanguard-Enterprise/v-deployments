@@ -171,8 +171,6 @@ spec:
       labels:
         app: netbird-coturn
     spec:
-      hostNetwork: false
-      #dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: coturn
           image: coturn/coturn:latest

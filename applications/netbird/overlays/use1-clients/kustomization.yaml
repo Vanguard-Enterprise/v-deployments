@@ -4,3 +4,4 @@ resources:
   - service.yaml
   - statefulset.yaml
   - external-secret.yaml
+  - namespace.yaml

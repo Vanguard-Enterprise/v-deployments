@@ -25,6 +25,8 @@ grafana.ini:
     token_url: https://accounts.vngenterprise.com/oauth/v2/token
     api_url: https://accounts.vngenterprise.com/api/oauth/v2/me
     role_attribute_path: "contains(groups[*], 'monitoring_admin') && 'GrafanaAdmin' || contains(groups[*], 'monitoring_editor') && 'Editor' || 'Viewer'"
+    email_attribute_name: "email:primary"
+    email_attribute_path: "email"
     scopes: openid email profile groups offline_access
     auto_login: true
     use_pkce: true

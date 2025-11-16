@@ -23,11 +23,13 @@ grafana.ini:
     client_id: "327050265184241030"
     auth_url: https://accounts.vngenterprise.com/oauth/v2/authorize
     token_url: https://accounts.vngenterprise.com/oauth/v2/token
-    api_url: https://accounts.vngenterprise.com/api/oauth/v2/me
+    api_url: https://accounts.vngenterprise.com/oidc/v1/userinfo
     role_attribute_path: "contains(groups[*], 'monitoring_admin') && 'GrafanaAdmin' || contains(groups[*], 'monitoring_editor') && 'Editor' || 'Viewer'"
+    allow_assign_grafana_admin: true
+    role_attribute_strict: true
     email_attribute_name: "email:primary"
     email_attribute_path: "email"
-    scopes: "openid email profile groups offline_access"
+    scopes: "openid email profile offline_access roles"
     auto_login: true
     use_pkce: true
     use_refresh_token: true

@@ -27,7 +27,7 @@ grafana.ini:
     role_attribute_path: "contains(groups[*], 'monitoring_admin') && 'GrafanaAdmin' || contains(groups[*], 'monitoring_editor') && 'Editor' || 'Viewer'"
     email_attribute_name: "email:primary"
     email_attribute_path: "email"
-    scopes: openid email profile groups offline_access
+    scopes: "openid email profile groups offline_access"
     auto_login: true
     use_pkce: true
     use_refresh_token: true

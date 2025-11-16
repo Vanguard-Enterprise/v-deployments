@@ -12,8 +12,22 @@ persistence:
   enabled: true
   size: 1Gi
 grafana.ini:
+  grafana_net:
+    url: https://grafana.vngenterprise.com
   server:
     root_url: https://grafana.vngenterprise.com
-
+  auth.generic_oauth:
+    enabled: true
+    name: "VANGUARD SSO"
+    allow_sign_up: true
+    client_id: "327050265184241030"
+    auth_url: https://accounts.vngenterprise.com/oauth/v2/authorize
+    token_url: https://accounts.vngenterprise.com/oauth/v2/token
+    api_url: https://accounts.vngenterprise.com/api/oauth/v2/me
+    role_attribute_path: "contains(groups[*], 'monitoring_admin') && 'GrafanaAdmin' || contains(groups[*], 'monitoring_editor') && 'Editor' || 'Viewer'"
+    scopes: openid email profile groups offline_access
+    auto_login: true
+    use_pkce: true
+    use_refresh_token: true
 deploymentStrategy:
   type: Recreate

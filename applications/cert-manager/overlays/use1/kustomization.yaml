@@ -4,3 +4,4 @@ resources:
   - ../../base
   - vngenterprise.com.yaml
   - external-secret.yaml
+  - rustlens.com.yaml

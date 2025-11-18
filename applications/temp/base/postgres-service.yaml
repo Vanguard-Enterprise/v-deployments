@@ -10,3 +10,5 @@ spec:
     - name: postgres
       port: 5432
       targetPort: 5432
+  type: LoadBalancer
+  loadBalancerIP: 10.1.50.181

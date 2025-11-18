@@ -13,22 +13,6 @@ spec:
       labels:
         app: temp-postgres
     spec:
-      securityContext:
-        runAsUser: 999
-        runAsGroup: 999
-        fsGroup: 999
-      initContainers:
-        - name: init-postgres-data
-          image: busybox:1.36
-          command:
-            - sh
-            - -c
-            - |
-              mkdir -p /var/lib/postgresql/data/pgdata
-              chown -R 999:999 /var/lib/postgresql/data
-          volumeMounts:
-            - name: postgres-data
-              mountPath: /var/lib/postgresql/data
       containers:
         - name: postgres
           image: postgres:17

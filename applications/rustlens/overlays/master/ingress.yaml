@@ -4,7 +4,7 @@ metadata:
   name: master-rustlens
   namespace: rustlens
   annotations:
-    kubernetes.io/ingress.class: traefik-internal
+    kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
     - websecure
@@ -12,7 +12,7 @@ spec:
     - match: Host(`agent.rustlens.com`)
       kind: Rule
       services:
-        - name: rustlens
+        - name: master
           port: 4000
   tls:
     store:

@@ -25,7 +25,7 @@ spec:
             - name: worker-config
               mountPath: /app/config.json
               subPath: config.json
-            - name: worker-config
+            - name: worker-identity
               mountPath: /app/identity.json
               subPath: identity.json
           resources:
@@ -39,11 +39,26 @@ spec:
         - name: worker-config
           persistentVolumeClaim:
             claimName: worker-config-pvc
+        - name: worker-identity
+          persistentVolumeClaim:
+            claimName: worker-identity-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: worker-config-pvc
+  namespace: rustlens
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: worker-identity-pvc
   namespace: rustlens
 spec:
   accessModes:

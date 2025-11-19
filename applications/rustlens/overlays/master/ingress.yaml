@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: master-rustlens
+  namespace: rustlens
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`agent.rustlens.com`)
+      kind: Rule
+      services:
+        - name: rustlens
+          port: 4000
+  tls:
+    store:
+      name: rustlens
+      namespace: traefik

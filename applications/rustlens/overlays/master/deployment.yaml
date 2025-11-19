@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master
+  namespace: rustlens
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: master
+  template:
+    metadata:
+      labels:
+        app: master
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      containers:
+        - name: master
+          ports:
+            - containerPort: 4000
+          image: ghcr.io/vanguard-enterprise/rustlens-agent-master:latest
+          envFrom:
+            - secretRef:
+                name: rustlens-secrets
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"

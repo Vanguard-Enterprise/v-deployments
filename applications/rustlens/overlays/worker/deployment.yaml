@@ -23,12 +23,11 @@ spec:
                 name: rustlens-secrets
           volumeMounts:
             - name: worker-config
-              mountPath: /app/worker-config
-              readOnly: true
-          command:
-            - /bin/sh
-            - -c
-            - cp /app/worker-config/config.json /app/config.json && cp /app/worker-config/identity.json /app/identity.json && npm start
+              mountPath: /app/config.json
+              subPath: config.json
+            - name: worker-config
+              mountPath: /app/identity.json
+              subPath: identity.json
           resources:
             requests:
               memory: "128Mi"
@@ -51,4 +50,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Mi
+      storage: 8Mi

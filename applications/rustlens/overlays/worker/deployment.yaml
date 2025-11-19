@@ -17,7 +17,7 @@ spec:
         - name: github-pull-secret
       containers:
         - name: worker
-          image: ghcr.io/vanguard-enterprise/rustlens-agent-worker:282abe5a2eb9c3b1de04d9c521bc82f67b5d221f
+          image: ghcr.io/vanguard-enterprise/rustlens-agent-worker:c0c3cb635f61fe2a5674ff5c75edc4e880e27329
           envFrom:
             - secretRef:
                 name: rustlens-secrets
@@ -25,6 +25,9 @@ spec:
             - name: worker-config
               mountPath: /app/config.json
               subPath: config.json
+            - name: worker-config
+              mountPath: /app/identity.json
+              subPath: identity.json
           resources:
             requests:
               memory: "128Mi"

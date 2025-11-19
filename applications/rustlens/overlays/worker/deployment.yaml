@@ -21,13 +21,6 @@ spec:
           envFrom:
             - secretRef:
                 name: rustlens-secrets
-          volumeMounts:
-            - name: worker-config
-              mountPath: /app/config.json
-              subPath: config.json
-            - name: worker-identity
-              mountPath: /app/identity.json
-              subPath: identity.json
           resources:
             requests:
               memory: "128Mi"
@@ -35,34 +28,3 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "200m"
-      volumes:
-        - name: worker-config
-          persistentVolumeClaim:
-            claimName: worker-config-pvc
-        - name: worker-identity
-          persistentVolumeClaim:
-            claimName: worker-identity-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: worker-config-pvc
-  namespace: rustlens
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 8Mi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: worker-identity-pvc
-  namespace: rustlens
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 8Mi

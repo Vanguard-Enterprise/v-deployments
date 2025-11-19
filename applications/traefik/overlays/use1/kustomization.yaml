@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../../base
   - default-store.yaml
+  - rustlens-store.yaml
 helmCharts:
   - name: traefik
     version: "37.3.0"

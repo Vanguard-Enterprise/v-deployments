@@ -19,3 +19,4 @@ spec:
           dnsZones:
             - "vngenterprise.com"
             - "vng.bet"
+            - "rustlens.com"

@@ -19,7 +19,7 @@ spec:
         - name: master
           ports:
             - containerPort: 4000
-          image: ghcr.io/vanguard-enterprise/rustlens-agent-master:eda26bbc1da27e3cad52f2a047c819c8959af985
+          image: ghcr.io/vanguard-enterprise/rustlens-agent-master:3e3b3369f665f2b3d065adbe377086e4c9f7d6d5
           envFrom:
             - secretRef:
                 name: rustlens-secrets

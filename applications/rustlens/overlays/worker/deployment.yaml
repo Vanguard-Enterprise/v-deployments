@@ -17,7 +17,7 @@ spec:
         - name: github-pull-secret
       containers:
         - name: worker
-          image: ghcr.io/vanguard-enterprise/rustlens-agent-worker:cb9c0882f4a54804405a5cdb341cc94e28261ffd
+          image: ghcr.io/vanguard-enterprise/rustlens-agent-worker:64018b90e936f6d7adf41188828b4055944d6e9a
           envFrom:
             - secretRef:
                 name: rustlens-secrets

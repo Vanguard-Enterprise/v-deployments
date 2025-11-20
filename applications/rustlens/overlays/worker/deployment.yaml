@@ -4,7 +4,7 @@ metadata:
   name: worker
   namespace: rustlens
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: worker
@@ -17,7 +17,7 @@ spec:
         - name: github-pull-secret
       containers:
         - name: worker
-          image: ghcr.io/vanguard-enterprise/rustlens-agent-worker:64018b90e936f6d7adf41188828b4055944d6e9a
+          image: ghcr.io/vanguard-enterprise/rustlens-agent-worker:ef227f120e86a01f61250786fdccffa6687506ff
           envFrom:
             - secretRef:
                 name: rustlens-secrets

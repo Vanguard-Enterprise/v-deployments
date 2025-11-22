@@ -4,6 +4,9 @@ resources:
   - ../../base
   - default-store.yaml
   - rustlens-store.yaml
+  - mimir-oauth2-proxy-secret.yaml
+  - mimir-oauth2-proxy.yaml
+  - mimir-oauth2-proxy-route.yaml
 helmCharts:
   - name: traefik
     version: "37.3.0"

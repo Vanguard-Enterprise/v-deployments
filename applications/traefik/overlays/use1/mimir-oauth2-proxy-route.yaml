@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mimir-oauth2-proxy
+  namespace: traefik
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`mimir.vngenterprise.com`) && PathPrefix(`/oauth2`)
+      kind: Rule
+      services:
+        - name: mimir-oauth2-proxy
+          port: 4180
+  tls:
+    store:
+      name: default
+      namespace: traefik

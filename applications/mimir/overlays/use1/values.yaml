@@ -1,0 +1,41 @@
+minio:
+  enabled: false
+vaultAgent:
+  enabled: false
+alertmanager:
+  enabled: false
+gateway:
+  enabled: false
+store_gateway:
+  zoneAwareReplication:
+    enabled: false
+mimir:
+  structuredConfig:
+    common:
+      storage:
+        backend: s3
+        s3:
+          bucket_name: "${RULER_BUCKET_NAME}"
+          endpoint: "${BUCKET_ENDPOINT}"
+          insecure: "false"
+          access_key_id: "${AWS_ACCESS_KEY_ID}"
+          secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
+    tenant_federation:
+      enabled: true
+    blocks_storage:
+      bucket_name: "${TSDB_BUCKET_NAME}"
+    alertmanager_storage:
+      bucket_name: "${RULER_BUCKET_NAME}"
+    ruler_storage:
+      bucket_name: "${RULER_BUCKET_NAME}"
+ingester:
+  replicas: 2
+  statefulSet:
+    enabled: true
+  persistentVolume:
+    size: 2Gi
+    storageClass: "longhorn"
+global:
+  extraEnvFrom:
+    - secretRef:
+        name: mimir-global-env

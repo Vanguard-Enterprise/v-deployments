@@ -2,3 +2,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
+  - https://raw.githubusercontent.com/grafana/helm-charts/refs/heads/main/charts/rollout-operator/crds/zone-aware-pod-disruption-budget-custom-resource-definition.yaml
+  - https://raw.githubusercontent.com/grafana/helm-charts/refs/heads/main/charts/rollout-operator/crds/replica-templates-custom-resource-definition.yaml

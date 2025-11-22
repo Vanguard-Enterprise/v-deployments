@@ -17,7 +17,7 @@ mimir:
         s3:
           bucket_name: "${RULER_BUCKET_NAME}"
           endpoint: "${BUCKET_ENDPOINT}"
-          insecure: "false"
+          insecure: false
           access_key_id: "${AWS_ACCESS_KEY_ID}"
           secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
     tenant_federation:

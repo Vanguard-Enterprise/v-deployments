@@ -9,8 +9,8 @@ gateway:
 store_gateway:
   zoneAwareReplication:
     enabled: false
-#kafka:
-#  enabled: false
+kafka:
+  enabled: false
 mimir:
   structuredConfig:
     common:
@@ -33,10 +33,10 @@ mimir:
     ruler_storage:
       s3:
         bucket_name: "${RULER_BUCKET_NAME}"
-#    ingest_storage:
-#      enabled: false
-#    ingester:
-#      push_grpc_method_enabled: true
+    ingest_storage:
+      enabled: false
+    ingester:
+      push_grpc_method_enabled: true
 ingester:
   replicas: 2
   statefulSet:

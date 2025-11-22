@@ -35,6 +35,8 @@ ingester:
   persistentVolume:
     size: 2Gi
     storageClass: "longhorn"
+  zoneAwareReplication:
+    enabled: false
 global:
   extraEnvFrom:
     - secretRef:

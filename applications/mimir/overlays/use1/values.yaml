@@ -23,11 +23,14 @@ mimir:
     tenant_federation:
       enabled: true
     blocks_storage:
-      bucket_name: "${TSDB_BUCKET_NAME}"
+      s3:
+        bucket_name: "${TSDB_BUCKET_NAME}"
     alertmanager_storage:
-      bucket_name: "${RULER_BUCKET_NAME}"
+      s3:
+        bucket_name: "${RULER_BUCKET_NAME}"
     ruler_storage:
-      bucket_name: "${RULER_BUCKET_NAME}"
+      s3:
+        bucket_name: "${RULER_BUCKET_NAME}"
 ingester:
   replicas: 2
   statefulSet:

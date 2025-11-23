@@ -1,2 +1,6 @@
 crds:
   create: false
+monitoring:
+  podMonitorEnabled: true
+  podMonitorAdditionalLabels:
+    instance: primary

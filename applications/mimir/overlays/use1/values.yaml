@@ -11,7 +11,8 @@ store_gateway:
     enabled: false
 kafka:
   persistence:
-    size: 20Gi
+    enabled: true
+    size: 5Gi
 mimir:
   structuredConfig:
     common:

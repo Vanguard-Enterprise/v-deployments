@@ -18,49 +18,70 @@ data:
       role = "node"
     }
 
-    discovery.relabel "kubelet_targets" {
-      targets = discovery.kubernetes.nodes.targets
-
-      rule {
-        source_labels = ["__meta_kubernetes_node_address_InternalIP"]
-        target_label  = "__address__"
-        replacement   = "$1:10250"
-      }
-
-      rule {
-        source_labels = ["__meta_kubernetes_node_name"]
-        target_label  = "node"
-      }
-    }
-
     prometheus.scrape "kubelet" {
-      targets         = discovery.relabel.kubelet_targets.output
+      targets         = discovery.kubernetes.nodes.targets
       scrape_interval = "30s"
       scheme          = "https"
-      metrics_path    = "/metrics"
 
+      # Talk to kube-apiserver and let it proxy to kubelet
       tls_config {
-        ca_file     = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-        server_name = "kubernetes"
+        ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
       }
 
       bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+      relabel_configs {
+        # Send all requests to the apiserver service
+        rule {
+          target_label = "__address__"
+          replacement  = "kubernetes.default.svc:443"
+        }
+
+        # Use node name to build the kubelet proxy path
+        rule {
+          source_labels = ["__meta_kubernetes_node_name"]
+          target_label  = "__metrics_path__"
+          replacement   = "/api/v1/nodes/$1/proxy/metrics"
+        }
+
+        # Optional: map node labels into Prometheus labels
+        rule {
+          action = "labelmap"
+          regex  = "__meta_kubernetes_node_label_(.+)"
+        }
+      }
 
       forward_to = [prometheus.remote_write.mimir.receiver]
     }
 
-    prometheus.scrape "cadvisor" {
-      targets         = discovery.relabel.kubelet_targets.output
+    prometheus.scrape "kubelet_cadvisor" {
+      targets         = discovery.kubernetes.nodes.targets
       scrape_interval = "30s"
       scheme          = "https"
-      metrics_path    = "/metrics/cadvisor"
 
       tls_config {
-        ca_file     = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-        server_name = "kubernetes"
+        ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
       }
 
       bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+      relabel_configs {
+        rule {
+          target_label = "__address__"
+          replacement  = "kubernetes.default.svc:443"
+        }
+
+        rule {
+          source_labels = ["__meta_kubernetes_node_name"]
+          target_label  = "__metrics_path__"
+          replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
+        }
+
+        rule {
+          action = "labelmap"
+          regex  = "__meta_kubernetes_node_label_(.+)"
+        }
+      }
 
       forward_to = [prometheus.remote_write.mimir.receiver]
     }

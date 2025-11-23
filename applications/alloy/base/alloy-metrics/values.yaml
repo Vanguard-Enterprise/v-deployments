@@ -3,3 +3,46 @@ alloy:
     create: false
     name: alloy-config
     key: config.alloy
+
+rbac:
+  create: true
+  rules:
+    - apiGroups: ["", "discovery.k8s.io", "networking.k8s.io"]
+      resources: ["endpoints", "endpointslices", "ingresses", "pods", "services"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["pods", "pods/log", "namespaces"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["monitoring.grafana.com"]
+      resources: ["podlogs"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["monitoring.coreos.com"]
+      resources: ["prometheusrules"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["monitoring.coreos.com"]
+      resources: ["podmonitors", "servicemonitors", "probes", "scrapeconfigs"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["events"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["configmaps", "secrets"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["apps", "extensions"]
+      resources: ["replicasets"]
+      verbs: ["get", "list", "watch"]
+
+  clusterRules:
+    - apiGroups: [""]
+      resources: ["nodes", "nodes/proxy", "nodes/metrics", "nodes/stats"]
+      verbs: ["get", "list", "watch"]
+    - nonResourceURLs: ["/metrics"]
+      verbs: ["get"]
+
+serviceAccount:
+  create: true
+  name: alloy-metrics
+  automountServiceAccountToken: true
+
+controller:
+  type: 'daemonset'

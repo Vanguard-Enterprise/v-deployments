@@ -38,7 +38,7 @@ mimir:
     ingester:
       push_grpc_method_enabled: true
 ingester:
-  replicas: 2
+  replicas: 1
   statefulSet:
     enabled: true
   persistentVolume:

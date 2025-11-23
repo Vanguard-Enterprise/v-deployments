@@ -20,18 +20,15 @@ data:
 
     discovery.relabel "kubelet" {
       targets = discovery.kubernetes.nodes.targets
-
       rule {
         target_label = "__address__"
         replacement  = "kubernetes.default.svc:443"
       }
-
       rule {
         source_labels = ["__meta_kubernetes_node_name"]
         target_label  = "__metrics_path__"
         replacement   = "/api/v1/nodes/$1/proxy/metrics"
       }
-
       rule {
         action = "labelmap"
         regex  = "__meta_kubernetes_node_label_(.+)"
@@ -40,35 +37,36 @@ data:
 
     discovery.relabel "kubelet_cadvisor" {
       targets = discovery.kubernetes.nodes.targets
-
       rule {
         target_label = "__address__"
         replacement  = "kubernetes.default.svc:443"
       }
-
       rule {
         source_labels = ["__meta_kubernetes_node_name"]
         target_label  = "__metrics_path__"
         replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
       }
-
       rule {
         action = "labelmap"
         regex  = "__meta_kubernetes_node_label_(.+)"
       }
     }
 
+    discovery.kubernetes "ksm" {
+      role = "service"
+      selectors = [
+        { label = "app.kubernetes.io/name", value = "kube-state-metrics" },
+      ]
+    }
+
     prometheus.scrape "kubelet" {
       targets         = discovery.relabel.kubelet.output
       scrape_interval = "30s"
       scheme          = "https"
-
+      bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
       tls_config {
         ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
       }
-
-      bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-
       forward_to = [prometheus.remote_write.mimir.receiver]
     }
 
@@ -76,28 +74,31 @@ data:
       targets         = discovery.relabel.kubelet_cadvisor.output
       scrape_interval = "30s"
       scheme          = "https"
-
+      
+      job_name        = "kubelet" 
+      
+      bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
       tls_config {
         ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
       }
-
-      bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-
       forward_to = [prometheus.remote_write.mimir.receiver]
+    }
+
+    prometheus.scrape "ksm" {
+      targets         = discovery.kubernetes.ksm.targets
+      scrape_interval = "30s"
+      job_name        = "kube-state-metrics"
+      forward_to      = [prometheus.remote_write.mimir.receiver]
     }
 
     prometheus.operator.podmonitors "primary" {
       forward_to = [prometheus.remote_write.mimir.receiver]
-      selector {
-        match_labels = { instance = "primary" }
-      }
+      selector { match_labels = { instance = "primary" } }
     }
 
     prometheus.operator.servicemonitors "primary" {
       forward_to = [prometheus.remote_write.mimir.receiver]
-      selector {
-        match_labels = { instance = "primary" }
-      }
+      selector { match_labels = { instance = "primary" } }
     }
 
     mimir.rules.kubernetes "pods" {
@@ -105,14 +106,9 @@ data:
       tenant_id = "pods"
 
       rule_namespace_selector {
-        match_labels = {
-          alloy_rules = "pods",
-        }
+        match_labels = { alloy_rules = "pods" }
       }
-
       rule_selector {
-        match_labels = {
-          alloy_rules = "pods",
-        }
+        match_labels = { alloy_rules = "pods" }
       }
     }

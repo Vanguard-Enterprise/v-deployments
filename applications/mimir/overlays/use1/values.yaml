@@ -9,12 +9,6 @@ gateway:
 store_gateway:
   zoneAwareReplication:
     enabled: false
-kafka:
-  enabled: false
-querier:
-  replicas: 1
-query_scheduler:
-  replicas: 1
 mimir:
   structuredConfig:
     common:

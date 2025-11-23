@@ -5,7 +5,7 @@ vaultAgent:
 alertmanager:
   enabled: false
 gateway:
-  enabled: false
+  enabled: true
 store_gateway:
   zoneAwareReplication:
     enabled: false

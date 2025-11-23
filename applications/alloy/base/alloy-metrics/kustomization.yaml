@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - configmap.yaml
+  - prometheusrule.yaml
 helmCharts:
   - name: alloy
     version: 1.4.0

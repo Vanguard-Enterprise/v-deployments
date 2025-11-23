@@ -99,3 +99,20 @@ data:
         match_labels = { instance = "primary" }
       }
     }
+
+    mimir.rules.kubernetes "pods" {
+      address   = "http://mimir-ruler.mimir.svc.cluster.local:8080"
+      tenant_id = "pods"
+
+      rule_namespace_selector {
+        match_labels = {
+          alloy_rules = "pods",
+        }
+      }
+
+      rule_selector {
+        match_labels = {
+          alloy_rules = "pods",
+        }
+      }
+    }

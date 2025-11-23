@@ -11,6 +11,10 @@ store_gateway:
     enabled: false
 kafka:
   enabled: false
+querier:
+  replicas: 1
+query_scheduler:
+  replicas: 1
 mimir:
   structuredConfig:
     common:
@@ -38,7 +42,6 @@ mimir:
     ingester:
       push_grpc_method_enabled: true
 ingester:
-  replicas: 1
   statefulSet:
     enabled: true
   persistentVolume:

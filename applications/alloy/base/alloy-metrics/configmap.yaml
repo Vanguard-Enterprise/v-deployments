@@ -54,9 +54,10 @@ data:
 
     discovery.kubernetes "ksm" {
       role = "service"
-      selectors = [
-        { label = "app.kubernetes.io/name", value = "kube-state-metrics" },
-      ]
+      selectors {
+        role  = "service"
+        label = "app.kubernetes.io/name=kube-state-metrics"
+      }
     }
 
     prometheus.scrape "kubelet" {
@@ -74,9 +75,7 @@ data:
       targets         = discovery.relabel.kubelet_cadvisor.output
       scrape_interval = "30s"
       scheme          = "https"
-      
       job_name        = "kubelet" 
-      
       bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
       tls_config {
         ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
@@ -104,7 +103,6 @@ data:
     mimir.rules.kubernetes "pods" {
       address   = "http://mimir-ruler.mimir.svc.cluster.local:8080"
       tenant_id = "pods"
-
       rule_namespace_selector {
         match_labels = { alloy_rules = "pods" }
       }

@@ -9,6 +9,9 @@ gateway:
 store_gateway:
   zoneAwareReplication:
     enabled: false
+kafka:
+  persistence:
+    size: 20Gi
 mimir:
   structuredConfig:
     common:

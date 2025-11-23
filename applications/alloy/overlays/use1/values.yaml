@@ -6,7 +6,7 @@ alloy:
 
 rbac:
   create: true
-  rules: []
+  #rules: []
   clusterRules:
     - apiGroups: ["", "discovery.k8s.io", "networking.k8s.io"]
       resources: ["endpoints", "endpointslices", "ingresses", "pods", "services", "namespaces", "nodes", "nodes/proxy", "nodes/metrics", "nodes/stats", "configmaps", "secrets", "events"]

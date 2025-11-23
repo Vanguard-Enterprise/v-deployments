@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: kube-container-cpu
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: "pods"
+spec:
+  groups:
+  - name: kubernetes-apps
+    rules:
+    - record: node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate
+      expr: |
+        sum by (namespace, pod, container) (
+          rate(container_cpu_usage_seconds_total{image!=""}[5m])
+        )

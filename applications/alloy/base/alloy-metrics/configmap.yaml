@@ -13,15 +13,68 @@ data:
         }
       }
     }
-    prometheus.operator.podmonitors "primary" {
-    forward_to = [prometheus.remote_write.mimir.receiver]
-    selector {
-        match_labels = {instance = "primary"}
-       }
+
+    discovery.kubernetes "nodes" {
+      role = "node"
     }
+
+    discovery.relabel "kubelet_targets" {
+      targets = discovery.kubernetes.nodes.targets
+
+      rule {
+        source_labels = ["__meta_kubernetes_node_address_InternalIP"]
+        target_label  = "__address__"
+        replacement   = "$1:10250"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_node_name"]
+        target_label  = "node"
+      }
+    }
+
+    prometheus.scrape "kubelet" {
+      targets         = discovery.relabel.kubelet_targets.output
+      scrape_interval = "30s"
+      scheme          = "https"
+      metrics_path    = "/metrics"
+
+      tls_config {
+        ca_file     = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+        server_name = "kubernetes"
+      }
+
+      bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+      forward_to = [prometheus.remote_write.mimir.receiver]
+    }
+
+    prometheus.scrape "cadvisor" {
+      targets         = discovery.relabel.kubelet_targets.output
+      scrape_interval = "30s"
+      scheme          = "https"
+      metrics_path    = "/metrics/cadvisor"
+
+      tls_config {
+        ca_file     = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+        server_name = "kubernetes"
+      }
+
+      bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+      forward_to = [prometheus.remote_write.mimir.receiver]
+    }
+
+    prometheus.operator.podmonitors "primary" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
+      selector {
+        match_labels = { instance = "primary" }
+      }
+    }
+
     prometheus.operator.servicemonitors "primary" {
-    forward_to = [prometheus.remote_write.mimir.receiver]
-    selector {
-        match_labels = {instance = "primary"}
-       }
+      forward_to = [prometheus.remote_write.mimir.receiver]
+      selector {
+        match_labels = { instance = "primary" }
+      }
     }

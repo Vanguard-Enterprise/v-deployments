@@ -51,7 +51,7 @@ ingester:
   statefulSet:
     enabled: true
   persistentVolume:
-    size: 2Gi
+    size: 12Gi
     storageClass: "longhorn"
   zoneAwareReplication:
     enabled: false

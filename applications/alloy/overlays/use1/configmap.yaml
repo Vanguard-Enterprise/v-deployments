@@ -51,7 +51,11 @@ data:
         regex  = "__meta_kubernetes_node_label_(.+)"
       }
     }
-
+      rule {
+        target_label = "metrics_path"
+        replacement  = "/metrics/cadvisor"
+      }
+    }
     discovery.kubernetes "ksm" {
       role = "service"
       selectors {

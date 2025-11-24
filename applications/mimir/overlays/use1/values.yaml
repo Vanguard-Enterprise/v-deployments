@@ -42,6 +42,8 @@ mimir:
       backend: s3
       s3:
         bucket_name: "${RULER_BUCKET_NAME}"
+    ingest_storage:
+      enabled: false
 
 ingester:
   statefulSet:

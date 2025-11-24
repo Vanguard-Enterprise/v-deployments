@@ -1,16 +1,22 @@
 minio:
   enabled: false
+
 vaultAgent:
   enabled: false
+
 alertmanager:
   enabled: false
+
 gateway:
   enabled: true
+
 store_gateway:
   zoneAwareReplication:
     enabled: false
+
 kafka:
   enabled: false
+
 mimir:
   structuredConfig:
     common:
@@ -36,6 +42,7 @@ mimir:
       backend: s3
       s3:
         bucket_name: "${RULER_BUCKET_NAME}"
+
 ingester:
   statefulSet:
     enabled: true
@@ -44,6 +51,7 @@ ingester:
     storageClass: "longhorn"
   zoneAwareReplication:
     enabled: false
+
 global:
   extraEnvFrom:
     - secretRef:

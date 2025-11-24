@@ -50,12 +50,14 @@ data:
         action = "labelmap"
         regex  = "__meta_kubernetes_node_label_(.+)"
       }
-    }
+      
+      # This rule is now correctly INSIDE the block
       rule {
         target_label = "metrics_path"
         replacement  = "/metrics/cadvisor"
       }
     }
+
     discovery.kubernetes "ksm" {
       role = "service"
       selectors {

@@ -2,7 +2,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: rustlens
-  namespace: rustlens
+  namespace: rustlens-db
 spec:
   instances: 3
   primaryUpdateStrategy: unsupervised

@@ -27,8 +27,8 @@ spec:
     topologyKey: kubernetes.io/hostname
   backup:
     barmanObjectStore:
-      destinationPath: s3://your-backup-bucket-name/rustlens/
-      endpointURL: https://s3.us-east-1.amazonaws.com
+      destinationPath: s3://rustlens-production/rustlens/
+      endpointURL: https://s3.wasabisys.com
       s3Credentials:
         accessKeyId:
           name: rustlens-secrets

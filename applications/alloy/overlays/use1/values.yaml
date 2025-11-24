@@ -3,7 +3,9 @@ alloy:
     create: false
     name: alloy-config
     key: config.alloy
-
+  clustering:
+    enabled: true
+    portName: http
 rbac:
   create: true
   #rules: []

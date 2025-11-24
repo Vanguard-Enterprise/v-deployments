@@ -44,6 +44,8 @@ mimir:
         bucket_name: "${RULER_BUCKET_NAME}"
     ingest_storage:
       enabled: false
+    ingester:
+      push_grpc_method_enabled: true
 
 ingester:
   statefulSet:

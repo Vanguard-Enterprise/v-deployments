@@ -5,3 +5,4 @@ resources:
   - cluster.yaml
   - poolers.yaml
   - external-secrets.yaml
+  - podmonitor.yaml

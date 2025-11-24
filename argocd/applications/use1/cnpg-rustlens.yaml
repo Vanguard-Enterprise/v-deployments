@@ -11,7 +11,7 @@ spec:
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: rustlens
+    namespace: rustlens-db
   syncPolicy:
     automated:
       prune: true

@@ -2,7 +2,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Pooler
 metadata:
   name: rustlens-rw
-  namespace: rustlens
+  namespace: rustlens-db
 spec:
   cluster:
     name: rustlens
@@ -18,7 +18,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Pooler
 metadata:
   name: rustlens-ro
-  namespace: rustlens
+  namespace: rustlens-db
 spec:
   cluster:
     name: rustlens

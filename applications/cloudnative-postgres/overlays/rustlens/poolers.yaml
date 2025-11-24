@@ -1,0 +1,31 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: rustlens-rw
+  namespace: rustlens
+spec:
+  cluster:
+    name: rustlens
+  instances: 2
+  type: rw
+  pgbouncer:
+    poolMode: session
+    parameters:
+      max_client_conn: "1000"
+      default_pool_size: "20"
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: rustlens-ro
+  namespace: rustlens
+spec:
+  cluster:
+    name: rustlens
+  instances: 2
+  type: ro
+  pgbouncer:
+    poolMode: session
+    parameters:
+      max_client_conn: "1000"
+      default_pool_size: "20"

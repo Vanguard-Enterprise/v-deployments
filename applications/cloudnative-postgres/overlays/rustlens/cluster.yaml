@@ -1,0 +1,40 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: rustlens
+  namespace: rustlens
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: rustlens
+      owner: rustlens_user
+      secret:
+        name: rustlens-secrets
+  storage:
+    size: 20Gi
+    storageClass: longhorn
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://your-backup-bucket-name/rustlens/
+      endpointURL: https://s3.us-east-1.amazonaws.com
+      s3Credentials:
+        accessKeyId:
+          name: rustlens-secrets
+          key: S3_ACCESS_KEY_ID
+        secretAccessKey:
+          name: rustlens-secrets
+          key: S3_SECRET_ACCESS_KEY
+      wal:
+        compression: gzip

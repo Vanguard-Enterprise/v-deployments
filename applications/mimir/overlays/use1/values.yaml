@@ -25,12 +25,15 @@ mimir:
     tenant_federation:
       enabled: true
     blocks_storage:
+      backend: s3
       s3:
         bucket_name: "${TSDB_BUCKET_NAME}"
     alertmanager_storage:
+      backend: s3
       s3:
         bucket_name: "${RULER_BUCKET_NAME}"
     ruler_storage:
+      backend: s3
       s3:
         bucket_name: "${RULER_BUCKET_NAME}"
 ingester:

@@ -1,17 +1,21 @@
 apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+kind: PodMonitor
 metadata:
-  name: longhorn-monitor
+  name: longhorn-csi-monitor
   namespace: longhorn-system
   labels:
     instance: primary
 spec:
   selector:
-    matchLabels:
-      app: longhorn-manager
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - longhorn-csi-plugin
   namespaceSelector:
     matchNames:
       - longhorn-system
-  endpoints:
-    - port: manager
+  podMetricsEndpoints:
+    - port: http
+      targetPort: 8000
       path: /metrics

@@ -1,7 +1,7 @@
 datasources:
   datasources.yaml:
     datasources:
-      - name: Mimir-Pods-Tenant
+      - name: Mimir-VANGUARD-Tenant
         type: prometheus
         access: proxy
         orgId: 1
@@ -14,18 +14,6 @@ datasources:
           alertmanagerUid: "alertmanager"
         secureJsonData:
           httpHeaderValue1: "pods"
-      - name: Mimir-Nodes-Tenant
-        type: prometheus
-        access: proxy
-        orgId: 1
-        url: http://mimir-gateway.mimir.svc.cluster.local/prometheus
-        version: 1
-        editable: true
-        jsonData:
-          httpHeaderName1: "X-Scope-OrgID"
-          alertmanagerUid: "alertmanager"
-        secureJsonData:
-          httpHeaderValue1: "nodes"
 persistence:
   storageClassName: longhorn
   enabled: true

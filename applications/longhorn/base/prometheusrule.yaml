@@ -1,0 +1,50 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: longhorn-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: longhorn.rules
+      rules:
+        - alert: LonghornVolumeUsageCritical
+          annotations:
+            description: Longhorn volume {{$labels.volume}} on {{$labels.node}} is at {{$value}}% used for more than 5 minutes.
+            summary: Longhorn volume capacity is over 90% used.
+          expr: 100 * (longhorn_volume_usage_bytes / longhorn_volume_capacity_bytes) > 90
+          for: 5m
+          labels:
+            severity: critical
+            issue: Longhorn volume usage critical
+        
+        - alert: LonghornVolumeStatusCritical
+          annotations:
+            description: Longhorn volume {{$labels.volume}} on {{$labels.node}} is Faulted.
+            summary: Longhorn volume {{$labels.volume}} is Faulted.
+          expr: longhorn_volume_robustness == 3
+          for: 2m
+          labels:
+            severity: critical
+            issue: Longhorn volume fault
+            
+        - alert: LonghornVolumeStatusWarning
+          annotations:
+            description: Longhorn volume {{$labels.volume}} on {{$labels.node}} is Degraded.
+            summary: Longhorn volume {{$labels.volume}} is Degraded.
+          expr: longhorn_volume_robustness == 2
+          for: 5m
+          labels:
+            severity: warning
+            issue: Longhorn volume degraded
+
+        - alert: LonghornNodeDown
+          annotations:
+            description: There are {{$value}} Longhorn nodes offline.
+            summary: Longhorn nodes are offline.
+          expr: (avg(longhorn_node_count_total) or on() vector(0)) - (count(longhorn_node_status{condition="ready"} == 1) or on() vector(0)) > 0
+          for: 5m
+          labels:
+            severity: critical
+            issue: Longhorn node offline

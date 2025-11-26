@@ -30,7 +30,7 @@ ports:
       enabled: true
   metrics:
     port: 9100
-    expose: 
+    expose:
       default: true
     exposedPort: 9100
     protocol: TCP

@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - ../../base
   - vault.vngenterprise.com.yaml
+  - servicemonitor.yaml
+  - prometheusrule.yaml
 helmCharts:
   - name: vault
     version: "0.31.0"

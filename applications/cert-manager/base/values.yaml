@@ -10,3 +10,14 @@ podDnsConfig:
   nameservers:
     - 1.1.1.1
     - 9.9.9.9
+
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+    namespace: cert-manager
+    labels:
+      instance: primary
+    interval: 60s
+    scrapeTimeout: 30s
+    path: /metrics

@@ -1,0 +1,43 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cert-manager-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: cert-manager
+      rules:
+        - alert: CertManagerAbsent
+          annotations:
+            description: New certificates cannot be generated. Service cert-manager is down.
+            summary: Cert Manager is down
+          expr: absent(up{job="cert-manager"})
+          for: 10m
+          labels:
+            severity: critical
+
+        - alert: CertManagerCertExpiringSoon
+          annotations:
+            description: The certificate {{ $labels.name }} in namespace {{ $labels.exported_namespace }} is expiring in less than 7 days.
+            summary: Certificate is expiring soon
+          expr: |
+            avg by (exported_namespace, namespace, name) (
+              certmanager_certificate_expiration_timestamp_seconds - time()
+            ) < (7 * 24 * 3600)
+          for: 1h
+          labels:
+            severity: warning
+
+        - alert: CertManagerCertNotReady
+          annotations:
+            description: The certificate {{ $labels.name }} in namespace {{ $labels.exported_namespace }} has not been ready for 10 minutes.
+            summary: Certificate is not ready
+          expr: |
+            max by (name, exported_namespace, namespace, condition) (
+              certmanager_certificate_ready_status{condition="False"}
+            ) == 1
+          for: 10m
+          labels:
+            severity: critical

@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: metallb-monitor
+  namespace: metallb-system
+  labels:
+    instance: primary
+    app: metallb
+spec:
+  selector:
+    matchLabels:
+      app: metallb
+  namespaceSelector:
+    matchNames:
+      - metallb-system
+  endpoints:
+    - port: monitoring
+      interval: 30s
+      path: /metrics
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: instance
+          action: replace
+    - port: frr-metrics
+      interval: 30s
+      path: /metrics
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: instance
+          action: replace

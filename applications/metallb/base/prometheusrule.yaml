@@ -1,0 +1,37 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: metallb-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: metallb.rules
+      rules:
+        - alert: MetalLBConfigNotLoaded
+          annotations:
+            description: MetalLB configuration is invalid or not loaded on {{ $labels.instance }}.
+            summary: MetalLB config invalid
+          expr: metallb_k8s_client_config_loaded_bool == 0
+          for: 1m
+          labels:
+            severity: critical
+
+        - alert: MetalLBAddressPoolExhausted
+          annotations:
+            description: IP Address pool {{ $labels.pool }} is 100% full.
+            summary: MetalLB pool exhausted
+          expr: metallb_allocator_addresses_in_use_total / metallb_allocator_addresses_total >= 1
+          for: 1m
+          labels:
+            severity: critical
+
+        - alert: MetalLBAddressPoolHigh
+          annotations:
+            description: IP Address pool {{ $labels.pool }} is >90% full.
+            summary: MetalLB pool running low
+          expr: metallb_allocator_addresses_in_use_total / metallb_allocator_addresses_total >= 0.9
+          for: 5m
+          labels:
+            severity: warning

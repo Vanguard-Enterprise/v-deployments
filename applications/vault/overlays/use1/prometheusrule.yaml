@@ -1,0 +1,37 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: vault-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: vault.rules
+      rules:
+        - alert: VaultSealed
+          annotations:
+            description: Vault instance {{ $labels.instance }} is sealed.
+            summary: Vault is sealed
+          expr: vault_core_unsealed == 0
+          for: 0m
+          labels:
+            severity: critical
+
+        - alert: VaultHighErrorRate
+          annotations:
+            description: High error rate on Vault instance {{ $labels.instance }}
+            summary: Vault has a high error rate
+          expr: rate(vault_core_handle_request_count{success="false"}[5m]) / rate(vault_core_handle_request_count[5m]) > 0.1
+          for: 5m
+          labels:
+            severity: warning
+
+        - alert: VaultNotReady
+          annotations:
+            description: Vault instance {{ $labels.instance }} is not ready (initialized=0 or unsealed=0 or standby=1)
+            summary: Vault instance is not ready to serve requests
+          expr: up{job="vault"} == 0
+          for: 5m
+          labels:
+            severity: critical

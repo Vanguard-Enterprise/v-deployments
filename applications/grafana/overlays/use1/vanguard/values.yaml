@@ -1,7 +1,7 @@
 datasources:
   datasources.yaml:
     datasources:
-      - name: Mimir-VANGUARD-Tenant
+      - name: Mimir-Pods-Tenant
         type: prometheus
         access: proxy
         orgId: 1

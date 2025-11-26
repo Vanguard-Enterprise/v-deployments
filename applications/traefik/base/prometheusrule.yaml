@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: traefik-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: traefik.rules
+      rules:
+        - alert: TraefikHighHttp4xxErrorRate
+          annotations:
+            description: Traefik {{ $labels.service }} 4xx error rate is above 5% for the last 5 minutes.
+            summary: Traefik High HTTP 4xx Error Rate
+          expr: sum(rate(traefik_service_requests_total{code=~"4.*"}[5m])) by (service) / sum(rate(traefik_service_requests_total[5m])) by (service) * 100 > 5
+          for: 5m
+          labels:
+            severity: warning
+
+        - alert: TraefikHighHttp5xxErrorRate
+          annotations:
+            description: Traefik {{ $labels.service }} 5xx error rate is above 5% for the last 5 minutes.
+            summary: Traefik High HTTP 5xx Error Rate
+          expr: sum(rate(traefik_service_requests_total{code=~"5.*"}[5m])) by (service) / sum(rate(traefik_service_requests_total[5m])) by (service) * 100 > 5
+          for: 5m
+          labels:
+            severity: critical

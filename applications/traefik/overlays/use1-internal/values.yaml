@@ -5,6 +5,15 @@ additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
   - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+
+metrics:
+  prometheus:
+    enabled: true
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+
 deployment:
   enabled: true
   replicas: 3
@@ -12,12 +21,24 @@ deployment:
   podAnnotations: {}
   additionalContainers: []
   initContainers: []
+
 ports:
   web:
     enabled: true
   websecure:
     tls:
       enabled: true
+  metrics:
+    port: 9100
+    expose: true
+    exposedPort: 9100
+    protocol: TCP
+
+serviceMonitor:
+  enabled: true
+  additionalLabels:
+    instance: primary
+
 providers:
   kubernetesCRD:
     enabled: true
@@ -37,6 +58,6 @@ service:
   annotations: {}
   labels: {}
   spec:
-    loadBalancerIP: 10.1.50.176 # Cluster-specific LB IP for internal class
+    loadBalancerIP: 10.1.50.176
   loadBalancerSourceRanges: []
   externalIPs: []

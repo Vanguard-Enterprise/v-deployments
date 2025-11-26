@@ -16,3 +16,26 @@ resources:
     memory: 128Mi
 
 logLevel: info
+
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 25s
+  additionalLabels:
+    instance: primary
+
+webhook:
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 25s
+    additionalLabels:
+      instance: primary
+
+certController:
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 25s
+    additionalLabels:
+      instance: primary

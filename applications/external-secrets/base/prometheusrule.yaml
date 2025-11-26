@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: external-secrets-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: external-secrets
+      rules:
+        - alert: ExternalSecretSyncError
+          annotations:
+            description: External Secret {{ $labels.name }} in namespace {{ $labels.namespace }} failed to sync.
+            summary: External Secret Sync Failed
+          expr: externalsecret_status_condition{condition="Ready", status="False"} == 1
+          for: 5m
+          labels:
+            severity: critical
+
+        - alert: ClusterSecretStoreNotReady
+          annotations:
+            description: ClusterSecretStore {{ $labels.name }} is not ready.
+            summary: Cluster Secret Store Not Ready
+          expr: clustersecretstore_status_condition{condition="Ready", status="False"} == 1
+          for: 5m
+          labels:
+            severity: critical

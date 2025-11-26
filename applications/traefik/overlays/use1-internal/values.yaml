@@ -13,6 +13,10 @@ metrics:
     addEntryPointsLabels: true
     addRoutersLabels: true
     addServicesLabels: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        instance: primary
 
 deployment:
   enabled: true
@@ -34,11 +38,6 @@ ports:
       default: true
     exposedPort: 9100
     protocol: TCP
-
-serviceMonitor:
-  enabled: true
-  additionalLabels:
-    instance: primary
 
 providers:
   kubernetesCRD:

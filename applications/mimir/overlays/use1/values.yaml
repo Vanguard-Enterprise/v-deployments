@@ -21,7 +21,7 @@ mimir:
   structuredConfig:
     limits:
       compactor_blocks_retention_period: 30d
-      max_total_query_length: 48h
+      max_total_query_length: 72h
     common:
       storage:
         backend: s3
@@ -54,10 +54,15 @@ ingester:
   statefulSet:
     enabled: true
   persistentVolume:
-    size: 12Gi
+    size: 40Gi
     storageClass: "longhorn"
   zoneAwareReplication:
     enabled: false
+
+compactor:
+  persistentVolume:
+    size: 20Gi
+    storageClass: "longhorn"
 
 global:
   extraEnvFrom:

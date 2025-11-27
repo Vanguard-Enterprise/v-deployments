@@ -19,6 +19,9 @@ kafka:
 
 mimir:
   structuredConfig:
+    limits:
+      compactor_blocks_retention_period: 30d
+      max_total_quyery_length: 72h
     common:
       storage:
         backend: s3

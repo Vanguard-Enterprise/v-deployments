@@ -21,7 +21,7 @@ mimir:
   structuredConfig:
     limits:
       compactor_blocks_retention_period: 30d
-      max_total_query_length: 72h
+      max_total_query_length: 48h
     common:
       storage:
         backend: s3

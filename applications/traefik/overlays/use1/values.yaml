@@ -7,12 +7,30 @@ additionalArguments:
   - "--log.level=INFO"
   - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
   - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
-  - "--entryPoints.web-internal.http.redirections.entryPoint.to=websecure-internal"
-  - "--entryPoints.web-internal.http.redirections.entryPoint.scheme=https"
+  - "--entryPoints.web-int.http.redirections.entryPoint.to=websec-int"
+  - "--entryPoints.web-int.http.redirections.entryPoint.scheme=https"
 
 deployment:
   enabled: true
   replicas: 3
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    fsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
 
 ports:
   web:
@@ -20,22 +38,20 @@ ports:
     exposedPort: 80
     expose:
       default: true
-      internal: false
   websecure:
     port: 8443
     exposedPort: 443
     expose:
       default: true
-      internal: false
     tls:
       enabled: true
-  web-internal:
-    port: 8080
+  web-int:
+    port: 8008
     exposedPort: 80
     expose:
       default: false
       internal: true
-  websecure-internal:
+  websec-int:
     port: 8444
     exposedPort: 443
     expose:
@@ -44,29 +60,24 @@ ports:
     tls:
       enabled: true
 
-  metrics:
-    port: 9100
-    expose:
-      default: true
-    exposedPort: 9100
-
 service:
   enabled: true
   type: LoadBalancer
   spec:
     loadBalancerIP: 10.1.50.175
-  
   additionalServices:
     internal:
       type: LoadBalancer
       spec:
         loadBalancerIP: 10.1.50.176
 
+ingressClass:
+  enabled: false
+
 providers:
   kubernetesCRD:
     enabled: true
-    allowCrossNameServices: true
-    ingressClass: "" 
+    allowCrossNamespace: true 
   kubernetesIngress:
     enabled: true
     publishedService:

@@ -4,9 +4,10 @@ resources:
   - ../../base
   - default-store.yaml
   - rustlens-store.yaml
+  - ingressclass.yaml
 helmCharts:
   - name: traefik
-    version: "37.3.0"
+    version: "38.0.1"
     repo: https://helm.traefik.io/traefik
     releaseName: traefik
     valuesFile: values.yaml

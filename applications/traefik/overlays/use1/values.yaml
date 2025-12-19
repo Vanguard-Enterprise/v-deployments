@@ -1,63 +1,82 @@
 globalArguments:
   - "--global.sendanonymoususage=false"
   - "--global.checknewversion=false"
+
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
+  - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
   - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
-
-metrics:
-  prometheus:
-    enabled: true
-    entryPoint: metrics
-    addEntryPointsLabels: true
-    addRoutersLabels: true
-    addServicesLabels: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        instance: primary
+  - "--entryPoints.web-internal.http.redirections.entryPoint.to=websecure-internal"
+  - "--entryPoints.web-internal.http.redirections.entryPoint.scheme=https"
 
 deployment:
   enabled: true
   replicas: 3
-  annotations: {}
-  podAnnotations: {}
-  additionalContainers: []
-  initContainers: []
 
 ports:
   web:
-    enabled: true
+    port: 8000
+    exposedPort: 80
+    expose:
+      default: true
+      internal: false
   websecure:
+    port: 8443
+    exposedPort: 443
+    expose:
+      default: true
+      internal: false
     tls:
       enabled: true
+  web-internal:
+    port: 8080
+    exposedPort: 80
+    expose:
+      default: false
+      internal: true
+  websecure-internal:
+    port: 8444
+    exposedPort: 443
+    expose:
+      default: false
+      internal: true
+    tls:
+      enabled: true
+
   metrics:
     port: 9100
     expose:
       default: true
     exposedPort: 9100
-    protocol: TCP
+
+service:
+  enabled: true
+  type: LoadBalancer
+  spec:
+    loadBalancerIP: 10.1.50.175
+  
+  additionalServices:
+    internal:
+      type: LoadBalancer
+      spec:
+        loadBalancerIP: 10.1.50.176
 
 providers:
   kubernetesCRD:
     enabled: true
     allowCrossNameServices: true
-    ingressClass: traefik-external
-    allowExternalNameServices: true
+    ingressClass: "" 
   kubernetesIngress:
     enabled: true
-    allowExternalNameServices: true
     publishedService:
       enabled: false
-rbac:
-  enabled: true
-service:
-  enabled: true
-  type: LoadBalancer
-  annotations: {}
-  labels: {}
-  spec:
-    loadBalancerIP: 10.1.50.175
-  loadBalancerSourceRanges: []
-  externalIPs: []
+
+metrics:
+  prometheus:
+    enabled: true
+    entryPoint: metrics
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        instance: primary

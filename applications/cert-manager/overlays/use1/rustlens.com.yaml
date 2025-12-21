@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: rustlens
-  namespace: traefik
+  namespace: gloo-system
 spec:
   secretName: rustlens-tls
   issuerRef:

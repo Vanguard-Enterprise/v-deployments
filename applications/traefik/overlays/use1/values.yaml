@@ -1,36 +1,29 @@
 globalArguments:
   - "--global.sendanonymoususage=false"
   - "--global.checknewversion=false"
-
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
-  - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
-  - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
-  - "--entryPoints.web-int.http.redirections.entryPoint.to=websec-int"
-  - "--entryPoints.web-int.http.redirections.entryPoint.scheme=https"
+
+metrics:
+  prometheus:
+    enabled: true
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        instance: primary
 
 deployment:
   enabled: true
   replicas: 3
-  podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 65532
-    runAsGroup: 65532
-    fsGroup: 65532
-    seccompProfile:
-      type: RuntimeDefault
-  containerSecurityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 65532
-    runAsGroup: 65532
-    seccompProfile:
-      type: RuntimeDefault
+  annotations: {}
+  podAnnotations: {}
+  additionalContainers: []
+  initContainers: []
 
 ports:
   web:
@@ -38,6 +31,10 @@ ports:
     exposedPort: 80
     expose:
       default: true
+    redirections:
+      entryPoint:
+        to: websecure
+        scheme: https
   websecure:
     port: 8443
     exposedPort: 443
@@ -45,49 +42,32 @@ ports:
       default: true
     tls:
       enabled: true
-  web-int:
-    port: 8008
-    exposedPort: 80
+  metrics:
+    port: 9100
     expose:
-      default: false
-      internal: true
-  websec-int:
-    port: 8444
-    exposedPort: 443
-    expose:
-      default: false
-      internal: true
-    tls:
-      enabled: true
-
-service:
-  enabled: true
-  type: LoadBalancer
-  spec:
-    loadBalancerIP: 10.1.50.175
-  additionalServices:
-    internal:
-      type: LoadBalancer
-      spec:
-        loadBalancerIP: 10.1.50.176
-
-ingressClass:
-  enabled: false
+      default: true
+    exposedPort: 9100
+    protocol: TCP
 
 providers:
   kubernetesCRD:
     enabled: true
-    allowCrossNamespace: true 
+    #allowCrossNameServices: true
+    ingressClass: traefik-external
+    allowExternalNameServices: true
   kubernetesIngress:
     enabled: true
+    allowExternalNameServices: true
     publishedService:
       enabled: false
-
-metrics:
-  prometheus:
-    enabled: true
-    entryPoint: metrics
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        instance: primary
+rbac:
+  enabled: true
+service:
+  enabled: true
+  type: LoadBalancer
+  annotations: {}
+  labels: {}
+  spec:
+    loadBalancerIP: 10.1.50.175
+  loadBalancerSourceRanges: []
+  externalIPs: []

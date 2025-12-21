@@ -4,4 +4,3 @@ resources:
   - ../../base
   - external-secret-masterkey.yaml
   - external-secret-config.yaml
-  - accounts.vngenterprise.com.yaml

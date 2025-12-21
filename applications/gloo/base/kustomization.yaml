@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+helmCharts:
+  - name: gloo
+    version: 1.20.4
+    repo: https://storage.googleapis.com/solo-public-helm
+    releaseName: gloo
+    namespace: gloo-system
+    valuesFile: values.yaml

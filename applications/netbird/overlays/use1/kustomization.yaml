@@ -7,4 +7,3 @@ resources:
   - external-secret.yaml
   - pvc.yaml
   - service.yaml
-  - ingress.yaml

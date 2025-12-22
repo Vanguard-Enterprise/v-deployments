@@ -3,9 +3,15 @@ kind: Kustomization
 resources:
   - namespace.yaml
 helmCharts:
-  - name: gloo
-    version: 1.20.4
-    repo: https://storage.googleapis.com/solo-public-helm
-    releaseName: gloo
+  - name: gloo-gateway-crds
+    includeCRDs: true
+    version: 2.0.1
+    repo: oci://us-docker.pkg.dev/solo-public/gloo-gateway/charts
+    releaseName: gloo-gateway-crds
+    namespace: gloo-system
+  - name: gloo-gateway
+    version: 2.0.1
+    repo: oci://us-docker.pkg.dev/solo-public/gloo-gateway/charts
+    releaseName: gloo-gateway
     namespace: gloo-system
     valuesFile: values.yaml

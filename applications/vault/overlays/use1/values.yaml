@@ -1,3 +1,4 @@
+fullnameOverride: vault
 global:
   enabled: true
 injector:
@@ -6,14 +7,6 @@ injector:
     repository: "hashicorp/vault-k8s"
     tag: "latest"
 server:
-  securityContext: # Temporary change to recover vault cluster
-    runAsUser: 100
-    runAsGroup: 1000
-    fsGroup: 1000
-  podSecurityContext: # Temporary change to recover vault cluster
-    fsGroup: 1000
-    runAsGroup: 1000
-    runAsUser: 100
   dataStorage:
     enabled: true
     size: 512Mi
@@ -21,19 +14,21 @@ server:
     storageClass: longhorn
     accessMode: ReadWriteOnce
     annotations: {}
+  auditStorage:
+    enabled: true
+    storageClass: longhorn
+    accessMode: ReadWriteOnce
+    size: 256Mi
   image:
     repository: "hashicorp/vault"
     tag: "latest"
-  readinessProbe: # disabled to allow for manual unsealing
-    enabled: false
+  readinessProbe:
+    enabled: true
     path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
-  livenessProbe: # disabled to allow for manual unsealing
-    enabled: false
+  livenessProbe:
+    enabled: true
     path: "/v1/sys/health?standbyok=true"
     initialDelaySeconds: 60
-  auditStorage:
-    enabled: true
-    size: 256Mi
   standalone:
     enabled: false
   extraSecretEnvironmentVars:

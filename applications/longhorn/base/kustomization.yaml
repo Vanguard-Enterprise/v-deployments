@@ -5,3 +5,7 @@ resources:
   - podmonitor.yaml
   - prometheusrule.yaml
   - servicemonitor.yaml
+  - storageclass.yaml
+# Jobs & Settings
+  - ./jobs
+  - ./settings

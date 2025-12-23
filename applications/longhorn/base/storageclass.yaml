@@ -1,0 +1,47 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "2"
+  dataLocality: "strict-local"
+  replicaSoftAntiAffinity: "true"
+  staleReplicaTimeout: "2880"
+  backupTargetName: "wasabi"
+  recurringJobSelector: '[{"name":"wasabi-policy","isGroup":true}]'
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-ha
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "3"
+  dataLocality: "strict-local"
+  replicaSoftAntiAffinity: "true"
+  staleReplicaTimeout: "2880"
+  backupTargetName: "wasabi"
+  recurringJobSelector: '[{"name":"wasabi-policy","isGroup":true}]'
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-temp
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "1"
+  dataLocality: "best-effort"
+  replicaSoftAntiAffinity: "true"
+  staleReplicaTimeout: "2880"

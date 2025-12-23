@@ -1,0 +1,12 @@
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: snapshot-30m
+  namespace: longhorn-system
+spec:
+  cron: "*/30 * * * *"
+  task: snapshot
+  retain: 12
+  concurrency: 2
+  groups:
+    - wasabi-policy

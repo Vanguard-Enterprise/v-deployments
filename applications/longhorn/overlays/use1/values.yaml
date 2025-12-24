@@ -1,2 +1,6 @@
 persistence:
   defaultClass: false
+
+defaultSettings:
+  createDefaultStorageClass: false
+  defaultLonghornStaticStorageClass: ""

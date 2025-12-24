@@ -3,4 +3,4 @@ kind: Setting
 metadata:
   name: backup-target-credential-secret
   namespace: longhorn-system
-value: wasabi-backup-creds
+value: longhorn-backup-wasabi

@@ -5,7 +5,7 @@ resources:
   - prometheusrule.yaml
 helmCharts:
   - name: traefik-crds
-    version: "1.13.0"
+    version: "1.13.1"
     repo: https://helm.traefik.io/traefik
     releaseName: traefik-crds
     namespace: traefik

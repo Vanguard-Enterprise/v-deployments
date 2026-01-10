@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: vngenterprise
-  namespace: gloo-system
+  namespace: traefik
 spec:
   secretName: vngenterprise-tls
   issuerRef:

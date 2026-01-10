@@ -4,7 +4,7 @@ kind: Kustomization
 #  - ../../base
 helmCharts:
   - name: traefik
-    version: "37.3.0"
+    version: "38.0.2"
     repo: https://helm.traefik.io/traefik
     releaseName: traefik-internal
     valuesFile: values.yaml

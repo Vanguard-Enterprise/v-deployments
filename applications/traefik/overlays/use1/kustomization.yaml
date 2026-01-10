@@ -6,7 +6,7 @@ resources:
   - rustlens-store.yaml
 helmCharts:
   - name: traefik
-    version: "38.0.2"
+    version: "38.0.1"
     repo: https://helm.traefik.io/traefik
     releaseName: traefik
     valuesFile: values.yaml

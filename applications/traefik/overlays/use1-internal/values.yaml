@@ -27,7 +27,7 @@ deployment:
 
 ports:
   web-int:
-    port: 8000
+    port: 80
     exposedPort: 80
     expose:
       default: true
@@ -36,14 +36,14 @@ ports:
         to: websecure
         scheme: https
   websecure-int:
-    port: 8443
+    port: 443
     exposedPort: 443
     expose:
       default: true
     tls:
       enabled: true
   metrics-int:
-    port: 9100
+    port: 9110
     expose:
       default: true
     exposedPort: 9100

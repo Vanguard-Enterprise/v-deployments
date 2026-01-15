@@ -15,4 +15,4 @@ primary:
     size: 1Gi
 
 image:
-  tag: 17
+  tag: 17.7.0-r6

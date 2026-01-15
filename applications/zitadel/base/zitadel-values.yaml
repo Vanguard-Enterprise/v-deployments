@@ -30,4 +30,4 @@ zitadel:
 ingress:
   enabled: false
 login:
-  enabled: false
+  enabled: true

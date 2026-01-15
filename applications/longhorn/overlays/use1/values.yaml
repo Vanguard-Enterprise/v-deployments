@@ -1,11 +1,18 @@
-persistence:
-  defaultClass: false
-
-defaultSettings:
-  createDefaultStorageClass: false
-  defaultLonghornStaticStorageClass: ""
 
 defaultBackupStore:
   backupTarget: s3://vanguard-longhorn@us-east-1/
   backupTargetCredentialSecret: longhorn-backup-wasabi
   pollInterval: 300
+persistence:
+  defaultClass: true
+  defaultFsType: ext4
+  defaultClassReplicaCount: 2
+  defaultDataLocality: best-effort
+  reclaimPolicy: Retain
+  volumeBindingMode: WaitForFirstConsumer
+  disableRevisionCounter: "true"
+  backupTargetName: wasabi
+  recurringJobSelector:
+    enable: true
+    jobList:
+      - '[{"name":"wasabi-policy","isGroup":true}]'

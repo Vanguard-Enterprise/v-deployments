@@ -9,7 +9,7 @@ zitadel:
       Enabled: false
     Database:
       Postgres:
-        Host: zitadel.zitadel-db.svc.cluster.local
+        Host: zitadel-rw.zitadel-db.svc.cluster.local
         Port: 5432
         Database: zitadel
         MaxOpenConns: 20

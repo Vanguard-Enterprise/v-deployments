@@ -17,10 +17,10 @@ server:
     repository: "hashicorp/vault"
     tag: "latest"
   readinessProbe:
-    enabled: true
+    enabled: false
     path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
   livenessProbe:
-    enabled: true
+    enabled: false
     path: "/v1/sys/health?standbyok=true"
     initialDelaySeconds: 60
   auditStorage:

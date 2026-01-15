@@ -1,4 +1,3 @@
-
 defaultBackupStore:
   backupTarget: s3://vanguard-longhorn@us-east-1/
   backupTargetCredentialSecret: longhorn-backup-wasabi

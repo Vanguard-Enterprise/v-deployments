@@ -5,14 +5,8 @@ resources:
   - namespace.yaml
 helmCharts:
   - name: zitadel
-    version: "9.12.3"
+    version: "9.16.0"
     repo: https://charts.zitadel.com
     releaseName: zitadel
-    valuesFile: zitadel-values.yaml
-    namespace: zitadel
-  - name: postgresql
-    version: "12.10.0"
-    repo: https://charts.bitnami.com/bitnami
-    releaseName: postgres
-    valuesFile: postgres-values.yaml
+    valuesFile: values.yaml
     namespace: zitadel

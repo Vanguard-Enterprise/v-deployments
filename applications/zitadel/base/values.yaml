@@ -1,9 +1,7 @@
 replicaCount: 3
 zitadel:
-  # These Secrets are created by ExternalSecrets above
   masterkeySecretName: zitadel-secret
   configSecretName: zitadel-secret-config
-  # Static, non‑sensitive config for the ConfigMap
   configmapConfig:
     ExternalSecure: true
     ExternalDomain: accounts.vngenterprise.com
@@ -11,7 +9,7 @@ zitadel:
       Enabled: false
     Database:
       Postgres:
-        Host: postgres
+        Host: zitadel.zitadel-db.svc.cluster.local
         Port: 5432
         Database: zitadel
         MaxOpenConns: 20
@@ -21,15 +19,11 @@ zitadel:
         User:
           Username: zitadel
           SSL:
-            Mode: verify-full
+            Mode: disable
         Admin:
           Username: postgres
           SSL:
-            Mode: verify-full
-  # TLS/SSL secrets for DB and application
-  dbSslCaCrtSecret: postgres-cert
-  dbSslAdminCrtSecret: postgres-cert
-  dbSslUserCrtSecret: zitadel-cert
+            Mode: disable
 ingress:
   enabled: false
 login:

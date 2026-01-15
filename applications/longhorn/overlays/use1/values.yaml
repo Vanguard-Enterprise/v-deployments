@@ -10,8 +10,8 @@ persistence:
   reclaimPolicy: Retain
   volumeBindingMode: Immediate
   disableRevisionCounter: "true"
-  backupTargetName: wasabi
-  recurringJobSelector:
-    enable: true
-    jobList:
-      - '[{"name":"wasabi-policy","isGroup":true}]'
+#  backupTargetName: wasabi
+#  recurringJobSelector:
+#    enable: true
+#    jobList:
+#      - '[{"name":"wasabi-policy","isGroup":true}]'

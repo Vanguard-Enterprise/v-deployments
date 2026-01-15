@@ -4,7 +4,6 @@ globalArguments:
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
-  - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
 
 metrics:
   prometheus:
@@ -27,12 +26,23 @@ deployment:
   initContainers: []
 
 ports:
-  web:
-    enabled: true
-  websecure:
+  web-int:
+    port: 8000
+    exposedPort: 80
+    expose:
+      default: true
+    redirections:
+      entryPoint:
+        to: websecure
+        scheme: https
+  websecure-int:
+    port: 8443
+    exposedPort: 443
+    expose:
+      default: true
     tls:
       enabled: true
-  metrics:
+  metrics-int:
     port: 9100
     expose:
       default: true
@@ -42,8 +52,8 @@ ports:
 providers:
   kubernetesCRD:
     enabled: true
-    allowCrossNameServices: true
-    ingressClass: traefik-internal
+    #allowCrossNameServices: true
+    ingressClass: traefik-external
     allowExternalNameServices: true
   kubernetesIngress:
     enabled: true

@@ -1,0 +1,28 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: zitadel
+  namespace: zitadel-db
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  postgresVersion: 17
+  bootstrap:
+    initdb:
+      database: zitadel
+      owner: zitadel
+      secret:
+        name: zitadel-db-credentials
+  storage:
+    size: 4Gi
+    storageClass: longhorn
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 500m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname

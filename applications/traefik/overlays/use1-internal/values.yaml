@@ -27,8 +27,6 @@ deployment:
   initContainers: []
 
 ports:
-  web:
-    enabled: true
   websecure:
     tls:
       enabled: true

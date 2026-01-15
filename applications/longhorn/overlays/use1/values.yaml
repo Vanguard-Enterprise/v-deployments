@@ -8,6 +8,7 @@ persistence:
   defaultClassReplicaCount: 2
   defaultDataLocality: best-effort
   reclaimPolicy: Retain
+  volumeBindingMode: Immediate
   disableRevisionCounter: "true"
   backupTargetName: wasabi
   recurringJobSelector:

@@ -15,4 +15,6 @@ primary:
     size: 1Gi
 
 image:
-  tag: 17.7.0-r6
+  registry: docker.io
+  repository: bitnamilegacy/postgresql
+  tag: 17.6.0-debian-12-r4

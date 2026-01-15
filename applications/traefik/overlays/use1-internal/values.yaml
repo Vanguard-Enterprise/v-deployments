@@ -42,7 +42,7 @@ ports:
 providers:
   kubernetesCRD:
     enabled: true
-    allowCrossNameServices: true
+    allowCrossNamespace: true
     ingressClass: traefik-internal
     allowExternalNameServices: true
   kubernetesIngress:

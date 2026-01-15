@@ -27,8 +27,6 @@ deployment:
   initContainers: []
 
 ports:
-  web:
-    enabled: true
   websecure:
     tls:
       enabled: true
@@ -42,7 +40,7 @@ ports:
 providers:
   kubernetesCRD:
     enabled: true
-    allowCrossNameServices: true
+    allowCrossNamespace: true
     ingressClass: traefik-external
     allowExternalNameServices: true
   kubernetesIngress:

@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - podmonitor.yaml
+  - clusterimagecatalog.yaml
+  - imagecatalog.yaml
 helmCharts:
   - name: cloudnative-pg
     version: "0.26.1"

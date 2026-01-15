@@ -9,6 +9,11 @@ spec:
   entryPoints:
     - websecure
   routes:
+    - match: Host(`accounts.vngenterprise.com`) && PathPrefix(`/ui/v2/login`)
+      kind: Rule
+      services:
+        - name: zitadel-login
+          port: 3000
     - match: Host(`accounts.vngenterprise.com`)
       kind: Rule
       services:

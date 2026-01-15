@@ -9,7 +9,7 @@ zitadel:
       Enabled: false
     Database:
       Postgres:
-        Host: zitadel-rw.zitadel-db.svc.cluster.local
+        Host: postgres
         Port: 5432
         Database: zitadel
         MaxOpenConns: 20
@@ -17,13 +17,16 @@ zitadel:
         MaxConnLifetime: 30m
         MaxConnIdleTime: 5m
         User:
-          Username: postgres
+          Username: zitadel
           SSL:
-            Mode: disable
+            Mode: verify-full
         Admin:
           Username: postgres
           SSL:
-            Mode: disable
+            Mode: verify-full
+  dbSslCaCrtSecret: postgres-cert
+  dbSslAdminCrtSecret: postgres-cert
+  dbSslUserCrtSecret: zitadel-cert
 ingress:
   enabled: false
 login:

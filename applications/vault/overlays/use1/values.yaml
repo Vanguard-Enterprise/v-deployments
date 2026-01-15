@@ -10,7 +10,7 @@ server:
     enabled: true
     size: 512Mi
     mountPath: "/vault/data"
-    storageClass: longhorn-ha-3
+    storageClass: longhorn
     accessMode: ReadWriteOnce
     annotations: {}
   image:

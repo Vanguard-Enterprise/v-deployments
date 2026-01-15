@@ -17,7 +17,7 @@ zitadel:
         MaxConnLifetime: 30m
         MaxConnIdleTime: 5m
         User:
-          Username: zitadel
+          Username: postgres
           SSL:
             Mode: disable
         Admin:
@@ -37,3 +37,15 @@ serviceAccount:
     helm.sh/hook-weight: "0"
 
   name: "zitadel"
+
+env:
+  - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: zitadel-db-credentials
+        key: password
+  - name: ZITADEL_DATABASE_POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: zitadel-db-credentials
+        key: password

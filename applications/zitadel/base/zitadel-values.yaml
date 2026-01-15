@@ -29,3 +29,5 @@ zitadel:
   dbSslUserCrtSecret: zitadel-cert
 ingress:
   enabled: false
+login:
+  enabled: false

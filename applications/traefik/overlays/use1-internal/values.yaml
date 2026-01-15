@@ -53,7 +53,7 @@ providers:
   kubernetesCRD:
     enabled: true
     #allowCrossNameServices: true
-    ingressClass: traefik-external
+    ingressClass: traefik-internal
     allowExternalNameServices: true
   kubernetesIngress:
     enabled: true

@@ -13,3 +13,8 @@ auth:
 primary:
   persistence:
     size: 1Gi
+
+image:
+  registry: registry-1.docker.io
+  repository: bitnami/postgresql
+  tag: 17

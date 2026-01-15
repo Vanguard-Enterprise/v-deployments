@@ -8,5 +8,11 @@ helmCharts:
     version: "9.16.0"
     repo: https://charts.zitadel.com
     releaseName: zitadel
-    valuesFile: values.yaml
+    valuesFile: zitadel-values.yaml
+    namespace: zitadel
+  - name: postgresql
+    version: "16.7.27"
+    repo: https://charts.bitnami.com/bitnami
+    releaseName: postgres
+    valuesFile: postgres-values.yaml
     namespace: zitadel

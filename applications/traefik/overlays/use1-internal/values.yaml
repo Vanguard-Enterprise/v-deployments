@@ -48,6 +48,15 @@ ports:
       default: true
     exposedPort: 9100
     protocol: TCP
+  web:
+    expose:
+      default: false
+  websecure:
+    expose:
+      default: false
+  metrics:
+    expose:
+      default: false
 
 providers:
   kubernetesCRD:

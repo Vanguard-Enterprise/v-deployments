@@ -4,6 +4,7 @@ resources:
   - ../../base
   - servicemonitor.yaml
   - prometheusrule.yaml
+  - vault.vngenterprise.com.yaml
 helmCharts:
   - name: vault
     version: "0.31.0"

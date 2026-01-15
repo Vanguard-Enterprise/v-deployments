@@ -11,7 +11,7 @@ helmCharts:
     valuesFile: zitadel-values.yaml
     namespace: zitadel
   - name: postgresql
-    version: "16.7.27"
+    version: "16.7.24"
     repo: https://charts.bitnami.com/bitnami
     releaseName: postgres
     valuesFile: postgres-values.yaml

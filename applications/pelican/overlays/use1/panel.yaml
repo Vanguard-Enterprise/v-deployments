@@ -11,9 +11,6 @@ spec:
     - name: https
       port: 443
       targetPort: 443
-    - name: https-alt
-      port: 8443
-      targetPort: 443
   selector:
     app: pelican-panel
 ---

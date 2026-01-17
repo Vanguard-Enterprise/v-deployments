@@ -17,3 +17,4 @@ data:
   DB_PORT: "3306"
   XDG_DATA_HOME: "/pelican-data"
   MAIL_DRIVER: "log"
+  SKIP_CADDY: "true"

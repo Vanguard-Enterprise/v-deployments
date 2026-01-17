@@ -29,6 +29,26 @@ spec:
       labels:
         app: pelican-panel
     spec:
+      securityContext:
+        runAsUser: 82
+        runAsGroup: 82
+        fsGroup: 82
+        fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+        - name: volume-permissions
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              mkdir -p /pelican-data /var/www/html/storage/logs/supervisord
+              chown -R 82:82 /pelican-data /var/www/html/storage/logs
+          volumeMounts:
+            - name: pelican-data
+              mountPath: /pelican-data
+            - name: pelican-logs
+              mountPath: /var/www/html/storage/logs
       containers:
         - name: panel
           image: ghcr.io/pelican-dev/panel:latest

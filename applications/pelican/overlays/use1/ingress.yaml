@@ -13,7 +13,7 @@ spec:
       kind: Rule
       services:
         - name: panel
-          port: 8443
+          port: 443
           scheme: https
   tls:
     store:

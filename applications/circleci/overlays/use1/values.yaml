@@ -3,4 +3,4 @@ agent:
   customSecret: circleci-resource-class-tokens
 
   resourceClasses:
-    Hyplex-Network/use1: {}
+    hyplex-network/use1: {}

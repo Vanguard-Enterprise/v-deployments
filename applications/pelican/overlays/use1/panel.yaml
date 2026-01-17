@@ -43,7 +43,7 @@ spec:
             - |
               set -e
               mkdir -p /pelican-data /var/www/html/storage/logs/supervisord
-              chown -R 82:82 /pelican-data /var/www/html/storage/logs
+              find /pelican-data /var/www/html/storage/logs -path "*/lost+found" -prune -o -exec chown 82:82 {} +
           volumeMounts:
             - name: pelican-data
               mountPath: /pelican-data

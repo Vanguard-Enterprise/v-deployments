@@ -8,13 +8,16 @@ tls:
   certificatesSecret: postgres-cert
   certFilename: "tls.crt"
   certKeyFilename: "tls.key"
+  certCAFilename: "ca.crt"
 auth:
   existingSecret: "zitadel-secret"
 primary:
+  containerSecurityContext:
+    readOnlyRootFilesystem: false
   persistence:
     size: 1Gi
 
 image:
   registry: docker.io
   repository: bitnamilegacy/postgresql
-  tag: 17.6.0-debian-12-r4
+  tag: 17.6.0-debian-12-r4]

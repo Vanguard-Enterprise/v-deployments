@@ -18,3 +18,4 @@ data:
   XDG_DATA_HOME: "/pelican-data"
   MAIL_DRIVER: "log"
   SKIP_CADDY: "true"
+  BEHIND_PROXY: "true"

@@ -1,0 +1,12 @@
+apiVersion: kustomization.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - external-secrets.yaml
+helmCharts:
+  - name: container-agent
+    version: 101.1.6
+    releaseName: container-agent
+    repo: https://packagecloud.io/circleci/container-agent/helm
+    namespace: circleci
+    valuesFile: values.yaml

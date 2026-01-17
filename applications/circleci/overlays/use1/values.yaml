@@ -1,0 +1,6 @@
+agent:
+  replicaCount: 1
+  customSecret: circleci-resource-class-tokens
+
+  resourceClasses:
+    use1/use1: {}

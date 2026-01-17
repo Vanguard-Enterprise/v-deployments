@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: panel
+  namespace: pelican
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: https
+      port: 443
+      targetPort: 443
+  selector:
+    app: pelican-panel
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panel
+  namespace: pelican
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pelican-panel
+  template:
+    metadata:
+      labels:
+        app: pelican-panel
+    spec:
+      containers:
+        - name: panel
+          image: ghcr.io/pelican-dev/panel:latest
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+          envFrom:
+            - configMapRef:
+                name: pelican-config
+            - secretRef:
+                name: pelican-app
+            - secretRef:
+                name: pelican-database
+          volumeMounts:
+            - name: pelican-data
+              mountPath: /pelican-data
+            - name: pelican-logs
+              mountPath: /var/www/html/storage/logs
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+      volumes:
+        - name: pelican-data
+          persistentVolumeClaim:
+            claimName: pelican-data
+        - name: pelican-logs
+          persistentVolumeClaim:
+            claimName: pelican-logs

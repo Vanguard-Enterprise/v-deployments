@@ -5,6 +5,7 @@ resources:
   - configmap.yaml
   - external-secret.yaml
   - pvc.yaml
+  - certificate.yaml
   - database.yaml
   - cache.yaml
   - panel.yaml

@@ -16,6 +16,4 @@ spec:
           port: 443
           scheme: https
   tls:
-    store:
-      name: default
-      namespace: traefik
+    secretName: pelican-tls

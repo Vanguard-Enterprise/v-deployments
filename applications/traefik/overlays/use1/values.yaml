@@ -4,9 +4,6 @@ globalArguments:
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
-  - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
-  - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
-  - "--entrypoints.websecure.address=:443"
 
 metrics:
   prometheus:
@@ -29,18 +26,7 @@ deployment:
   initContainers: []
 
 ports:
-  web:
-    port: 80
-    expose:
-      default: true
-    exposedPort: 80
-    protocol: TCP
   websecure:
-    port: 443
-    expose:
-      default: true
-    exposedPort: 443
-    protocol: TCP
     tls:
       enabled: true
   metrics:

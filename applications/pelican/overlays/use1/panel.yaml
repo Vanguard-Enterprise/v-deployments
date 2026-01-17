@@ -43,7 +43,8 @@ spec:
             - |
               set -e
               mkdir -p /pelican-data /var/www/html/storage/logs/supervisord
-              find /pelican-data /var/www/html/storage/logs -path "*/lost+found" -prune -o -exec chown 82:82 {} +
+              find /pelican-data -mindepth 1 -path "*/lost+found" -prune -o -exec chown 82:82 {} + 2>/dev/null || true
+              find /var/www/html/storage/logs -mindepth 1 -path "*/lost+found" -prune -o -exec chown 82:82 {} + 2>/dev/null || true
           volumeMounts:
             - name: pelican-data
               mountPath: /pelican-data

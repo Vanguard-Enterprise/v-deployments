@@ -13,8 +13,8 @@ spec:
       kind: Rule
       services:
         - name: panel
-          port: 443
-          scheme: https
+          port: 80
+          scheme: http
   tls:
     store:
       name: default

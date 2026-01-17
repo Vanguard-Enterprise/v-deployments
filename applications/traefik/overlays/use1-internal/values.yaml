@@ -35,6 +35,11 @@ ports:
     exposedPort: 80
     protocol: TCP
   websecure:
+    port: 443
+    expose:
+      default: true
+    exposedPort: 443
+    protocol: TCP
     tls:
       enabled: true
   metrics:

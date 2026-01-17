@@ -6,6 +6,7 @@ additionalArguments:
   - "--log.level=INFO"
   - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
   - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+  - "--entrypoints.websecure.address=:443"
 
 metrics:
   prometheus:

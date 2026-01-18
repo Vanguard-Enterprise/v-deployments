@@ -16,6 +16,7 @@ spec:
           port: 80
           scheme: http
   tls:
+    secretName: pelican-tls
     store:
       name: default
       namespace: traefik

@@ -13,9 +13,40 @@ spec:
       labels:
         app: pelican-panel
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 33
+        fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+        - name: init-perms
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /var/www/html/storage/logs/supervisord
+              chown -R 33:33 /pelican-data /var/www/html/storage/logs
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: pelican-data
+              mountPath: /pelican-data
+            - name: pelican-logs
+              mountPath: /var/www/html/storage/logs
       containers:
         - name: panel
           image: ghcr.io/pelican-dev/panel:latest
+          workingDir: /var/www/html
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /var/www/html/storage/logs/supervisord
+              chmod +x /entrypoint.sh
+              exec /entrypoint.sh /usr/bin/supervisord -c /etc/supervisord.conf
           ports:
             - containerPort: 80
               name: http
@@ -45,5 +76,4 @@ spec:
           persistentVolumeClaim:
             claimName: pelican-data
         - name: pelican-logs
-          persistentVolumeClaim:
-            claimName: pelican-logs
+          emptyDir: {}

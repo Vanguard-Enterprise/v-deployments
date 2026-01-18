@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: circleci-release-agent-system
+resources:
+  - ../../base
+  - external-secret.yaml
+helmCharts:
+  - name: circleci-release-agent
+    version: 1.4.0
+    releaseName: circleci-release-agent
+    repo: https://circleci-public.github.io/cci-k8s-release-agent
+    namespace: circleci-release-agent-system
+    valuesFile: values.yaml

@@ -1,0 +1,9 @@
+agentNamespace: circleci-release-agent-system
+replicas: 2
+
+tokenSecret:
+  create: false
+
+managedNamespaces:
+  - hyplex-backend
+  - hyplex-frontend

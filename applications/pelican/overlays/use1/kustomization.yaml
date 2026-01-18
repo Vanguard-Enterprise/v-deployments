@@ -10,3 +10,4 @@ resources:
   - cache.yaml
   - panel.yaml
   - ingress.yaml
+  - service.yaml

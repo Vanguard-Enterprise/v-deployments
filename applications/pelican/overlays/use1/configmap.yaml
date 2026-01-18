@@ -4,7 +4,7 @@ metadata:
   name: pelican-config
   namespace: pelican
 data:
-  APP_URL: "https://gdev.vngenterprise.com"
+  APP_URL: "http://gdev.vngenterprise.com"
   APP_DEBUG: "false"
   APP_ENV: "production"
   LE_EMAIL: "infra@vngenterprise.com"

@@ -20,3 +20,4 @@ data:
   BEHIND_PROXY: "true"
   SKIP_CADDY: "false"
   SUPERVISORD_CADDY: "true"
+  APP_INSTALLED: "true"

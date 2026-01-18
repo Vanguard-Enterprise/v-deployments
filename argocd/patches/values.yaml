@@ -34,7 +34,7 @@ configs:
     oidc.config: |
       name: Zitadel
       issuer: https://accounts.vngenterprise.com
-      clientID: "326386307850896434"
+      clientID: "356128038108333174"
       requestedScopes:
         - openid
         - profile

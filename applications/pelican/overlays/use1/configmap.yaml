@@ -4,6 +4,7 @@ metadata:
   name: pelican-config
   namespace: pelican
 data:
+  APP_NAME: "Hyplex - Gdev"
   APP_URL: "https://gdev.vngenterprise.com"
   APP_DEBUG: "false"
   APP_ENV: "production"

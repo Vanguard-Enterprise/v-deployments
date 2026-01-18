@@ -77,6 +77,63 @@ spec:
             limits:
               cpu: "500m"
               memory: "1Gi"
+        - name: queue-worker
+          image: ghcr.io/pelican-dev/panel:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              php /var/www/html/artisan queue:work --verbose --tries=1 --sleep=3 --no-interaction
+          envFrom:
+            - configMapRef:
+                name: pelican-config
+            - secretRef:
+                name: pelican-app
+            - secretRef:
+                name: pelican-database
+          volumeMounts:
+            - name: pelican-data
+              mountPath: /pelican-data
+            - name: pelican-logs
+              mountPath: /var/www/html/storage/logs
+          resources:
+            requests:
+              cpu: "150m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
+        - name: scheduler
+          image: ghcr.io/pelican-dev/panel:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              while true; do
+                php /var/www/html/artisan schedule:run --no-interaction --verbose || true
+                sleep 60
+              done
+          envFrom:
+            - configMapRef:
+                name: pelican-config
+            - secretRef:
+                name: pelican-app
+            - secretRef:
+                name: pelican-database
+          volumeMounts:
+            - name: pelican-data
+              mountPath: /pelican-data
+            - name: pelican-logs
+              mountPath: /var/www/html/storage/logs
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "150m"
+              memory: "256Mi"
       volumes:
         - name: pelican-data
           persistentVolumeClaim:

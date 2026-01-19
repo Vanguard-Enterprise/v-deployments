@@ -5,6 +5,8 @@ metadata:
   namespace: pelican
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: pelican-panel
@@ -25,7 +27,7 @@ spec:
             - sh
             - -c
             - |
-              mkdir -p /var/www/html/storage/logs/supervisord
+              mkdir -p /pelican-data/plugins /var/www/html/storage/logs/supervisord
               chown -R 33:33 /pelican-data /var/www/html/storage/logs
           securityContext:
             runAsUser: 0
@@ -34,6 +36,9 @@ spec:
           volumeMounts:
             - name: pelican-data
               mountPath: /pelican-data
+            - name: pelican-data
+              mountPath: /var/www/html/plugins
+              subPath: plugins
             - name: pelican-logs
               mountPath: /var/www/html/storage/logs
       containers:
@@ -78,6 +83,9 @@ spec:
           volumeMounts:
             - name: pelican-data
               mountPath: /pelican-data
+            - name: pelican-data
+              mountPath: /var/www/html/plugins
+              subPath: plugins
             - name: pelican-logs
               mountPath: /var/www/html/storage/logs
           resources:

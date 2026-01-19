@@ -1,6 +1,6 @@
 # RustFS Distributed Configuration
-# 4 pods with data PVC each
-# Longhorn provides 2x replication at the storage layer
+# 4 pods × 4 disks × 5Gi = 80Gi total
+# Uses custom SC with 1 replica (RustFS handles redundancy)
 
 replicaCount: 4
 
@@ -29,10 +29,10 @@ config:
 secret:
   existingSecret: rustfs-secrets
 
-# Storage configuration using Longhorn
+# Storage configuration - custom SC with 1 replica
 storageclass:
-  name: longhorn
-  dataStorageSize: 20Gi
+  name: longhorn-rustfs
+  dataStorageSize: 5Gi
   logStorageSize: 256Mi
 
 # Disable built-in ingress - we use Traefik IngressRoutes

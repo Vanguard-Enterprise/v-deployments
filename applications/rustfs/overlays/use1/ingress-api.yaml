@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rustfs-api
+  namespace: rustfs
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`s3.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: rustfs
+          port: 9000
+  tls:
+    store:
+      name: default
+      namespace: traefik

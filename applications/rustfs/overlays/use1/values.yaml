@@ -1,0 +1,74 @@
+# RustFS MNSD (Multi-Node Single-Disk) Configuration
+# Distributed mode: 3 pods with 1 PVC each (3 total disks)
+# Longhorn provides 2x replication at the storage layer
+
+replicaCount: 3
+
+mode:
+  standalone:
+    enabled: false
+  distributed:
+    enabled: true
+    drivesPerNode: 1
+
+image:
+  repository: rustfs/rustfs
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Credentials are injected via external secret
+secret:
+  rustfs:
+    access_key_from_secret: true
+    secret_key_from_secret: true
+  existingSecret: rustfs-secrets
+  accessKeyKey: RUSTFS_ROOT_USER
+  secretKeyKey: RUSTFS_ROOT_PASSWORD
+
+# Storage configuration using Longhorn
+storageclass:
+  name: longhorn
+
+persistence:
+  enabled: true
+  size: 20Gi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 9000
+  consolePort: 9001
+
+# Disable built-in ingress - we use Traefik IngressRoutes
+ingress:
+  enabled: false
+
+# Console configuration
+console:
+  enabled: true
+
+# Resource limits
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "2Gi"
+    cpu: "1000m"
+
+# Pod anti-affinity for MDMD - spread pods across nodes
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - rustfs
+        topologyKey: kubernetes.io/hostname
+
+# Environment variables
+env:
+  - name: RUSTFS_CONSOLE_ENABLE
+    value: "true"

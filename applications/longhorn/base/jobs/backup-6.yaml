@@ -6,7 +6,7 @@ metadata:
 spec:
   cron: "0 */6 * * *"
   task: backup
-  retain: 120
+  retain: 100
   concurrency: 2
   groups:
     - wasabi-policy

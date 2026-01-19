@@ -38,7 +38,7 @@ spec:
               mountPath: /var/www/html/storage/logs
       containers:
         - name: panel
-          image: ghcr.io/pelican-dev/panel:latest
+          image: ghcr.io/pelican-dev/panel:main
           workingDir: /var/www/html
           command:
             - /bin/sh

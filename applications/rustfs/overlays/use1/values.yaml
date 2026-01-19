@@ -1,51 +1,43 @@
-# RustFS MNSD (Multi-Node Single-Disk) Configuration
-# Distributed mode: 3 pods with 1 PVC each (3 total disks)
+# RustFS Distributed Configuration
+# 4 pods with data PVC each
 # Longhorn provides 2x replication at the storage layer
 
-replicaCount: 3
+replicaCount: 4
 
 mode:
   standalone:
     enabled: false
   distributed:
     enabled: true
-    drivesPerNode: 1
 
 image:
   repository: rustfs/rustfs
   tag: "latest"
   pullPolicy: IfNotPresent
 
-# Credentials are injected via external secret
-secret:
+# Distributed volume configuration
+config:
   rustfs:
-    access_key_from_secret: true
-    secret_key_from_secret: true
+    volumes: "http://rustfs-{0...3}.rustfs-headless:9000/data/rustfs{0...3}"
+    address: ":9000"
+    console_enable: "true"
+    console_address: ":9001"
+    log_level: "info"
+    region: "us-east-1"
+
+# Credentials from external secret
+secret:
   existingSecret: rustfs-secrets
-  accessKeyKey: RUSTFS_ROOT_USER
-  secretKeyKey: RUSTFS_ROOT_PASSWORD
 
 # Storage configuration using Longhorn
 storageclass:
   name: longhorn
-
-persistence:
-  enabled: true
-  size: 20Gi
-
-# Service configuration
-service:
-  type: ClusterIP
-  port: 9000
-  consolePort: 9001
+  dataStorageSize: 20Gi
+  logStorageSize: 256Mi
 
 # Disable built-in ingress - we use Traefik IngressRoutes
 ingress:
   enabled: false
-
-# Console configuration
-console:
-  enabled: true
 
 # Resource limits
 resources:
@@ -56,19 +48,8 @@ resources:
     memory: "2Gi"
     cpu: "1000m"
 
-# Pod anti-affinity for MDMD - spread pods across nodes
+# Pod anti-affinity - spread pods across nodes
 affinity:
   podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-            - key: app.kubernetes.io/name
-              operator: In
-              values:
-                - rustfs
-        topologyKey: kubernetes.io/hostname
-
-# Environment variables
-env:
-  - name: RUSTFS_CONSOLE_ENABLE
-    value: "true"
+    enabled: true
+    topologyKey: kubernetes.io/hostname

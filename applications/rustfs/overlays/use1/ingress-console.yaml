@@ -12,7 +12,7 @@ spec:
     - match: Host(`s3-console.vngenterprise.com`)
       kind: Rule
       services:
-        - name: rustfs
+        - name: rustfs-svc
           port: 9001
   tls:
     store:

@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.class: traefik-internal
 spec:
   entryPoints:
-    - websec-int
+    - websecure
   routes:
     - match: Host(`argocd.vngenterprise.com`)
       kind: Rule

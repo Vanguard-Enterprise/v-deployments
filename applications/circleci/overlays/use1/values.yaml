@@ -1,6 +1,0 @@
-agent:
-  replicaCount: 1
-  customSecret: circleci-resource-class-tokens
-
-  resourceClasses:
-    hyplex-network/use1: {}

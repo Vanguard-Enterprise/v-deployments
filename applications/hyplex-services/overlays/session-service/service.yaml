@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: session-service
-  namespace: hyplex-services
+  namespace: hyplex-session
 spec:
   type: ClusterIP
   ports:

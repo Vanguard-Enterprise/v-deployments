@@ -2,10 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: hyplex-services-config
-  namespace: hyplex-services
+  namespace: hyplex-player-profile
 data:
-  REDIS_ADDR: "hyplex-redis-sentinel.hyplex-redis.svc.cluster.local:26379"
-  NATS_URL: "nats://nats.nats.svc.cluster.local:4222"
   DB_HOST: "hyplex-pooler-rw.hyplex-pg.svc.cluster.local"
   DB_PORT: "5432"
   DB_NAME: "hyplex"

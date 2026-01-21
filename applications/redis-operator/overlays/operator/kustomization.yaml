@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - podmonitor.yaml
+helmCharts:
+  - name: redis-operator
+    version: "0.23.0"
+    repo: https://ot-container-kit.github.io/helm-charts/
+    releaseName: redis-operator
+    namespace: redis-operator
+    valuesFile: values.yaml

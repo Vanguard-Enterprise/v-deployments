@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: redis-operator
+  namespace: redis-operator
+  labels:
+    instance: primary
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis-operator
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 15s

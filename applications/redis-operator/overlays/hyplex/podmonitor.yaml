@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: hyplex-redis
+  namespace: hyplex-redis
+  labels:
+    instance: primary
+spec:
+  selector:
+    matchLabels:
+      app: hyplex-redis
+  podMetricsEndpoints:
+    - port: redis-exporter
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: hyplex-redis-sentinel
+  namespace: hyplex-redis
+  labels:
+    instance: primary
+spec:
+  selector:
+    matchLabels:
+      app: hyplex-redis-sentinel
+  podMetricsEndpoints:
+    - port: redis-exporter
+      interval: 15s

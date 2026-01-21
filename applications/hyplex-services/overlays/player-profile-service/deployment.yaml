@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: player-profile-service
-  namespace: hyplex-services
+  namespace: hyplex-player-profile
 spec:
   replicas: 2
   selector:

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: configuration-service
-  namespace: hyplex-services
+  namespace: hyplex-configuration
 spec:
   replicas: 2
   selector:

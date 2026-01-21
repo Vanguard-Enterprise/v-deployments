@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: session-service
-  namespace: hyplex-services
+  namespace: hyplex-session
 spec:
   replicas: 2
   selector:

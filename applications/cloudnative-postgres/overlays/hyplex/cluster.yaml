@@ -1,0 +1,40 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: hyplex
+  namespace: hyplex-pg
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: hyplex
+      owner: hyplex_user
+      secret:
+        name: hyplex-pg-secrets
+  storage:
+    size: 20Gi
+    storageClass: longhorn
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://hyplex-production-pg-backups/
+      endpointURL: https://pg-backup.production.hyplex.gg
+      s3Credentials:
+        accessKeyId:
+          name: hyplex-pg-secrets
+          key: S3_ACCESS_KEY_ID
+        secretAccessKey:
+          name: hyplex-pg-secrets
+          key: S3_SECRET_ACCESS_KEY
+      wal:
+        compression: gzip

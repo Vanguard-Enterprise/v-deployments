@@ -1,0 +1,69 @@
+config:
+  cluster:
+    enabled: true
+    replicas: 3
+    routeURLs:
+      useFQDN: false
+      k8sClusterDomain: cluster.local
+
+  jetstream:
+    enabled: true
+    fileStore:
+      enabled: true
+      dir: /data
+      pvc:
+        enabled: true
+        size: 10Gi
+        storageClassName: longhorn
+
+  monitor:
+    enabled: true
+    port: 8222
+
+natsBox:
+  enabled: true
+
+promExporter:
+  enabled: true
+  image:
+    repository: natsio/prometheus-nats-exporter
+    tag: 0.18.0
+  port: 7777
+  podMonitor:
+    enabled: true
+    merge:
+      metadata:
+        labels:
+          instance: primary
+
+service:
+  enabled: true
+  ports:
+    nats:
+      enabled: true
+    cluster:
+      enabled: true
+    monitor:
+      enabled: true
+
+statefulSet:
+  merge:
+    spec:
+      template:
+        spec:
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: nats
+                  topologyKey: kubernetes.io/hostname
+
+container:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

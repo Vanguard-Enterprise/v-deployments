@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hyplex-services-config
+  namespace: hyplex-admin
+data:
+  REDIS_ADDR: "hyplex-redis-sentinel-sentinel.hyplex-redis.svc.cluster.local:26379"
+  LOG_LEVEL: "info"
+  LOG_PRETTY: "false"
+  PLAYER_PROFILE_URL: "http://player-profile-service.hyplex-player-profile.svc.cluster.local:8080"
+  SESSION_URL: "http://session-service.hyplex-session.svc.cluster.local:8080"
+  MODERATION_URL: "http://moderation-service.hyplex-moderation.svc.cluster.local:8080"
+  ECONOMY_URL: "http://economy-service.hyplex-economy.svc.cluster.local:8080"
+  ANALYTICS_URL: "http://analytics-service.hyplex-analytics.svc.cluster.local:8080"
+  CONFIGURATION_URL: "http://configuration-service.hyplex-configuration.svc.cluster.local:8080"

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: admin-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/hyplex-services/overlays/admin-service
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hyplex-admin
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

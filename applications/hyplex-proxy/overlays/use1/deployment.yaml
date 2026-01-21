@@ -28,12 +28,6 @@ spec:
             - name: messaging
               containerPort: 25568
               protocol: UDP
-          env:
-            - name: PROXY_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: hyplex-proxy-secrets
-                  key: PROXY_SECRET
           volumeMounts:
             - name: config
               mountPath: /app/config
@@ -47,5 +41,5 @@ spec:
               cpu: "500m"
       volumes:
         - name: config
-          configMap:
-            name: hyplex-proxy-config
+          secret:
+            secretName: hyplex-proxy-config

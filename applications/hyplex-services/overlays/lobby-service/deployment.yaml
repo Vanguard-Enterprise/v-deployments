@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lobby-service
+  namespace: hyplex-lobby
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lobby-service
+  template:
+    metadata:
+      labels:
+        app: lobby-service
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      containers:
+        - name: lobby-service
+          image: ghcr.io/hyplex-network/lobby-service:latest
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: hyplex-services-config
+            - secretRef:
+                name: lobby-service-secrets
+          env:
+            - name: PORT
+              value: "8080"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: lobby-service
+                topologyKey: kubernetes.io/hostname

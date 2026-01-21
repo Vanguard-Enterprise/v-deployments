@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: game-server-manager
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/hyplex-services/overlays/game-server-manager
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hyplex-gsm
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

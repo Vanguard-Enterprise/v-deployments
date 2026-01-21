@@ -17,7 +17,7 @@ spec:
         - name: github-pull-secret
       containers:
         - name: hyplex-proxy
-          image: ghcr.io/hytalemodding/hytale-proxy:latest
+          image: ghcr.io/hyplex-network/hytale-proxy:latest
           args:
             - "-config"
             - "/app/config/config.toml"

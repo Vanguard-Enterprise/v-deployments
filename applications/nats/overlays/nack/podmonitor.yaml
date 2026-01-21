@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: nack-jetstream-controller
+  namespace: nats-nack
+  labels:
+    instance: primary
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: jetstream-controller
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 15s

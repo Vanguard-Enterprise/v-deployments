@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: analytics-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/hyplex-services/overlays/analytics-service
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hyplex-analytics
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hyplex-services-config
+  namespace: hyplex-anticheat
+data:
+  REDIS_ADDR: "hyplex-redis-sentinel-sentinel.hyplex-redis.svc.cluster.local:26379"
+  NATS_URL: "nats://nats.nats.svc.cluster.local:4222"
+  LOG_LEVEL: "info"
+  LOG_PRETTY: "false"
+  SESSION_URL: "http://session-service.hyplex-session.svc.cluster.local:8080"
+  MODERATION_URL: "http://moderation-service.hyplex-moderation.svc.cluster.local:8080"
+  PLAYER_PROFILE_URL: "http://player-profile-service.hyplex-player-profile.svc.cluster.local:8080"
+  ANALYTICS_URL: "http://analytics-service.hyplex-analytics.svc.cluster.local:8080"

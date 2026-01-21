@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: world-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/hyplex-services/overlays/world-service
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hyplex-world
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

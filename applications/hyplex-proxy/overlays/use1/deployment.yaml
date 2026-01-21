@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hyplex-proxy
+  namespace: hyplex-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hyplex-proxy
+  template:
+    metadata:
+      labels:
+        app: hyplex-proxy
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      containers:
+        - name: hyplex-proxy
+          image: ghcr.io/hytalemodding/hytale-proxy:latest
+          args:
+            - "-config"
+            - "/app/config/config.toml"
+          ports:
+            - name: quic
+              containerPort: 25565
+              protocol: UDP
+            - name: messaging
+              containerPort: 25568
+              protocol: UDP
+          env:
+            - name: PROXY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hyplex-proxy-secrets
+                  key: PROXY_SECRET
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: config
+          configMap:
+            name: hyplex-proxy-config

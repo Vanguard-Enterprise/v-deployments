@@ -3,7 +3,7 @@ defaultBackupStore:
   backupTargetCredentialSecret: longhorn-backup-wasabi
   pollInterval: 300
 defaultSettings:
-  storageOverProvisioningPercentage: 200
+  storageOverProvisioningPercentage: "200"
 persistence:
   defaultClass: true
   defaultFsType: ext4

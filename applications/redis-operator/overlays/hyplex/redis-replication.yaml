@@ -6,7 +6,7 @@ metadata:
 spec:
   clusterSize: 3
   kubernetesConfig:
-    image: quay.io/opstree/redis:v7.4.1
+    image: quay.io/opstree/redis:v7.4.7
     imagePullPolicy: IfNotPresent
     redisSecret:
       name: hyplex-redis-secrets

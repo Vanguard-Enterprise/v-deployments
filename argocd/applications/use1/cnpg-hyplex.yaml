@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hyplex-cnpg
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/cloudnative-postgres/overlays/hyplex
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hyplex-pg
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

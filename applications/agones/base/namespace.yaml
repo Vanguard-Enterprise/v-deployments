@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: agones-system
+  labels:
+    app.kubernetes.io/name: agones
+    app.kubernetes.io/component: controller

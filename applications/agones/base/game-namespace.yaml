@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hyplex-game
+  labels:
+    app.kubernetes.io/name: hyplex-game
+    app.kubernetes.io/part-of: hyplex-network

@@ -1,0 +1,68 @@
+# Agones Helm Chart Values
+# https://agones.dev/site/docs/installation/install-agones/helm/
+
+agones:
+  # Feature gates
+  featureGates: ""
+
+  # Image configuration
+  image:
+    registry: us-docker.pkg.dev/agones-images/release
+    tag: 1.45.0
+    pullPolicy: IfNotPresent
+
+  # Controller configuration
+  controller:
+    replicaCount: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  # Extensions (Allocator) configuration
+  extensions:
+    replicaCount: 2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  # Ping service configuration
+  ping:
+    install: true
+    replicas: 2
+    http:
+      serviceType: ClusterIP
+      port: 80
+    udp:
+      serviceType: ClusterIP
+      port: 50000
+
+  # Allocator service configuration
+  allocator:
+    install: true
+    replicas: 2
+    service:
+      serviceType: ClusterIP
+    disableTLS: true  # TLS handled by service mesh/internal network
+
+  # Metrics configuration
+  metrics:
+    prometheusEnabled: true
+    prometheusServiceDiscovery: true
+    stackdriverEnabled: false
+
+gameservers:
+  # Namespace for game servers (Agones will watch this)
+  namespaces:
+    - hyplex-game
+
+  # Min/max port range for game servers
+  minPort: 7000
+  maxPort: 8000

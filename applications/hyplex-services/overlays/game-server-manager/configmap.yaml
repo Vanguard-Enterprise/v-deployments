@@ -8,3 +8,8 @@ data:
   NATS_URL: "nats://nats.nats.svc.cluster.local:4222"
   LOG_LEVEL: "info"
   LOG_PRETTY: "false"
+  # Agones configuration
+  AGONES_ENABLED: "true"
+  AGONES_NAMESPACE: "hyplex-game"
+  GAME_SERVER_IMAGE: "ghcr.io/hyplex-network/game-server"
+  GAME_SERVER_VERSION: "latest"

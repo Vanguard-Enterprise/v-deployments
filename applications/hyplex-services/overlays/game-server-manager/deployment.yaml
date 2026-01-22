@@ -13,6 +13,7 @@ spec:
       labels:
         app: game-server-manager
     spec:
+      serviceAccountName: game-server-manager
       imagePullSecrets:
         - name: github-pull-secret
       containers:

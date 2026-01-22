@@ -27,7 +27,7 @@ grafana.ini:
     enabled: true
     name: "VANGUARD SSO"
     allow_sign_up: true
-    client_id: "327050265184241030"
+    client_id: "356670791548470770"
     auth_url: https://accounts.vngenterprise.com/oauth/v2/authorize
     token_url: https://accounts.vngenterprise.com/oauth/v2/token
     api_url: https://accounts.vngenterprise.com/oidc/v1/userinfo

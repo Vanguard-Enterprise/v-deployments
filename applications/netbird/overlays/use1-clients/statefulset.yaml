@@ -31,10 +31,6 @@ spec:
             capabilities:
               add:
                 - NET_ADMIN
-          resources:
-            limits:
-              cpu: "250m"
-              memory: "256Mi"
   volumeClaimTemplates:
     - metadata:
         name: client-data

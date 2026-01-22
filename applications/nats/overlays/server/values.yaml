@@ -61,11 +61,3 @@ statefulSet:
                         app.kubernetes.io/name: nats
                     topologyKey: kubernetes.io/hostname
 
-container:
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi

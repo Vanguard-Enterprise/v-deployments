@@ -19,13 +19,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: netbird-dashboard-env
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "250m"
-              memory: "256Mi"
           ports:
             - name: http
               containerPort: 80
@@ -48,13 +41,6 @@ spec:
       containers:
         - name: signal
           image: netbirdio/signal:latest
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "250m"
-              memory: "256Mi"
           volumeMounts:
             - name: signal-data
               mountPath: /var/lib/netbird
@@ -84,13 +70,6 @@ spec:
       containers:
         - name: relay
           image: netbirdio/relay:latest
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "250m"
-              memory: "256Mi"
           envFrom:
             - configMapRef:
                 name: netbird-relay-env
@@ -118,13 +97,6 @@ spec:
       containers:
         - name: management
           image: netbirdio/management:latest
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "250m"
-              memory: "256Mi"
           args:
             - "--port"
             - "80"
@@ -174,13 +146,6 @@ spec:
       containers:
         - name: coturn
           image: coturn/coturn:latest
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "250m"
-              memory: "256Mi"
           args:
             - "-c"
             - "/etc/turnserver.conf"

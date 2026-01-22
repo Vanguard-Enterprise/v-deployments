@@ -14,23 +14,9 @@ spec:
     redisSecret:
       name: hyplex-redis-secrets
       key: password
-    resources:
-      requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
-        cpu: 1000m
-        memory: 1Gi
   redisExporter:
     enabled: true
     image: quay.io/opstree/redis-exporter:v1.44.0
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 100m
-        memory: 128Mi
   storage:
     volumeClaimTemplate:
       spec:

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linear-notifier
+  namespace: linear-notifier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linear-notifier
+  template:
+    metadata:
+      labels:
+        app: linear-notifier
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      containers:
+        - name: linear-notifier
+          image: ghcr.io/hyplex-network/linear-notifier:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: linear-notifier-secrets
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10

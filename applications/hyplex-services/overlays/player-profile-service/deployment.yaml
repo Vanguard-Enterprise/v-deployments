@@ -42,13 +42,6 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 5
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "200m"
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

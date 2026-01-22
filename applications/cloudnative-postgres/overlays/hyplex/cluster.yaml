@@ -15,13 +15,6 @@ spec:
   storage:
     size: 20Gi
     storageClass: longhorn
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "500m"
-    limits:
-      memory: "1Gi"
-      cpu: "1000m"
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname

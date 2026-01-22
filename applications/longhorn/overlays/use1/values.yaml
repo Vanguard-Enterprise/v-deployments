@@ -4,6 +4,7 @@ defaultBackupStore:
   pollInterval: 300
 defaultSettings:
   storageOverProvisioningPercentage: "300"
+  replicaAutoBalance: best-effort
 persistence:
   defaultClass: true
   defaultFsType: ext4

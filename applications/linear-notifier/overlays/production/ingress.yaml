@@ -15,4 +15,6 @@ spec:
         - name: linear-notifier
           port: 3000
   tls:
-    certResolver: letsencrypt
+    store:
+      name: default
+      namespace: traefik

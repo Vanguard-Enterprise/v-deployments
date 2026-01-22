@@ -8,3 +8,6 @@ data:
   NATS_URL: "nats://nats.nats.svc.cluster.local:4222"
   LOG_LEVEL: "info"
   LOG_PRETTY: "false"
+  # R2 Storage configuration
+  R2_ENDPOINT_URL: "https://worlds.production.hyplex.gg"
+  R2_BUCKET_NAME: "hyplex-worlds"

@@ -12,8 +12,8 @@ spec:
       targetPort: 25565
       protocol: UDP
     - name: messaging
-      port: 25568
-      targetPort: 25568
+      port: 25570
+      targetPort: 25570
       protocol: UDP
   selector:
     app: hyplex-proxy

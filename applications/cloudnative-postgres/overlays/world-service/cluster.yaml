@@ -1,0 +1,33 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: world-service
+  namespace: world-service-db
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: world_service
+      owner: world_service_user
+      secret:
+        name: world-service-db-secrets
+  storage:
+    size: 512Mi
+    storageClass: longhorn
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://hyplex-production-pg-backups/world-service/
+      endpointURL: https://pg-backup.production.hyplex.gg
+      s3Credentials:
+        accessKeyId:
+          name: world-service-db-secrets
+          key: S3_ACCESS_KEY_ID
+        secretAccessKey:
+          name: world-service-db-secrets
+          key: S3_SECRET_ACCESS_KEY
+      wal:
+        compression: gzip

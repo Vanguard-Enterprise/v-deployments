@@ -1,17 +1,17 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: hyplex
-  namespace: hyplex-pg
+  name: player-profile
+  namespace: player-profile-db
 spec:
   instances: 3
   primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:
-      database: hyplex
-      owner: hyplex_user
+      database: player_profile
+      owner: player_profile_user
       secret:
-        name: hyplex-pg-secrets
+        name: player-profile-db-secrets
   storage:
     size: 5Gi
     storageClass: longhorn
@@ -20,14 +20,14 @@ spec:
     topologyKey: kubernetes.io/hostname
   backup:
     barmanObjectStore:
-      destinationPath: s3://hyplex-production-pg-backups/
+      destinationPath: s3://hyplex-production-pg-backups/player-profile/
       endpointURL: https://pg-backup.production.hyplex.gg
       s3Credentials:
         accessKeyId:
-          name: hyplex-pg-secrets
+          name: player-profile-db-secrets
           key: S3_ACCESS_KEY_ID
         secretAccessKey:
-          name: hyplex-pg-secrets
+          name: player-profile-db-secrets
           key: S3_SECRET_ACCESS_KEY
       wal:
         compression: gzip

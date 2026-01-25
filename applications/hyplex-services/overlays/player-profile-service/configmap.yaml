@@ -4,9 +4,9 @@ metadata:
   name: hyplex-services-config
   namespace: hyplex-player-profile
 data:
-  DB_HOST: "hyplex-pooler-rw.hyplex-pg.svc.cluster.local"
+  DB_HOST: "player-profile-pooled-rw.player-profile-db.svc.cluster.local"
   DB_PORT: "5432"
-  DB_NAME: "hyplex"
-  DB_USER: "postgres"
+  DB_NAME: "player_profile"
+  DB_USER: "player_profile_user"
   LOG_LEVEL: "info"
   LOG_PRETTY: "false"

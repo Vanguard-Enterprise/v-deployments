@@ -1,14 +1,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: hyplex-pg-cnpg
-  namespace: hyplex-pg
+  name: player-profile-db-cnpg
+  namespace: player-profile-db
   labels:
     instance: primary
 spec:
   selector:
     matchLabels:
-      cnpg.io/cluster: hyplex
+      cnpg.io/cluster: player-profile
   podMetricsEndpoints:
     - port: metrics
       interval: 15s

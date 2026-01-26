@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: worlds-frontend-config
+  namespace: worlds-frontend
+data:
+  NEXT_PUBLIC_API_URL: "http://world-service.hyplex-world.svc.cluster.local:8080"

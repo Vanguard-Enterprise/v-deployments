@@ -10,4 +10,4 @@ data:
   LOG_PRETTY: "false"
   # R2 Storage configuration
   R2_ENDPOINT_URL: "https://worlds.production.hyplex.gg"
-  R2_BUCKET_NAME: "hyplex-worlds"
+  R2_BUCKET_NAME: "worlds"

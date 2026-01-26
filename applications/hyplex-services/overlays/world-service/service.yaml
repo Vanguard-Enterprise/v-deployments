@@ -3,10 +3,8 @@ kind: Service
 metadata:
   name: world-service
   namespace: hyplex-world
-  annotations:
-    metallb.universe.tf/loadBalancerIPs: 10.1.50.181
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - name: http
       port: 8080

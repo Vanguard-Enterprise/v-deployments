@@ -9,5 +9,5 @@ data:
   LOG_LEVEL: "info"
   LOG_PRETTY: "false"
   # R2 Storage configuration
-  R2_ENDPOINT_URL: "https://worlds.production.hyplex.gg"
+  R2_ENDPOINT_URL: "https://557bf24a406c7d5b80d2874f6937616c.r2.cloudflarestorage.com"
   R2_BUCKET_NAME: "worlds"

@@ -6,4 +6,4 @@ metadata:
 data:
   # Server-side URLs for API proxy (not exposed to browser)
   ADMIN_SERVICE_URL: "http://admin-service.hyplex-admin.svc.cluster.local:8080"
-  WORLD_SERVICE_URL: "http://world-service.hyplex.svc.cluster.local:8080"
+  WORLD_SERVICE_URL: "http://world-service.hyplex-world.svc.cluster.local:8080"

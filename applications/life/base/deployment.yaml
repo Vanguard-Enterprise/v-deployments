@@ -75,4 +75,4 @@ spec:
           persistentVolumeClaim:
             claimName: life-data
       imagePullSecrets:
-        - name: ghcr-secret
+        - name: github-pull-secret

@@ -10,6 +10,7 @@ resources:
   - ingress.yaml
   - pvc.yaml
   - external-secret.yaml
+  - github-pull-secret.yaml
 
 images:
   - name: ghcr.io/hyplex-network/life

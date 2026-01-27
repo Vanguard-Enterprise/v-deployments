@@ -28,6 +28,8 @@ spec:
               value: "production"
             - name: DATABASE_URL
               value: "file:/app/data/life.db"
+            - name: NEXT_PUBLIC_APP_URL
+              value: "https://life.vngenterprise.com"
             - name: AUTH_USERNAME
               valueFrom:
                 secretKeyRef:

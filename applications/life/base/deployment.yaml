@@ -48,6 +48,26 @@ spec:
                 secretKeyRef:
                   name: life-secrets
                   key: health-api-key
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: life-secrets
+                  key: encryption-key
+            - name: PLAID_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: life-secrets
+                  key: plaid-client-id
+            - name: PLAID_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: life-secrets
+                  key: plaid-secret
+            - name: PLAID_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: life-secrets
+                  key: plaid-env
           volumeMounts:
             - name: data
               mountPath: /app/data

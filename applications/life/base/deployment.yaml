@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: life
-  namespace: hyplex
+  namespace: life
   labels:
     app: life
 spec:

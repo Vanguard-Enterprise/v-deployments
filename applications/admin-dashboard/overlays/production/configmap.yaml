@@ -4,4 +4,5 @@ metadata:
   name: admin-dashboard-config
   namespace: admin-dashboard
 data:
-  NEXT_PUBLIC_API_URL: "http://admin-service.hyplex-admin.svc.cluster.local:8080"
+  # Server-side URL for API proxy (not exposed to browser)
+  ADMIN_SERVICE_URL: "http://admin-service.hyplex-admin.svc.cluster.local:8080"

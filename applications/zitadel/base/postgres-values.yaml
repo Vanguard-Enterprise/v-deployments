@@ -12,7 +12,7 @@ auth:
   existingSecret: "zitadel-secret"
 primary:
   persistence:
-    size: 1Gi
+    size: 5Gi
 
 image:
   registry: docker.io

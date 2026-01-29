@@ -5,6 +5,7 @@ resources:
   - podmonitor.yaml
   - clusterimagecatalog.yaml
   - imagecatalog.yaml
+  - prometheusrule.yaml
 helmCharts:
   - name: cloudnative-pg
     version: "0.26.1"

@@ -6,3 +6,4 @@ resources:
   - redis-replication.yaml
   - redis-sentinel.yaml
   - podmonitor.yaml
+  - prometheusrule.yaml

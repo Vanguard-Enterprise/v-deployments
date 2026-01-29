@@ -1,0 +1,60 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: nats-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: nats.rules
+      rules:
+        - alert: NATSDown
+          annotations:
+            description: NATS server {{ $labels.instance }} is down.
+            summary: NATS server is down
+          expr: up{job=~".*nats.*"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            issue: NATS server down
+
+        - alert: NATSSlowConsumer
+          annotations:
+            description: NATS has {{ $value }} slow consumers on {{ $labels.instance }}.
+            summary: NATS slow consumers detected
+          expr: nats_core_slow_consumer_count > 0
+          for: 5m
+          labels:
+            severity: warning
+            issue: NATS slow consumers
+
+        - alert: NATSHighPendingMessages
+          annotations:
+            description: NATS JetStream has {{ $value }} pending messages on stream {{ $labels.stream }}.
+            summary: NATS JetStream high pending messages
+          expr: nats_consumer_num_pending > 10000
+          for: 10m
+          labels:
+            severity: warning
+            issue: NATS high pending messages
+
+        - alert: NATSJetStreamStorageHigh
+          annotations:
+            description: NATS JetStream storage usage is {{ $value | humanize1024 }}B on {{ $labels.instance }}.
+            summary: NATS JetStream storage high
+          expr: nats_server_jetstream_storage_used_bytes / nats_server_jetstream_storage_reserved_bytes > 0.85
+          for: 10m
+          labels:
+            severity: warning
+            issue: NATS JetStream storage high
+
+        - alert: NATSClusterNotHealthy
+          annotations:
+            description: NATS cluster has only {{ $value }} nodes instead of expected 3.
+            summary: NATS cluster not fully healthy
+          expr: count(nats_core_info) < 3
+          for: 5m
+          labels:
+            severity: warning
+            issue: NATS cluster degraded

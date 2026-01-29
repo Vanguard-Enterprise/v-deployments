@@ -1,0 +1,80 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: mimir-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: mimir.rules
+      rules:
+        - alert: MimirIngesterUnhealthy
+          annotations:
+            description: Mimir ingester {{ $labels.pod }} is unhealthy.
+            summary: Mimir ingester unhealthy
+          expr: mimir_ring_members{state="Unhealthy", name="ingester"} > 0
+          for: 5m
+          labels:
+            severity: critical
+            issue: Mimir ingester unhealthy
+
+        - alert: MimirDistributorHighLatency
+          annotations:
+            description: Mimir distributor {{ $labels.pod }} has high push latency ({{ $value | humanizeDuration }}).
+            summary: Mimir distributor high latency
+          expr: histogram_quantile(0.99, rate(cortex_distributor_latency_bucket[5m])) > 2
+          for: 5m
+          labels:
+            severity: warning
+            issue: Mimir distributor latency
+
+        - alert: MimirIngesterDiskFull
+          annotations:
+            description: Mimir ingester {{ $labels.pod }} disk is {{ $value | humanizePercentage }} full.
+            summary: Mimir ingester disk full
+          expr: kubelet_volume_stats_used_bytes{persistentvolumeclaim=~"storage-mimir-ingester.*"} / kubelet_volume_stats_capacity_bytes > 0.85
+          for: 5m
+          labels:
+            severity: critical
+            issue: Mimir ingester disk full
+
+        - alert: MimirCompactorNotRunning
+          annotations:
+            description: Mimir compactor is not running.
+            summary: Mimir compactor down
+          expr: up{job=~".*mimir-compactor.*"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            issue: Mimir compactor down
+
+        - alert: MimirQuerierHighLatency
+          annotations:
+            description: Mimir querier has high query latency ({{ $value | humanizeDuration }}).
+            summary: Mimir querier high latency
+          expr: histogram_quantile(0.99, rate(cortex_query_frontend_query_range_duration_seconds_bucket[5m])) > 30
+          for: 10m
+          labels:
+            severity: warning
+            issue: Mimir querier latency
+
+        - alert: MimirHighErrorRate
+          annotations:
+            description: Mimir has high error rate ({{ $value | humanizePercentage }}).
+            summary: Mimir high error rate
+          expr: rate(cortex_request_duration_seconds_count{status_code=~"5.."}[5m]) / rate(cortex_request_duration_seconds_count[5m]) > 0.05
+          for: 5m
+          labels:
+            severity: warning
+            issue: Mimir high error rate
+
+        - alert: MimirRulerFailures
+          annotations:
+            description: Mimir ruler has {{ $value }} evaluation failures.
+            summary: Mimir ruler failures
+          expr: rate(cortex_ruler_evaluation_failed_total[5m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+            issue: Mimir ruler failures

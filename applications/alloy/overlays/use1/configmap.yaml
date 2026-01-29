@@ -84,7 +84,7 @@ data:
 
     prometheus.scrape "kubelet" {
       targets         = discovery.relabel.kubelet.output
-      scrape_interval = "30s"
+      scrape_interval = "60s"
       scheme          = "https"
       bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
       tls_config {
@@ -95,7 +95,7 @@ data:
 
     prometheus.scrape "kubelet_cadvisor" {
       targets         = discovery.relabel.kubelet_cadvisor.output
-      scrape_interval = "30s"
+      scrape_interval = "60s"
       scheme          = "https"
       job_name        = "kubelet"
       bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
@@ -107,7 +107,7 @@ data:
 
     prometheus.scrape "ksm" {
       targets         = discovery.kubernetes.ksm.targets
-      scrape_interval = "30s"
+      scrape_interval = "60s"
       job_name        = "kube-state-metrics"
       forward_to      = [prometheus.remote_write.mimir.receiver]
     }

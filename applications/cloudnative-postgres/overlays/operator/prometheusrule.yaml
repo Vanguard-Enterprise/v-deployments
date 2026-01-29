@@ -1,0 +1,80 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cnpg-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: cnpg.rules
+      rules:
+        - alert: CNPGClusterNotHealthy
+          annotations:
+            description: CloudNative PostgreSQL cluster {{ $labels.cluster }} in namespace {{ $labels.namespace }} is not healthy.
+            summary: CNPG cluster not healthy
+          expr: cnpg_cluster_status != 1
+          for: 5m
+          labels:
+            severity: critical
+            issue: CNPG cluster not healthy
+
+        - alert: CNPGReplicationLag
+          annotations:
+            description: CloudNative PostgreSQL replica {{ $labels.pod }} has {{ $value | humanizeDuration }} replication lag.
+            summary: CNPG replication lag detected
+          expr: cnpg_pg_replication_lag > 30
+          for: 5m
+          labels:
+            severity: warning
+            issue: CNPG replication lag
+
+        - alert: CNPGHighConnections
+          annotations:
+            description: CloudNative PostgreSQL {{ $labels.pod }} has {{ $value | humanizePercentage }} connection usage.
+            summary: CNPG connection usage high
+          expr: cnpg_backends_total / cnpg_pg_settings_max_connections > 0.8
+          for: 5m
+          labels:
+            severity: warning
+            issue: CNPG connections high
+
+        - alert: CNPGDiskSpaceLow
+          annotations:
+            description: CloudNative PostgreSQL {{ $labels.pod }} disk space is {{ $value | humanizePercentage }} full.
+            summary: CNPG disk space low
+          expr: (cnpg_pg_database_size_bytes / cnpg_pg_tablespace_size_bytes) > 0.85
+          for: 10m
+          labels:
+            severity: warning
+            issue: CNPG disk space low
+
+        - alert: CNPGBackupFailed
+          annotations:
+            description: CloudNative PostgreSQL cluster {{ $labels.cluster }} backup has failed.
+            summary: CNPG backup failed
+          expr: cnpg_collector_last_failed_backup_timestamp > cnpg_collector_last_available_backup_timestamp
+          for: 5m
+          labels:
+            severity: critical
+            issue: CNPG backup failed
+
+        - alert: CNPGWALArchiveFailed
+          annotations:
+            description: CloudNative PostgreSQL {{ $labels.pod }} WAL archiving has failed.
+            summary: CNPG WAL archive failed
+          expr: cnpg_pg_wal_archive_failed_count > 0
+          for: 5m
+          labels:
+            severity: warning
+            issue: CNPG WAL archive failed
+
+        - alert: CNPGInstanceDown
+          annotations:
+            description: CloudNative PostgreSQL instance {{ $labels.pod }} is down.
+            summary: CNPG instance down
+          expr: cnpg_collector_up == 0
+          for: 2m
+          labels:
+            severity: critical
+            issue: CNPG instance down

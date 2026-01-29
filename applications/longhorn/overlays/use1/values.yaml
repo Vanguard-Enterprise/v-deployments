@@ -16,4 +16,4 @@ persistence:
   recurringJobSelector:
     enable: true
     jobList:
-      - '{"name":"r2-policy","isGroup":true}'
+      - '{"name":"default","isGroup":true}'

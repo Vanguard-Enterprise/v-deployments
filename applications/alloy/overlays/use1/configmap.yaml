@@ -14,6 +14,24 @@ data:
       }
     }
 
+    // Relabel to drop high-cardinality labels and unused metrics
+    prometheus.relabel "drop_high_cardinality" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
+
+      // Drop container id/name labels that explode cardinality
+      rule {
+        action = "labeldrop"
+        regex  = "id|name|container_id|image_id|image"
+      }
+
+      // Drop metrics that are rarely used
+      rule {
+        source_labels = ["__name__"]
+        regex         = "container_tasks_state|container_memory_failures_total|container_blkio_device_usage_total|container_fs_inodes_free|container_fs_inodes_total|container_fs_io_current|container_fs_io_time_seconds_total|container_fs_io_time_weighted_seconds_total|container_fs_limit_bytes|container_fs_read_seconds_total|container_fs_reads_merged_total|container_fs_sector_reads_total|container_fs_sector_writes_total|container_fs_write_seconds_total|container_fs_writes_merged_total|container_last_seen|container_scrape_error|container_sockets|container_spec_cpu_period|container_spec_cpu_quota|container_spec_cpu_shares|container_start_time_seconds|container_threads|container_threads_max|container_ulimits_soft"
+        action        = "drop"
+      }
+    }
+
     discovery.kubernetes "nodes" {
       role = "node"
     }
@@ -79,12 +97,12 @@ data:
       targets         = discovery.relabel.kubelet_cadvisor.output
       scrape_interval = "30s"
       scheme          = "https"
-      job_name        = "kubelet" 
+      job_name        = "kubelet"
       bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
       tls_config {
         ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
       }
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.drop_high_cardinality.receiver]
     }
 
     prometheus.scrape "ksm" {

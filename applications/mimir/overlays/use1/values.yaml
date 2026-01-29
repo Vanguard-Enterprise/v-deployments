@@ -20,7 +20,7 @@ kafka:
 mimir:
   structuredConfig:
     limits:
-      compactor_blocks_retention_period: 30d
+      compactor_blocks_retention_period: 14d
       max_total_query_length: 72h
     common:
       storage:
@@ -37,6 +37,11 @@ mimir:
       backend: s3
       s3:
         bucket_name: "${TSDB_BUCKET_NAME}"
+      tsdb:
+        block_ranges_period: ["1h"]
+        retention_period: 6h
+        head_compaction_interval: 15m
+        head_compaction_idle_timeout: 1h
     alertmanager_storage:
       backend: s3
       s3:
@@ -48,20 +53,22 @@ mimir:
     ingest_storage:
       enabled: false
     ingester:
+      ring:
+        replication_factor: 1
       push_grpc_method_enabled: true
 
 ingester:
   statefulSet:
     enabled: true
   persistentVolume:
-    size: 40Gi
+    size: 20Gi
     storageClass: "longhorn"
   zoneAwareReplication:
     enabled: false
 
 compactor:
   persistentVolume:
-    size: 20Gi
+    size: 10Gi
     storageClass: "longhorn"
 
 global:

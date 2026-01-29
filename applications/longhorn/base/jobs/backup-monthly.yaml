@@ -1,12 +1,12 @@
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob
 metadata:
-  name: r2-backup-hourly
+  name: r2-backup-monthly
   namespace: longhorn-system
 spec:
-  cron: "0 * * * *"
+  cron: "0 0 1 * *"
   task: backup
-  retain: 24
+  retain: 4
   concurrency: 2
   groups:
     - r2-policy

@@ -1,6 +1,6 @@
 defaultBackupStore:
-  backupTarget: s3://longhorn-backups@us-east-1/
-  backupTargetCredentialSecret: longhorn-backup-wasabi
+  backupTarget: s3://longhorn-backups@auto/
+  backupTargetCredentialSecret: longhorn-backup-r2
   pollInterval: 300
 defaultSettings:
   storageOverProvisioningPercentage: "300"

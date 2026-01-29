@@ -1,5 +1,5 @@
 defaultBackupStore:
-  backupTarget: s3://vanguard-longhorn@us-east-1/
+  backupTarget: s3://longhorn-backups@us-east-1/
   backupTargetCredentialSecret: longhorn-backup-wasabi
   pollInterval: 300
 defaultSettings:

@@ -1,7 +1,7 @@
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob
 metadata:
-  name: wasabi-backup-6h
+  name: r2-backup-6h
   namespace: longhorn-system
 spec:
   cron: "0 */6 * * *"
@@ -9,4 +9,4 @@ spec:
   retain: 100
   concurrency: 2
   groups:
-    - wasabi-policy
+    - r2-policy

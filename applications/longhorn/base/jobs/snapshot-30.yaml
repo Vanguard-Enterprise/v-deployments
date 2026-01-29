@@ -9,4 +9,4 @@ spec:
   retain: 12
   concurrency: 2
   groups:
-    - wasabi-policy
+    - r2-policy

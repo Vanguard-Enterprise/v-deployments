@@ -48,3 +48,23 @@ spec:
           labels:
             severity: critical
             issue: Longhorn node offline
+
+        - alert: LonghornBackupFailed
+          annotations:
+            description: Longhorn backup for volume {{$labels.volume}} has failed.
+            summary: Longhorn backup failed
+          expr: longhorn_backup_state == 3
+          for: 5m
+          labels:
+            severity: critical
+            issue: Longhorn backup failed
+
+        - alert: LonghornBackupTooOld
+          annotations:
+            description: No successful backup for volume {{$labels.volume}} in the last 25 hours.
+            summary: Longhorn backup is stale
+          expr: time() - longhorn_volume_last_backup_timestamp > 90000
+          for: 5m
+          labels:
+            severity: warning
+            issue: Longhorn backup stale

@@ -1,0 +1,70 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: redis-alerts
+  namespace: alloy-metrics
+  labels:
+    alloy_rules: pods
+spec:
+  groups:
+    - name: redis.rules
+      rules:
+        - alert: RedisDown
+          annotations:
+            description: Redis instance {{ $labels.instance }} is down.
+            summary: Redis is down
+          expr: redis_up == 0
+          for: 2m
+          labels:
+            severity: critical
+            issue: Redis down
+
+        - alert: RedisSentinelDown
+          annotations:
+            description: Redis Sentinel {{ $labels.instance }} is down.
+            summary: Redis Sentinel is down
+          expr: redis_sentinel_up == 0
+          for: 2m
+          labels:
+            severity: critical
+            issue: Redis Sentinel down
+
+        - alert: RedisMemoryHigh
+          annotations:
+            description: Redis instance {{ $labels.instance }} memory usage is {{ $value | humanizePercentage }}.
+            summary: Redis memory usage high
+          expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+          for: 5m
+          labels:
+            severity: warning
+            issue: Redis memory high
+
+        - alert: RedisTooManyConnections
+          annotations:
+            description: Redis instance {{ $labels.instance }} has {{ $value }} connections (max {{ $labels.maxclients }}).
+            summary: Redis connection count high
+          expr: redis_connected_clients / redis_config_maxclients > 0.8
+          for: 5m
+          labels:
+            severity: warning
+            issue: Redis connections high
+
+        - alert: RedisReplicationBroken
+          annotations:
+            description: Redis instance {{ $labels.instance }} replication is broken.
+            summary: Redis replication broken
+          expr: redis_connected_slaves < 1
+          for: 5m
+          labels:
+            severity: critical
+            issue: Redis replication broken
+
+        - alert: RedisSentinelNoMaster
+          annotations:
+            description: Redis Sentinel {{ $labels.instance }} cannot find master.
+            summary: Redis Sentinel has no master
+          expr: redis_sentinel_master_status != 1
+          for: 2m
+          labels:
+            severity: critical
+            issue: Redis Sentinel no master

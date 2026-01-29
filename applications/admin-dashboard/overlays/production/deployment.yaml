@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: admin-dashboard
+      annotations:
+        # Increment this to trigger a rolling restart when configmap changes
+        config-revision: "2"
     spec:
       imagePullSecrets:
         - name: github-pull-secret

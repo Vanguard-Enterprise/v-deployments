@@ -13,8 +13,7 @@ persistence:
   reclaimPolicy: Retain
   volumeBindingMode: Immediate
   disableRevisionCounter: "true"
-#  backupTargetName: r2
-#  recurringJobSelector:
-#    enable: true
-#    jobList:
-#      - '[{"name":"r2-policy","isGroup":true}]'
+  recurringJobSelector:
+    enable: true
+    jobList:
+      - '{"name":"r2-policy","isGroup":true}'

@@ -20,8 +20,8 @@ spec:
     topologyKey: kubernetes.io/hostname
   backup:
     barmanObjectStore:
-      destinationPath: s3://hyplex-production-pg-backups/world-service/
-      endpointURL: https://pg-backup.production.hyplex.gg
+      destinationPath: s3://world-service/
+      endpointURL: https://postgres.hyplex.gg
       s3Credentials:
         accessKeyId:
           name: world-service-db-secrets

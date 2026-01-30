@@ -20,8 +20,8 @@ spec:
     topologyKey: kubernetes.io/hostname
   backup:
     barmanObjectStore:
-      destinationPath: s3://hyplex-production-pg-backups/player-profile/
-      endpointURL: https://pg-backup.production.hyplex.gg
+      destinationPath: s3://postgres/player-profile/
+      endpointURL: https://557bf24a406c7d5b80d2874f6937616c.r2.cloudflarestorage.com
       s3Credentials:
         accessKeyId:
           name: player-profile-db-secrets

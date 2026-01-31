@@ -7,3 +7,4 @@ resources:
   - external-secret.yaml
   - deployment.yaml
   - service.yaml
+  - service-lb.yaml

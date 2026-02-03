@@ -11,5 +11,6 @@ data:
   # Agones configuration
   AGONES_ENABLED: "true"
   AGONES_NAMESPACE: "hyplex-game"
-  GAME_SERVER_IMAGE: "ghcr.io/hyplex-network/game-server"
+  GAME_SERVER_IMAGE: "ghcr.io/hyplex-network/hytale-server"
   GAME_SERVER_VERSION: "latest"
+  CONFIG_SERVICE_URL: "http://configuration-service.hyplex-configuration.svc.cluster.local:8080"

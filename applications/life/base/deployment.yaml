@@ -20,6 +20,9 @@ spec:
       containers:
         - name: life
           image: ghcr.io/hyplex-network/life:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - npx prisma db push --accept-data-loss && node server.js
           ports:
             - containerPort: 3000
               protocol: TCP

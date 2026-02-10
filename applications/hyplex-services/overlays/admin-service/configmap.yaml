@@ -4,7 +4,7 @@ metadata:
   name: hyplex-services-config
   namespace: hyplex-admin
 data:
-  REDIS_ADDR: "hyplex-redis-sentinel-sentinel.hyplex-redis.svc.cluster.local:26379"
+  REDIS_ADDR: "hyplex-redis-master.hyplex-redis.svc.cluster.local:6379"
   LOG_LEVEL: "info"
   LOG_PRETTY: "false"
   PLAYER_PROFILE_URL: "http://player-profile-service.hyplex-player-profile.svc.cluster.local:8080"

@@ -4,7 +4,7 @@ metadata:
   name: hyplex-services-config
   namespace: hyplex-friends
 data:
-  REDIS_ADDR: "hyplex-redis-sentinel-sentinel.hyplex-redis.svc.cluster.local:26379"
+  REDIS_ADDR: "hyplex-redis-master.hyplex-redis.svc.cluster.local:6379"
   NATS_URL: "nats://nats.nats.svc.cluster.local:4222"
   LOG_LEVEL: "info"
   LOG_PRETTY: "false"

@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - game-namespace.yaml
   - external-secret-r2.yaml
+  - external-secret-secrets.yaml
 helmCharts:
   - name: agones
     version: 1.45.0

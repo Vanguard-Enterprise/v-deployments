@@ -11,7 +11,7 @@ spec:
       app: hyplex-redis
   podMetricsEndpoints:
     - port: redis-exporter
-      interval: 15s
+      interval: 60s
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
@@ -26,4 +26,4 @@ spec:
       app: hyplex-redis-sentinel
   podMetricsEndpoints:
     - port: redis-exporter
-      interval: 15s
+      interval: 60s

@@ -1,3 +1,13 @@
+longhornManager:
+  tolerations:
+    - key: "node.kubernetes.io/disk-pressure"
+      operator: "Exists"
+      effect: "NoSchedule"
+longhornDriver:
+  tolerations:
+    - key: "node.kubernetes.io/disk-pressure"
+      operator: "Exists"
+      effect: "NoSchedule"
 defaultBackupStore:
   backupTarget: s3://longhorn-backups@auto/
   backupTargetCredentialSecret: longhorn-backup-r2

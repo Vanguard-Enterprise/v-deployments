@@ -10,24 +10,12 @@ rbac:
 logLevel: info
 
 serviceMonitor:
-  enabled: true
-  interval: 30s
-  scrapeTimeout: 25s
-  additionalLabels:
-    instance: primary
+  enabled: false
 
 webhook:
   serviceMonitor:
-    enabled: true
-    interval: 30s
-    scrapeTimeout: 25s
-    additionalLabels:
-      instance: primary
+    enabled: false
 
 certController:
   serviceMonitor:
-    enabled: true
-    interval: 30s
-    scrapeTimeout: 25s
-    additionalLabels:
-      instance: primary
+    enabled: false

@@ -11,4 +11,4 @@ spec:
       cnpg.io/cluster: player-profile
   podMetricsEndpoints:
     - port: metrics
-      interval: 15s
+      interval: 60s

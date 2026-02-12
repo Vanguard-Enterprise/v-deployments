@@ -11,4 +11,4 @@ spec:
       app.kubernetes.io/name: jetstream-controller
   podMetricsEndpoints:
     - port: metrics
-      interval: 15s
+      interval: 60s

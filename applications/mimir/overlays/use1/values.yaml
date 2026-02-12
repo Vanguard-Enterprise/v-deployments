@@ -20,7 +20,7 @@ kafka:
 mimir:
   structuredConfig:
     limits:
-      compactor_blocks_retention_period: 14d
+      compactor_blocks_retention_period: 7d
       max_total_query_length: 72h
     common:
       storage:

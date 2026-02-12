@@ -1,4 +1,9 @@
 replicaCount: 3
+serviceAccount:
+  create: true
+  annotations: {}
+configMap:
+  annotations: {}
 zitadel:
   masterkeySecretName: zitadel-secret
   configSecretName: zitadel-secret-config

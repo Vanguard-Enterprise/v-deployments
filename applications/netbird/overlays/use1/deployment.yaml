@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: netbirdio/dashboard:v2.28.0
+          image: netbirdio/dashboard:v2.32.2
           envFrom:
             - configMapRef:
                 name: netbird-dashboard-env
@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
         - name: signal
-          image: netbirdio/signal:0.64.1
+          image: netbirdio/signal:0.65.1
           volumeMounts:
             - name: signal-data
               mountPath: /var/lib/netbird
@@ -69,7 +69,7 @@ spec:
     spec:
       containers:
         - name: relay
-          image: netbirdio/relay:0.64.1
+          image: netbirdio/relay:0.65.1
           envFrom:
             - configMapRef:
                 name: netbird-relay-env
@@ -96,7 +96,7 @@ spec:
     spec:
       containers:
         - name: management
-          image: netbirdio/management:0.64.1
+          image: netbirdio/management:0.65.1
           args:
             - "--port"
             - "80"
@@ -162,8 +162,8 @@ spec:
               protocol: TCP
       volumes:
         - name: turn-config
-          secretName:
-            name: netbird-turn-config
+          secret:
+            secretName: netbird-turn-config
             items:
               - key: turnserver.conf
                 path: turnserver.conf

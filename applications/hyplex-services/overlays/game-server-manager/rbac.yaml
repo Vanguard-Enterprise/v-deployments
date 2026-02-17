@@ -25,6 +25,14 @@ rules:
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["get", "list", "watch"]
+  # Read pod logs for server log viewer
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+  # Attach to pod stdin for server console
+  - apiGroups: [""]
+    resources: ["pods/attach"]
+    verbs: ["create"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

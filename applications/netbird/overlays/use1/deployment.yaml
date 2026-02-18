@@ -26,144 +26,56 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: netbird-signal
+  name: netbird-server
   namespace: netbird
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: netbird-signal
+      app: netbird-server
   template:
     metadata:
       labels:
-        app: netbird-signal
+        app: netbird-server
     spec:
       containers:
-        - name: signal
-          image: netbirdio/signal:0.65.1
+        - name: server
+          image: netbirdio/netbird-server:0.65.2
+          args:
+            - "--config"
+            - "/etc/netbird/config.yaml"
           volumeMounts:
-            - name: signal-data
+            - name: server-data
               mountPath: /var/lib/netbird
-          ports:
-            - name: grpc
-              containerPort: 10000
-      volumes:
-        - name: signal-data
-          persistentVolumeClaim:
-            claimName: netbird-signal-pvc
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: netbird-relay
-  namespace: netbird
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: netbird-relay
-  template:
-    metadata:
-      labels:
-        app: netbird-relay
-    spec:
-      containers:
-        - name: relay
-          image: netbirdio/relay:0.65.1
-          envFrom:
-            - configMapRef:
-                name: netbird-relay-env
-            - secretRef:
-                name: netbird-relay-env
+            - name: server-config
+              mountPath: /etc/netbird/config.yaml
+              subPath: config.yaml
           ports:
             - name: http
               containerPort: 80
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: netbird-management
-  namespace: netbird
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: netbird-management
-  template:
-    metadata:
-      labels:
-        app: netbird-management
-    spec:
-      containers:
-        - name: management
-          image: netbirdio/management:0.65.1
-          args:
-            - "--port"
-            - "80"
-            - "--log-file"
-            - "console"
-            - "--log-level"
-            - "info"
-            - "--disable-anonymous-metrics=false"
-            - "--single-account-mode-domain=intra.vngenterprise.com"
-            - "--dns-domain=intra.vngenterprise.com"
-            - "--idp-sign-key-refresh-enabled"
-          volumeMounts:
-            - name: management-data
-              mountPath: /var/lib/netbird
-            - name: management-config
-              mountPath: /etc/netbird/management.json
-              subPath: management.json
-          ports:
-            - name: http
-              containerPort: 80
-      volumes:
-        - name: management-data
-          persistentVolumeClaim:
-            claimName: netbird-mgmt-pvc
-        - name: management-config
-          secret:
-            secretName: netbird-management-config
-            items:
-              - key: management.json
-                path: management.json
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: netbird-coturn
-  namespace: netbird
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: netbird-coturn
-  template:
-    metadata:
-      labels:
-        app: netbird-coturn
-    spec:
-      containers:
-        - name: coturn
-          image: coturn/coturn:4.8.0
-          args:
-            - "-c"
-            - "/etc/turnserver.conf"
-          volumeMounts:
-            - name: turn-config
-              mountPath: /etc/turnserver.conf
-              subPath: turnserver.conf
-          ports:
-            - name: stun
+              protocol: TCP
+            - name: stun-udp
               containerPort: 3478
               protocol: UDP
-            - name: turn-tls
-              containerPort: 5349
-              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 5
       volumes:
-        - name: turn-config
+        - name: server-data
+          persistentVolumeClaim:
+            claimName: netbird-mgmt-pvc
+        - name: server-config
           secret:
-            secretName: netbird-turn-config
+            secretName: netbird-server-config
             items:
-              - key: turnserver.conf
-                path: turnserver.conf
+              - key: config.yaml
+                path: config.yaml

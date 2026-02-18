@@ -9,34 +9,39 @@ spec:
   entryPoints:
     - websecure
   routes:
+    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/management.ManagementService/`)
+      kind: Rule
+      services:
+        - name: netbird-server
+          port: 80
+          scheme: h2c
+    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/signalexchange.SignalExchange/`)
+      kind: Rule
+      services:
+        - name: netbird-server
+          port: 80
+          scheme: h2c
+    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/relay`)
+      kind: Rule
+      services:
+        - name: netbird-server
+          port: 80
+    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: netbird-server
+          port: 80
+    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/oauth2`)
+      kind: Rule
+      services:
+        - name: netbird-server
+          port: 80
     - match: Host(`netbird.vngenterprise.com`)
       kind: Rule
       services:
         - name: netbird-dashboard
           port: 80
           scheme: http
-    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/management.ManagementService/`)
-      kind: Rule
-      services:
-        - name: netbird-management
-          port: 80
-          scheme: h2c
-    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/signalexchange.SignalExchange/`)
-      kind: Rule
-      services:
-        - name: netbird-signal
-          port: 10000
-          scheme: h2c
-    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/relay`)
-      kind: Rule
-      services:
-        - name: netbird-relay
-          port: 80
-    - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/api`)
-      kind: Rule
-      services:
-        - name: netbird-management
-          port: 80
   tls:
     store:
       name: default

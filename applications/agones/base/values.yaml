@@ -3,7 +3,7 @@
 
 agones:
   # Feature gates
-  featureGates: ""
+  featureGates: "PortPolicyNone=true"
 
   # Image configuration
   image:

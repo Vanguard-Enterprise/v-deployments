@@ -28,6 +28,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: admin-dashboard-config
+            - secretRef:
+                name: admin-dashboard-secrets
           livenessProbe:
             httpGet:
               path: /api/health

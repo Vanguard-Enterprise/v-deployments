@@ -4,5 +4,6 @@ resources:
   - ../../base
   - configmap.yaml
   - deployment.yaml
+  - admin-dashboard-secret.yaml
   - service.yaml
   - ingress.yaml

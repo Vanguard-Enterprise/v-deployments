@@ -58,15 +58,13 @@ spec:
               containerPort: 3478
               protocol: UDP
           livenessProbe:
-            httpGet:
-              path: /health
-              port: 9000
+            tcpSocket:
+              port: 80
             initialDelaySeconds: 15
             periodSeconds: 10
           readinessProbe:
-            httpGet:
-              path: /health
-              port: 9000
+            tcpSocket:
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:

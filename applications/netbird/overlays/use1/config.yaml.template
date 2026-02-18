@@ -1,0 +1,32 @@
+## This file is NOT used directly. The config.yaml is templated by the
+## ExternalSecret in external-secret.yaml, pulling secrets from Vault:
+##   - NB_AUTH_SECRET from netbird/environment
+##   - DataStoreEncryptionKey from netbird/management (management.json)
+##
+## This file exists only as a human-readable reference of what gets generated.
+
+server:
+  listenAddress: ":80"
+  exposedAddress: "https://netbird.vngenterprise.com:443"
+  stunPorts:
+    - 3478
+  metricsPort: 9090
+  healthcheckAddress: ":9000"
+  logLevel: "info"
+  logFile: "console"
+  authSecret: "<from Vault: netbird/environment → NB_AUTH_SECRET>"
+  dataDir: "/var/lib/netbird/"
+  disableAnonymousMetrics: false
+
+  auth:
+    issuer: "https://netbird.vngenterprise.com/oauth2"
+    signKeyRefreshEnabled: true
+    dashboardRedirectURIs:
+      - "https://netbird.vngenterprise.com/nb-auth"
+      - "https://netbird.vngenterprise.com/nb-silent-auth"
+    cliRedirectURIs:
+      - "http://localhost:53000/"
+
+  store:
+    engine: "sqlite"
+    encryptionKey: "<from Vault: netbird/management → management.json → DataStoreEncryptionKey>"

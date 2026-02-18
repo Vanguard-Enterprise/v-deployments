@@ -6,9 +6,9 @@ metadata:
 data:
   NETBIRD_MGMT_API_ENDPOINT: "https://netbird.vngenterprise.com"
   NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://netbird.vngenterprise.com"
-  AUTH_AUDIENCE: "355943350001533198"
-  AUTH_CLIENT_ID: "355943350001533198"
-  AUTH_AUTHORITY: "https://accounts.vngenterprise.com"
+  AUTH_AUDIENCE: "netbird-dashboard"
+  AUTH_CLIENT_ID: "netbird-dashboard"
+  AUTH_AUTHORITY: "https://netbird.vngenterprise.com/oauth2"
   USE_AUTH0: "false"
   AUTH_SUPPORTED_SCOPES: "openid profile email offline_access api"
   AUTH_REDIRECT_URI: "/nb-auth"
@@ -16,13 +16,3 @@ data:
   NGINX_SSL_PORT: "443"
   LETSENCRYPT_DOMAIN: "none"
   LETSENCRYPT_EMAIL: "frankd@vngenterprise.com"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: netbird-relay-env
-  namespace: netbird
-data:
-  NB_LOG_LEVEL: "info"
-  NB_LISTEN_ADDRESS: ":80"
-  NB_EXPOSED_ADDRESS: "rels://netbird.vngenterprise.com:443"

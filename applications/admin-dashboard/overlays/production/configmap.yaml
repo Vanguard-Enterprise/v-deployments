@@ -9,6 +9,7 @@ data:
   WORLD_SERVICE_URL: "http://world-service.hyplex-world.svc.cluster.local:8080"
   CONFIGURATION_SERVICE_URL: "http://configuration-service.hyplex-configuration.svc.cluster.local:8080"
   GAME_SERVER_MANAGER_URL: "http://game-server-manager.hyplex-gsm.svc.cluster.local:8080"
+  MODERATION_SERVICE_URL: "http://moderation-service.hyplex-moderation.svc.cluster.local:8080"
   # Zitadel OIDC (PKCE public client)
   ZITADEL_DOMAIN: "https://accounts.vngenterprise.com"
   ZITADEL_CLIENT_ID: "360519108233593933"

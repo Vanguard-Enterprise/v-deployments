@@ -6,9 +6,9 @@ metadata:
 data:
   NETBIRD_MGMT_API_ENDPOINT: "https://netbird.vngenterprise.com"
   NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://netbird.vngenterprise.com"
-  AUTH_AUDIENCE: "netbird-dashboard"
-  AUTH_CLIENT_ID: "netbird-dashboard"
-  AUTH_AUTHORITY: "https://netbird.vngenterprise.com/oauth2"
+  AUTH_AUDIENCE: "360524786834670002"
+  AUTH_CLIENT_ID: "360524786834670002"
+  AUTH_AUTHORITY: "https://accounts.vngenterprise.com"
   USE_AUTH0: "false"
   AUTH_SUPPORTED_SCOPES: "openid profile email offline_access"
   AUTH_REDIRECT_URI: "/nb-auth"

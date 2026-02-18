@@ -30,6 +30,8 @@ metadata:
   namespace: netbird
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: netbird-server

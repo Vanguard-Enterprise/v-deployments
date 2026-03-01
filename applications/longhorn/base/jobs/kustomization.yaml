@@ -1,9 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - backup-6.yaml
-  - backup-daily.yaml
-  - backup-weekly.yaml
-  - backup-monthly.yaml
+  # R2 backup jobs are disabled. Config files are kept for reference.
+  # To re-enable: uncomment these entries and restore backupTarget in overlays/use1/values.yaml.
+  # - backup-6.yaml
+  # - backup-daily.yaml
+  # - backup-weekly.yaml
+  # - backup-monthly.yaml
+  # - system-backup-24.yaml  # system-backup also requires a backup target
   - snapshot-30.yaml
-  - system-backup-24.yaml

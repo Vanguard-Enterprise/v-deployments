@@ -8,10 +8,15 @@ longhornDriver:
     - key: "node.kubernetes.io/disk-pressure"
       operator: "Exists"
       effect: "NoSchedule"
+# R2 backups are disabled. To re-enable, restore the values below and
+# add the backup jobs back to base/jobs/kustomization.yaml.
+#
+# defaultBackupStore:
+#   backupTarget: s3://longhorn-backups@auto/
+#   backupTargetCredentialSecret: longhorn-backup-r2
+#   pollInterval: 300
 defaultBackupStore:
-  backupTarget: s3://longhorn-backups@auto/
-  backupTargetCredentialSecret: longhorn-backup-r2
-  pollInterval: 300
+  backupTarget: ""
 defaultSettings:
   storageOverProvisioningPercentage: "300"
   replicaAutoBalance: best-effort

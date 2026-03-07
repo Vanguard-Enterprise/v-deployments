@@ -36,11 +36,10 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-            - name: logs
+            - name: data
               mountPath: /logs
+              subPath: logs
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: rustfs-data
-        - name: logs
-          emptyDir: {}

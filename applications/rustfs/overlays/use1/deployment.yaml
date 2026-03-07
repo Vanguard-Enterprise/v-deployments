@@ -15,9 +15,14 @@ spec:
       labels:
         app: rustfs
     spec:
+      securityContext:
+        fsGroup: 10001
       containers:
         - name: rustfs
           image: rustfs/rustfs:latest
+          args:
+            - --console-enable
+            - /data
           ports:
             - name: s3
               containerPort: 9000

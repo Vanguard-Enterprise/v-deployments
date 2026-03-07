@@ -1,0 +1,11 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: auth-service-db
+  namespace: auth-service-db
+spec:
+  selector:
+    matchLabels:
+      cnpg.io/cluster: auth-service
+  podMetricsEndpoints:
+    - port: metrics

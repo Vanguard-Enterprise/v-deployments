@@ -9,7 +9,7 @@ data:
   VAULT_ADDR: "http://vault.vault.svc.cluster.local:8200"
   LOG_LEVEL: "info"
   LOG_PRETTY: "false"
-  DB_HOST: "auth-db-rw.hyplex-auth.svc.cluster.local"
+  DB_HOST: "auth-service-rw.auth-service-db.svc.cluster.local"
   DB_PORT: "5432"
   DB_NAME: "auth"
   DB_USER: "auth"

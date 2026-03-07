@@ -18,11 +18,6 @@ spec:
       containers:
         - name: rustfs
           image: rustfs/rustfs:latest
-          args:
-            - server
-            - /data
-            - --console-address
-            - ":9001"
           ports:
             - name: s3
               containerPort: 9000
@@ -33,22 +28,14 @@ spec:
           envFrom:
             - secretRef:
                 name: rustfs-root-secrets
-          livenessProbe:
-            httpGet:
-              path: /minio/health/live
-              port: s3
-            initialDelaySeconds: 10
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /minio/health/ready
-              port: s3
-            initialDelaySeconds: 10
-            periodSeconds: 5
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: logs
+              mountPath: /logs
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: rustfs-data
+        - name: logs
+          emptyDir: {}

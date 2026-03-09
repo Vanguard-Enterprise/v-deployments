@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: hyplex
+  namespace: traefik
+spec:
+  secretName: hyplex-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "*.hyplex.com"
+  dnsNames:
+    - "*.hyplex.com"
+    - hyplex.com

@@ -5,3 +5,4 @@ resources:
   - vngenterprise.com.yaml
   - external-secret.yaml
   - rustlens.com.yaml
+  - hyplex.gg.yaml

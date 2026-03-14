@@ -1,0 +1,17 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: vanguard-permissions-db
+  namespace: vanguard-permissions-db
+spec:
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: permissions
+      owner: permissions
+      secret:
+        name: vanguard-permissions-db-secrets
+  storage:
+    size: 256Mi
+    storageClass: longhorn

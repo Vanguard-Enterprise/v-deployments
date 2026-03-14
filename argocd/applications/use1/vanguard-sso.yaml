@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vanguard-sso
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/vanguard-services/overlays/sso-service
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vanguard-sso
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

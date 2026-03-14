@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vanguard-identity
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/vanguard-services/overlays/identity-service
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vanguard-identity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

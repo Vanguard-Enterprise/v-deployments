@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-vanguard-sso
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/cloudnative-postgres/overlays/vanguard-sso
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vanguard-sso-db
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,29 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-identity
+  namespace: vanguard-frontend
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/identity
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-permissions
+  namespace: vanguard-frontend
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/permissions
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-sso
+  namespace: vanguard-frontend
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/sso

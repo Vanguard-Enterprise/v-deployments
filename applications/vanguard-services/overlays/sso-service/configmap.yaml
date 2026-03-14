@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vanguard-services-config
+  namespace: vanguard-sso
+data:
+  PORT: "8082"
+  GRPC_PORT: "9092"
+  JWT_KID: "identity-v1"
+  JWT_PUBLIC_KEY_PATH: "/etc/secrets/jwt/public.pem"
+  IDENTITY_GRPC_ADDR: "identity-service.vanguard-identity.svc.cluster.local:9090"

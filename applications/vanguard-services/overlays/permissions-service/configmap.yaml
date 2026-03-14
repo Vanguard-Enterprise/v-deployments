@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vanguard-services-config
+  namespace: vanguard-permissions
+data:
+  PORT: "8081"
+  GRPC_PORT: "9091"
+  JWT_KID: "identity-v1"
+  JWT_PUBLIC_KEY_PATH: "/etc/secrets/jwt/public.pem"

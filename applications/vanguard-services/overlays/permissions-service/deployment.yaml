@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: permissions-service
+  namespace: vanguard-permissions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: permissions-service
+  template:
+    metadata:
+      labels:
+        app: permissions-service
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      containers:
+        - name: permissions-service
+          image: ghcr.io/vanguard-enterprise/permissions-service:latest
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+            - name: grpc
+              containerPort: 9091
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: vanguard-services-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: permissions-service-secrets
+                  key: DATABASE_URL
+          volumeMounts:
+            - name: jwt-key
+              mountPath: /etc/secrets/jwt
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /v1/healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /v1/healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: jwt-key
+          secret:
+            secretName: permissions-service-secrets
+            items:
+              - key: JWT_PUBLIC_KEY
+                path: public.pem

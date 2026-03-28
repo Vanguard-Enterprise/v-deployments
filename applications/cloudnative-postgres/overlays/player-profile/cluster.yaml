@@ -4,7 +4,7 @@ metadata:
   name: player-profile
   namespace: player-profile-db
 spec:
-  instances: 3
+  instances: 1
   primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:

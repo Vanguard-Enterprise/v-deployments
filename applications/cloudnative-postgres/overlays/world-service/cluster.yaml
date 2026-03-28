@@ -4,7 +4,7 @@ metadata:
   name: world-service
   namespace: world-service-db
 spec:
-  instances: 3
+  instances: 1
   primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:

@@ -4,8 +4,6 @@ metadata:
   name: pve1a-external
   namespace: traefik
 spec:
-  type: ExternalName
-  externalName: 10-1-40-15.sslip.io
   ports:
     - name: https
       port: 8006

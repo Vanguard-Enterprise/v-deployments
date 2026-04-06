@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pve1a-external
+  namespace: traefik
+spec:
+  type: ExternalName
+  externalName: 10.1.40.15
+  ports:
+    - name: https
+      port: 8006
+      protocol: TCP
+      targetPort: 8006
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pve1a
+  namespace: traefik
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pve1a.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: pve1a-external
+          port: 8006
+          scheme: https
+  tls:
+    store:
+      name: default
+      namespace: traefik

@@ -8,3 +8,4 @@ data:
   BACKEND_SSO_URL: "http://sso-service.vanguard-sso.svc.cluster.local:8082"
   NEXT_PUBLIC_APP_URL: "https://vngenterprise.com"
   LOGIN_DISABLED: "true"
+  NODE_ENV: "production"

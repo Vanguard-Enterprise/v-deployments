@@ -4,7 +4,7 @@ metadata:
   name: world-service
   namespace: world-service-db
 spec:
-  instances: 3
+  instances: 1
   primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:
@@ -13,7 +13,7 @@ spec:
       secret:
         name: world-service-db-secrets
   storage:
-    size: 512Mi
+    size: 5Gi
     storageClass: longhorn
   affinity:
     enablePodAntiAffinity: true

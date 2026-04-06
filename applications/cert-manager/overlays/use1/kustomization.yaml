@@ -6,3 +6,4 @@ resources:
   - external-secret.yaml
   - rustlens.com.yaml
   - hyplex.gg.yaml
+  - mancini.beer.yaml

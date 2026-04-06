@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: mancini-beer
+
+resources:
+  - namespace.yaml
+  - github-pull-secret.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+
+images:
+  - name: ghcr.io/vanguard-enterprise/mancini.beer
+    newTag: latest

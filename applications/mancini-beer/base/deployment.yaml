@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mancini-beer
+  namespace: mancini-beer
+  labels:
+    app: mancini-beer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mancini-beer
+  template:
+    metadata:
+      labels:
+        app: mancini-beer
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      containers:
+        - name: mancini-beer
+          image: ghcr.io/vanguard-enterprise/mancini.beer:latest
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: production
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi

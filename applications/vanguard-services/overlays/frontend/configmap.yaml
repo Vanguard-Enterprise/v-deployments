@@ -7,5 +7,5 @@ data:
   BACKEND_IDENTITY_URL: "http://identity-service.vanguard-identity.svc.cluster.local:8080"
   BACKEND_SSO_URL: "http://sso-service.vanguard-sso.svc.cluster.local:8082"
   NEXT_PUBLIC_APP_URL: "https://vngenterprise.com"
-  LOGIN_DISABLED: "true"
+  LOGIN_DISABLED: "TRUE"
   NODE_ENV: "production"

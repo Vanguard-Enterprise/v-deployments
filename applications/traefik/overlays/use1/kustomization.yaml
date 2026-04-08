@@ -4,6 +4,7 @@ resources:
   - ../../base
   - default-store.yaml
   - rustlens-store.yaml
+  - mancini-store.yaml
 helmCharts:
   - name: traefik
     version: "38.0.1"

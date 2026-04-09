@@ -13,5 +13,5 @@ spec:
       secret:
         name: vanguard-identity-db-secrets
   storage:
-    size: 256Mi
+    size: 2Gi
     storageClass: longhorn

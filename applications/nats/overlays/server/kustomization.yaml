@@ -10,3 +10,5 @@ helmCharts:
     releaseName: nats
     namespace: nats
     valuesFile: values.yaml
+patches:
+  - path: statefulset-patch.yaml

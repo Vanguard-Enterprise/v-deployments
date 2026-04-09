@@ -12,6 +12,13 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: nats
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      name: nats
+      namespace: nats
+      jqPathExpressions:
+        - .spec.volumeClaimTemplates[]?.spec.volumeMode
   syncPolicy:
     automated:
       prune: true

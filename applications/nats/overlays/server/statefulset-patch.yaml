@@ -19,8 +19,3 @@ spec:
           configMap:
             defaultMode: 420
             name: nats-config
-  volumeClaimTemplates:
-    - metadata:
-        name: nats-js
-      spec:
-        volumeMode: Filesystem

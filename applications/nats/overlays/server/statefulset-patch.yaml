@@ -11,3 +11,16 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       partition: 0
+  template:
+    spec:
+      securityContext: {}
+      volumes:
+        - name: config
+          configMap:
+            defaultMode: 420
+            name: nats-config
+  volumeClaimTemplates:
+    - metadata:
+        name: nats-js
+      spec:
+        volumeMode: Filesystem

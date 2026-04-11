@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: netbirdio/netbird:0.66.4
+          image: netbirdio/netbird:0.67.4
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: netbirdio/dashboard:v2.34.2
+          image: netbirdio/dashboard:v2.36.0
           envFrom:
             - configMapRef:
                 name: netbird-dashboard-env
@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: netbirdio/netbird-server:0.66.4
+          image: netbirdio/netbird-server:0.67.4
           args:
             - "--config"
             - "/etc/netbird/config.yaml"

@@ -1,0 +1,182 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflare-ddns-config
+  namespace: cloudflare-ddns
+data:
+  # Add the Cloudflare records you want pinned to the cluster's current public IPv4.
+  # Example item:
+  # { "zone_name": "vngenterprise.com", "record_name": "grafana.vngenterprise.com", "ttl": 1, "proxied": false }
+  records.json: |
+    {
+      "records": []
+    }
+  updater.py: |
+    import json
+    import os
+    import sys
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+
+
+    API_BASE = "https://api.cloudflare.com/client/v4"
+    PUBLIC_IP_URL = os.environ.get("PUBLIC_IP_URL", "https://api.ipify.org?format=json")
+    RECORDS_PATH = os.environ.get("RECORDS_PATH", "/config/records.json")
+    TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN")
+    TIMEOUT = int(os.environ.get("HTTP_TIMEOUT_SECONDS", "20"))
+
+
+    def fail(message: str) -> None:
+        print(message, file=sys.stderr)
+        raise SystemExit(1)
+
+
+    def http_json(method: str, url: str, payload=None, headers=None):
+        body = None
+        request_headers = {"Accept": "application/json"}
+        if headers:
+            request_headers.update(headers)
+        if payload is not None:
+            body = json.dumps(payload).encode("utf-8")
+            request_headers["Content-Type"] = "application/json"
+        request = urllib.request.Request(url, data=body, headers=request_headers, method=method)
+        try:
+            with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+                charset = response.headers.get_content_charset() or "utf-8"
+                raw = response.read().decode(charset)
+        except urllib.error.HTTPError as exc:
+            details = exc.read().decode("utf-8", errors="replace")
+            fail(f"HTTP {exc.code} for {method} {url}: {details}")
+        except urllib.error.URLError as exc:
+            fail(f"Request failed for {method} {url}: {exc}")
+        return json.loads(raw)
+
+
+    def cloudflare_request(method: str, path: str, payload=None, query=None):
+        if not TOKEN:
+            fail("CLOUDFLARE_API_TOKEN is required")
+        url = f"{API_BASE}{path}"
+        if query:
+            url = f"{url}?{urllib.parse.urlencode(query)}"
+        response = http_json(
+            method,
+            url,
+            payload=payload,
+            headers={"Authorization": f"Bearer {TOKEN}"},
+        )
+        if not response.get("success"):
+            fail(f"Cloudflare API error for {method} {path}: {json.dumps(response.get('errors', []))}")
+        return response["result"]
+
+
+    def get_public_ip() -> str:
+        response = http_json("GET", PUBLIC_IP_URL)
+        ip = response.get("ip", "").strip()
+        if not ip:
+            fail(f"Public IP response did not include an ip field: {response}")
+        return ip
+
+
+    def load_records():
+        with open(RECORDS_PATH, "r", encoding="utf-8") as handle:
+            data = json.load(handle)
+        records = data.get("records", data if isinstance(data, list) else None)
+        if records is None:
+            fail("records.json must contain either a top-level array or an object with a records array")
+        return records
+
+
+    def normalize_record(record):
+        zone_name = record.get("zone_name")
+        record_name = record.get("record_name")
+        record_type = record.get("type", "A")
+        ttl = int(record.get("ttl", 1))
+        proxied = bool(record.get("proxied", False))
+        if not zone_name or not record_name:
+            fail(f"Each record needs zone_name and record_name: {record}")
+        if record_type != "A":
+            fail(f"Only A records are supported by this updater today: {record}")
+        return {
+            "zone_name": zone_name,
+            "record_name": record_name,
+            "type": record_type,
+            "ttl": ttl,
+            "proxied": proxied,
+        }
+
+
+    def main():
+        records = [normalize_record(record) for record in load_records()]
+        if not records:
+            print("No records configured in records.json, nothing to update.")
+            return
+
+        public_ip = get_public_ip()
+        print(f"Detected public IPv4 {public_ip}")
+
+        zone_cache = {}
+        updated = 0
+        unchanged = 0
+
+        for record in records:
+            zone_name = record["zone_name"]
+            zone_id = zone_cache.get(zone_name)
+            if zone_id is None:
+                zones = cloudflare_request("GET", "/zones", query={"name": zone_name, "status": "active", "per_page": 1})
+                if not zones:
+                    fail(f"Zone not found or not active in Cloudflare: {zone_name}")
+                zone_id = zones[0]["id"]
+                zone_cache[zone_name] = zone_id
+
+            existing_records = cloudflare_request(
+                "GET",
+                f"/zones/{zone_id}/dns_records",
+                query={"type": record["type"], "name": record["record_name"], "per_page": 100},
+            )
+            exact_match = next((item for item in existing_records if item.get("name") == record["record_name"]), None)
+
+            desired = {
+                "type": record["type"],
+                "name": record["record_name"],
+                "content": public_ip,
+                "ttl": record["ttl"],
+                "proxied": record["proxied"],
+            }
+
+            if exact_match is None:
+                cloudflare_request("POST", f"/zones/{zone_id}/dns_records", payload=desired)
+                updated += 1
+                print(f"Created {record['type']} record {record['record_name']} -> {public_ip}")
+                continue
+
+            current_content = exact_match.get("content")
+            current_ttl = int(exact_match.get("ttl", 1))
+            current_proxied = bool(exact_match.get("proxied", False))
+
+            if (
+                current_content == public_ip
+                and current_ttl == record["ttl"]
+                and current_proxied == record["proxied"]
+            ):
+                unchanged += 1
+                print(f"Unchanged {record['record_name']} ({public_ip})")
+                continue
+
+            cloudflare_request(
+                "PATCH",
+                f"/zones/{zone_id}/dns_records/{exact_match['id']}",
+                payload=desired,
+            )
+            updated += 1
+            print(
+                "Updated "
+                f"{record['record_name']} from {current_content} to {public_ip} "
+                f"(ttl={record['ttl']}, proxied={record['proxied']})"
+            )
+
+        print(f"Done. Updated {updated} record(s); {unchanged} already matched the public IP.")
+
+
+    if __name__ == "__main__":
+        main()

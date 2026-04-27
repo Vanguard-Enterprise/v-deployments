@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rustlens-bot
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/rustlens/overlays/bot
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: rustlens-bot
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

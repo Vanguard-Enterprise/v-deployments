@@ -1,0 +1,40 @@
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisReplication
+metadata:
+  name: rustlens-redis
+  namespace: rustlens-redis
+spec:
+  clusterSize: 3
+  podSecurityContext:
+    runAsUser: 1000
+    fsGroup: 1000
+  kubernetesConfig:
+    image: quay.io/opstree/redis:v7.4.7
+    imagePullPolicy: IfNotPresent
+    redisSecret:
+      name: rustlens-redis-secrets
+      key: password
+  redisExporter:
+    enabled: true
+    image: quay.io/opstree/redis-exporter:v1.44.0
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: longhorn
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - rustlens-redis
+            topologyKey: kubernetes.io/hostname

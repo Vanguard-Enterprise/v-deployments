@@ -18,6 +18,7 @@ spec:
       containers:
         - name: frontend
           image: ghcr.io/vanguard-enterprise/rustlens-frontend:main
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000

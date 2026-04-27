@@ -4,5 +4,6 @@ resources:
   - namespace.yaml
   - cluster.yaml
   - poolers.yaml
+  - pooler-rw-lb.yaml
   - external-secrets.yaml
   - podmonitor.yaml

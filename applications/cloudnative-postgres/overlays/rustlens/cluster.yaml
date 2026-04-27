@@ -9,25 +9,12 @@ spec:
   bootstrap:
     initdb:
       database: rustlens
-      owner: rustlens_user
+      owner: rustlens
       secret:
-        name: rustlens-secrets
+        name: rustlens-pg-bootstrap
   storage:
-    size: 20Gi
+    size: 10Gi
     storageClass: longhorn
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
-  backup:
-    barmanObjectStore:
-      destinationPath: s3://rustlens-production/rustlens/
-      endpointURL: https://s3.wasabisys.com
-      s3Credentials:
-        accessKeyId:
-          name: rustlens-secrets
-          key: S3_ACCESS_KEY_ID
-        secretAccessKey:
-          name: rustlens-secrets
-          key: S3_SECRET_ACCESS_KEY
-      wal:
-        compression: gzip

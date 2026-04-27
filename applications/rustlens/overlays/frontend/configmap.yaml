@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rustlens-frontend-config
+  namespace: rustlens-frontend
+data:
+  PORT: "3000"
+  NODE_ENV: "production"
+  RUSTLENS_API_URL: "http://rustlens-backend.rustlens-backend.svc.cluster.local:8080"
+  APP_ORIGIN: "https://rustlens.com"
+  TRUST_PROXY_HEADERS: "true"
+  TRUST_PROXY_IP_HEADER: "X-Forwarded-For"
+  AUTH_DEBUG_TOKEN_PREVIEW: "false"

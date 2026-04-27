@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rustlens-bot
+  namespace: rustlens-bot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rustlens-bot
+  template:
+    metadata:
+      labels:
+        app: rustlens-bot
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      containers:
+        - name: bot
+          image: ghcr.io/vanguard-enterprise/rustlens-bot:main
+          envFrom:
+            - configMapRef:
+                name: rustlens-bot-config
+            - secretRef:
+                name: rustlens-bot-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 768Mi

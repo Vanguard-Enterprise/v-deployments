@@ -1,0 +1,9 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rustlens-block-external
+  namespace: rustlens-frontend
+spec:
+  ipAllowList:
+    sourceRange:
+      - 127.0.0.1/32

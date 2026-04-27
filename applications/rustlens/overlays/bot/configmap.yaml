@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rustlens-bot-config
+  namespace: rustlens-bot
+data:
+  BACKEND_URL: "http://rustlens-backend.rustlens-backend.svc.cluster.local:8080"
+  BOT_TARGET_SHARDS: "2"

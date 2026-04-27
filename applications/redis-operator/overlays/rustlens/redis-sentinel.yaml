@@ -1,0 +1,39 @@
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisSentinel
+metadata:
+  name: rustlens-redis-sentinel
+  namespace: rustlens-redis
+spec:
+  clusterSize: 3
+  podSecurityContext:
+    runAsUser: 1000
+    fsGroup: 1000
+  redisSentinelConfig:
+    redisReplicationName: rustlens-redis
+    masterGroupName: "mymaster"
+    redisPort: "6379"
+    quorum: "2"
+    parallelSyncs: "1"
+    failoverTimeout: "180000"
+    downAfterMilliseconds: "30000"
+  kubernetesConfig:
+    image: quay.io/opstree/redis-sentinel:v7.4.7
+    imagePullPolicy: IfNotPresent
+    redisSecret:
+      name: rustlens-redis-secrets
+      key: password
+  redisExporter:
+    enabled: true
+    image: quay.io/opstree/redis-exporter:v1.44.0
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - rustlens-redis-sentinel
+            topologyKey: kubernetes.io/hostname

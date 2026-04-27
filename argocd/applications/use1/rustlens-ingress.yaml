@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rustlens-ingress
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/rustlens/overlays/ingress
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: rustlens-frontend
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

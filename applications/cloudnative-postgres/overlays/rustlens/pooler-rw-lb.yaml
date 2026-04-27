@@ -8,7 +8,6 @@ metadata:
     metallb.universe.tf/address-pool: use1-pool
 spec:
   type: LoadBalancer
-  loadBalancerIP: 10.1.50.151
   selector:
     cnpg.io/poolerName: rustlens-pooled-rw
   ports:

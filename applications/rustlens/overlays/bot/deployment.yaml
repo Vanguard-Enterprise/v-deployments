@@ -18,6 +18,7 @@ spec:
       containers:
         - name: bot
           image: ghcr.io/vanguard-enterprise/rustlens-bot:main
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: rustlens-bot-config

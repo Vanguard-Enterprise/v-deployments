@@ -10,3 +10,4 @@ data:
   BATTLEMETRICS_SERVER_POLL_INTERVAL_SECONDS: "10"
   APP_ORIGIN: "https://rustlens.com"
   ALLOW_AUTH_DEBUG_TOKENS: "false"
+  PROXY_ENABLED: "true"

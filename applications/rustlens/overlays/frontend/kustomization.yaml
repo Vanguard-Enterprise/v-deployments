@@ -1,9 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - namespace.yaml
-  - configmap.yaml
-  - github-pull-secret.yaml
-  - external-secret.yaml
-  - deployment.yaml
-  - service.yaml
+- namespace.yaml
+- configmap.yaml
+- github-pull-secret.yaml
+- external-secret.yaml
+- deployment.yaml
+- service.yaml
+images:
+- name: ghcr.io/vanguard-enterprise/rustlens-frontend
+  digest: sha256:6c75411c5bcf560aa9f582014ed3af40af7e83f03ae8a061c6a09f64a45a13bd

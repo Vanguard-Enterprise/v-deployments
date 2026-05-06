@@ -4,9 +4,8 @@ metadata:
   name: rustlens-frontend
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: frontend=ghcr.io/vanguard-enterprise/rustlens-frontend
+    argocd-image-updater.argoproj.io/image-list: frontend=ghcr.io/vanguard-enterprise/rustlens-frontend:main
     argocd-image-updater.argoproj.io/frontend.update-strategy: digest
-    argocd-image-updater.argoproj.io/frontend.allow-tags: regexp:^main$
     argocd-image-updater.argoproj.io/frontend.pull-secret: pullsecret:argocd/ghcr-image-updater
     argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git
     argocd-image-updater.argoproj.io/write-back-target: kustomization:applications/rustlens/overlays/frontend

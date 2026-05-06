@@ -4,9 +4,8 @@ metadata:
   name: rustlens-bot
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: bot=ghcr.io/vanguard-enterprise/rustlens-bot
+    argocd-image-updater.argoproj.io/image-list: bot=ghcr.io/vanguard-enterprise/rustlens-bot:main
     argocd-image-updater.argoproj.io/bot.update-strategy: digest
-    argocd-image-updater.argoproj.io/bot.allow-tags: regexp:^main$
     argocd-image-updater.argoproj.io/bot.pull-secret: pullsecret:argocd/ghcr-image-updater
     argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git
     argocd-image-updater.argoproj.io/write-back-target: kustomization:applications/rustlens/overlays/bot

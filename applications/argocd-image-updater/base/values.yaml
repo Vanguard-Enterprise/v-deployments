@@ -1,0 +1,24 @@
+config:
+  argocd:
+    grpcWeb: true
+    serverAddress: argocd-server.argocd.svc.cluster.local
+    insecure: false
+    plaintext: false
+  logLevel: info
+  registries:
+    - name: GitHub Container Registry
+      api_url: https://ghcr.io
+      prefix: ghcr.io
+      ping: yes
+      credentials: pullsecret:argocd/ghcr-image-updater
+      default: true
+
+serviceAccount:
+  create: true
+  name: argocd-image-updater
+
+metrics:
+  enabled: false
+
+rbac:
+  enabled: true

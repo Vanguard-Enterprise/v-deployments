@@ -15,18 +15,20 @@ data:
         timeout client  1h
         timeout server  1h
 
-    # Resolve via whatever nameserver the local NetBird daemon installs into
-    # /etc/resolv.conf. Each netbird-client pod runs its OWN embedded DNS
-    # resolver at its OWN NetBird IP (different per pod), so we cannot
-    # hardcode it — parse-resolv-conf makes haproxy track each pod's local
-    # config dynamically.
+    # Resolve via the local NetBird daemon's embedded DNS resolver. Each
+    # pod runs its OWN NetBird daemon at its OWN WG IP, so __NETBIRD_DNS_IP__
+    # is substituted at container startup by the wrapper script in the
+    # StatefulSet (reads the actual nameserver from /etc/resolv.conf).
+    # `parse-resolv-conf` was attempted first but haproxy 2.8 read it before
+    # the in-pod NetBird daemon finished overwriting /etc/resolv.conf and
+    # ended up parsing the kubelet-injected cluster CoreDNS IP, which
+    # resolves backup-storage.vngenterprise.com back to our own Service
+    # ClusterIP (via CoreDNS rewrite) — a loop.
     resolvers netbird-dns
-        parse-resolv-conf
+        nameserver netbird __NETBIRD_DNS_IP__:53
         resolve_retries 3
         timeout resolve 5s
         timeout retry   2s
-        # Cache results aggressively so transient resolver hiccups don't
-        # take the backend offline. Re-resolves on `hold valid`.
         hold valid      5m
         hold other      30s
         hold refused    30s

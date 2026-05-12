@@ -46,8 +46,11 @@ spec:
             - /bin/sh
             - -c
             - |
+              set -eu
+              # Wait until NetBird has overwritten /etc/resolv.conf with its
+              # in-pod DNS nameserver (kubelet initially writes cluster DNS).
               i=0
-              until grep -qE "^nameserver 100\.107\." /etc/resolv.conf; do
+              while ! grep -qE "^nameserver 100\.107\." /etc/resolv.conf; do
                 i=$((i+1))
                 if [ $i -ge 60 ]; then
                   echo "[s3-forward] gave up waiting for NetBird DNS after 120s" >&2
@@ -56,8 +59,15 @@ spec:
                 echo "[s3-forward] waiting for NetBird DNS in /etc/resolv.conf (attempt $i)"
                 sleep 2
               done
-              echo "[s3-forward] NetBird DNS detected, starting haproxy"
-              exec haproxy -W -db -f /usr/local/etc/haproxy/haproxy.cfg
+              # Substitute the resolved NetBird DNS IP into the haproxy config
+              # template (the ConfigMap mount is read-only, so write to a
+              # writable runtime dir).
+              ns=$(awk '/^nameserver 100\.107\./ {print $2; exit}' /etc/resolv.conf)
+              echo "[s3-forward] NetBird DNS = $ns — starting haproxy"
+              sed "s|__NETBIRD_DNS_IP__|$ns|g" \
+                /usr/local/etc/haproxy/haproxy.cfg \
+                > /run/haproxy/haproxy.cfg
+              exec haproxy -W -db -f /run/haproxy/haproxy.cfg
           ports:
             - name: s3
               containerPort: 443
@@ -66,6 +76,8 @@ spec:
             - name: s3-forward-config
               mountPath: /usr/local/etc/haproxy
               readOnly: true
+            - name: s3-forward-runtime
+              mountPath: /run/haproxy
           resources:
             requests:
               cpu: 10m
@@ -86,6 +98,10 @@ spec:
         - name: s3-forward-config
           configMap:
             name: s3-forward-config
+        - name: s3-forward-runtime
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Mi
   volumeClaimTemplates:
     - metadata:
         name: client-data

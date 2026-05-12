@@ -36,8 +36,8 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - "-d"
-            - "TCP-LISTEN:443,fork,reuseaddr"
-            - "TCP:backup-storage.vngenterprise.com:443"
+            - "TCP4-LISTEN:443,fork,reuseaddr"
+            - "TCP4:backup-storage.vngenterprise.com:443"
           ports:
             - name: s3
               containerPort: 443

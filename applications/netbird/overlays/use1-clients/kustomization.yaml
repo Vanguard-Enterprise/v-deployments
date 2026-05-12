@@ -6,3 +6,4 @@ resources:
   - external-secret.yaml
   - namespace.yaml
   - backup-storage-service.yaml
+  - s3-forward-config.yaml

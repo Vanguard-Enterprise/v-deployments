@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s3-forward-config
+  namespace: netbird-client
+data:
+  haproxy.cfg: |
+    global
+        log stdout format raw local0 info
+
+    defaults
+        log     global
+        mode    tcp
+        timeout connect 5s
+        timeout client  1h
+        timeout server  1h
+
+    # Resolve via the NetBird-installed in-pod DNS. The WireGuard tunnel
+    # in this pod (set up by the netbird `client` container) provides routing
+    # to 100.107.0.0/16 — including the resolver IP and the upstream.
+    resolvers netbird-dns
+        nameserver netbird 100.107.173.42:53
+        resolve_retries 3
+        timeout resolve 1s
+        timeout retry   1s
+        hold valid      30s
+        hold other      30s
+        hold refused    30s
+        hold nx         30s
+        hold timeout    30s
+
+    frontend s3-in
+        bind *:443
+        default_backend s3-out
+
+    backend s3-out
+        # init-addr libc,none: try glibc resolver at startup, fall back to no
+        # initial address rather than crash-loop if DNS is briefly unavailable.
+        # haproxy re-resolves on the schedule above.
+        server backup-storage backup-storage.vngenterprise.com:443 resolvers netbird-dns init-addr libc,none check inter 30s

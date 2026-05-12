@@ -21,13 +21,15 @@ data:
     resolvers netbird-dns
         nameserver netbird 100.107.173.42:53
         resolve_retries 3
-        timeout resolve 1s
-        timeout retry   1s
-        hold valid      30s
+        timeout resolve 5s
+        timeout retry   2s
+        # Cache results aggressively so transient resolver hiccups don't
+        # take the backend offline. Re-resolves on `hold valid`.
+        hold valid      5m
         hold other      30s
         hold refused    30s
         hold nx         30s
-        hold timeout    30s
+        hold timeout    60s
 
     frontend s3-in
         bind *:443
@@ -36,5 +38,6 @@ data:
     backend s3-out
         # init-addr libc,none: try glibc resolver at startup, fall back to no
         # initial address rather than crash-loop if DNS is briefly unavailable.
-        # haproxy re-resolves on the schedule above.
-        server backup-storage backup-storage.vngenterprise.com:443 resolvers netbird-dns init-addr libc,none check inter 30s
+        # haproxy re-resolves via `resolvers` on the schedule above.
+        # resolve-prefer ipv4 — skip AAAA which NetBird DNS doesn't return.
+        server backup-storage backup-storage.vngenterprise.com:443 resolvers netbird-dns resolve-prefer ipv4 init-addr libc,none check inter 30s

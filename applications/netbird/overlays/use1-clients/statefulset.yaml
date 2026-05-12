@@ -33,6 +33,7 @@ spec:
                 - NET_ADMIN
         - name: s3-forward
           image: alpine/socat:latest
+          imagePullPolicy: IfNotPresent
           args:
             - "-d"
             - "TCP-LISTEN:443,fork,reuseaddr"

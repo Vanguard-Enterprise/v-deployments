@@ -15,11 +15,13 @@ data:
         timeout client  1h
         timeout server  1h
 
-    # Resolve via the NetBird-installed in-pod DNS. The WireGuard tunnel
-    # in this pod (set up by the netbird `client` container) provides routing
-    # to 100.107.0.0/16 — including the resolver IP and the upstream.
+    # Resolve via whatever nameserver the local NetBird daemon installs into
+    # /etc/resolv.conf. Each netbird-client pod runs its OWN embedded DNS
+    # resolver at its OWN NetBird IP (different per pod), so we cannot
+    # hardcode it — parse-resolv-conf makes haproxy track each pod's local
+    # config dynamically.
     resolvers netbird-dns
-        nameserver netbird 100.107.173.42:53
+        parse-resolv-conf
         resolve_retries 3
         timeout resolve 5s
         timeout retry   2s

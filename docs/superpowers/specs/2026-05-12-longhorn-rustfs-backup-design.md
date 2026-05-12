@@ -277,11 +277,11 @@ The old `longhorn-backup-r2` ExternalSecret is removed in the same change.
 
 Edit `base/jobs/kustomization.yaml` to re-enable:
 
-- `backup-6.yaml` — every 6h, retain 4
-- `backup-daily.yaml` — daily, retain 7
-- `backup-weekly.yaml` — weekly, retain 4
-- `backup-monthly.yaml` — monthly, retain 12
-- `system-backup-24.yaml` — full system backup daily
+- `backup-6.yaml` — hourly (cron `0 * * * *`), retain 24 (existing schedule preserved; filename predates the schedule tuning)
+- `backup-daily.yaml` — daily at 00:00, retain 7
+- `backup-weekly.yaml` — weekly on Sunday at 00:00, retain 4
+- `backup-monthly.yaml` — monthly on the 1st at 00:00, retain 4
+- `system-backup-24.yaml` — full system backup daily at 02:15, retain 14
 
 Rename the recurring job names from `r2-backup-*` → `backup-*` inside the YAMLs
 to drop the now-obsolete R2 prefix. The `default` group selector remains

@@ -32,7 +32,7 @@ spec:
               add:
                 - NET_ADMIN
         - name: s3-forward
-          image: alpine/socat:latest
+          image: alpine/socat:1.7.4.4
           imagePullPolicy: IfNotPresent
           args:
             - "-d"

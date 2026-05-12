@@ -36,8 +36,12 @@ data:
         default_backend s3-out
 
     backend s3-out
-        # init-addr libc,none: try glibc resolver at startup, fall back to no
-        # initial address rather than crash-loop if DNS is briefly unavailable.
-        # haproxy re-resolves via `resolvers` on the schedule above.
-        # resolve-prefer ipv4 — skip AAAA which NetBird DNS doesn't return.
-        server backup-storage backup-storage.vngenterprise.com:443 resolvers netbird-dns resolve-prefer ipv4 init-addr libc,none check inter 30s
+        # init-addr none: don't fight cluster CoreDNS during pod startup.
+        # The resolvers section is the only source of truth for the upstream
+        # IP; haproxy refreshes per `hold valid` and on connection attempts.
+        # No `check`: rustfs is a trusted upstream; we don't want haproxy to
+        # mark the server DOWN on transient DNS hiccups during WG bringup,
+        # because once DOWN it stops accepting connections. Longhorn retries
+        # on connection failures via the AWS SDK.
+        # resolve-prefer ipv4 — skip AAAA which NetBird DNS doesn't serve.
+        server backup-storage backup-storage.vngenterprise.com:443 resolvers netbird-dns resolve-prefer ipv4 init-addr none

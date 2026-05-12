@@ -1,7 +1,7 @@
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob
 metadata:
-  name: r2-backup-daily
+  name: backup-daily
   namespace: longhorn-system
 spec:
   cron: "0 0 * * *"

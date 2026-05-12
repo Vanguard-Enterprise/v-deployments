@@ -134,11 +134,12 @@ Second container in each pod of the `netbird-client` StatefulSet:
 
 ```yaml
 - name: s3-forward
-  image: alpine/socat:latest
+  image: alpine/socat:1.7.4.4
+  imagePullPolicy: IfNotPresent
   args:
     - "-d"
-    - "TCP-LISTEN:443,fork,reuseaddr"
-    - "TCP:backup-storage.vngenterprise.com:443"
+    - "TCP4-LISTEN:443,fork,reuseaddr"
+    - "TCP4:100.107.29.143:443"   # NetBird-side IP of backup-storage.vngenterprise.com
   ports:
     - name: s3
       containerPort: 443
@@ -159,14 +160,32 @@ Second container in each pod of the `netbird-client` StatefulSet:
     readOnlyRootFilesystem: true
 ```
 
+Important deployment note — the upstream is **hardcoded as the NetBird mesh
+IP** (`100.107.29.143`), not the hostname. The intent was to let `socat`
+resolve the hostname via the NetBird DNS that the in-pod NetBird daemon
+installs, but `socat` (built on alpine + musl libc) fails `getaddrinfo` with
+"Name has no usable address" against this resolv.conf shape (`ndots:5` plus
+six search domains). `nslookup` from the same container works (it queries the
+nameserver directly), and glibc-based clients work too, but musl's resolver
+does not. Switching to a glibc-based socat image is the cleaner long-term
+fix; until then, the literal IP works reliably. If the rustfs peer is ever
+re-registered in NetBird and gets a new mesh IP, update both this manifest
+and the design doc. Verify with:
+
+```bash
+kubectl --context=admin@use1 -n netbird-client exec netbird-client-0 \
+  -c client -- nslookup backup-storage.vngenterprise.com
+```
+
 Notes:
 
-- `socat` resolves `backup-storage.vngenterprise.com` via the pod's resolver,
-  which (per operator confirmation) returns the NetBird-side IP because the
-  NetBird client running in the same pod participates in NetBird DNS.
-- No NET_ADMIN required. NET_BIND_SERVICE allows binding 443 without running
-  as root; the alpine/socat image has socat compiled with the capability
-  support.
+- TLS terminates end-to-end at rustfs; socat is pure TCP4 pass-through so
+  the in-cluster client's SNI for `backup-storage.vngenterprise.com` reaches
+  rustfs unmodified and the public cert verifies.
+- No NET_ADMIN required for the sidecar. The container runs as root inside
+  the `netbird-client` namespace (which has
+  `pod-security.kubernetes.io/enforce: privileged`), so root binds privileged
+  port 443 directly without any added capabilities.
 - Raw TCP pass-through. Sidecar never sees plaintext.
 
 ### 5.2 New `backup-storage-service.yaml`

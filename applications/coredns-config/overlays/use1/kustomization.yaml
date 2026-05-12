@@ -3,3 +3,7 @@ kind: Kustomization
 resources:
   - ../../base
   - coredns-rewrite.yaml
+labels:
+  - includeSelectors: false
+    pairs:
+      app.kubernetes.io/name: coredns-config

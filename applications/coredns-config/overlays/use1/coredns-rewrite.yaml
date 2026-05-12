@@ -1,3 +1,7 @@
+# Corefile body captured verbatim from kube-system/coredns on 2026-05-12
+# (cluster: use1) with one inserted rewrite directive for backup-storage.
+# Re-capture and update this file before any CoreDNS upgrade that may
+# modify the default Corefile shape.
 apiVersion: v1
 kind: ConfigMap
 metadata:

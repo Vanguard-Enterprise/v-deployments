@@ -34,11 +34,30 @@ spec:
         - name: s3-forward
           image: haproxy:2.8.10
           imagePullPolicy: IfNotPresent
-          # Debian-based (glibc) haproxy. Its own DNS resolver (configured to
-          # use NetBird's in-pod DNS at 100.107.173.42) handles hostname
-          # resolution for backup-storage.vngenterprise.com, with periodic
-          # re-resolution. This replaces the earlier alpine/socat sidecar
-          # whose musl libc getaddrinfo fails against this resolv.conf shape.
+          # Debian-based (glibc) haproxy with `parse-resolv-conf` in the
+          # resolvers section. Each NetBird-client pod runs its OWN embedded
+          # DNS resolver at its OWN NetBird IP (different per pod), so we
+          # cannot hardcode the nameserver — we let haproxy read whatever
+          # /etc/resolv.conf the local NetBird daemon has installed.
+          # The wrapper below waits for NetBird to overwrite /etc/resolv.conf
+          # (kubelet initially writes the cluster CoreDNS IP) BEFORE haproxy
+          # starts, since haproxy only reads resolv.conf once at boot.
+          command:
+            - /bin/sh
+            - -c
+            - |
+              i=0
+              until grep -qE "^nameserver 100\.107\." /etc/resolv.conf; do
+                i=$((i+1))
+                if [ $i -ge 60 ]; then
+                  echo "[s3-forward] gave up waiting for NetBird DNS after 120s" >&2
+                  exit 1
+                fi
+                echo "[s3-forward] waiting for NetBird DNS in /etc/resolv.conf (attempt $i)"
+                sleep 2
+              done
+              echo "[s3-forward] NetBird DNS detected, starting haproxy"
+              exec haproxy -W -db -f /usr/local/etc/haproxy/haproxy.cfg
           ports:
             - name: s3
               containerPort: 443

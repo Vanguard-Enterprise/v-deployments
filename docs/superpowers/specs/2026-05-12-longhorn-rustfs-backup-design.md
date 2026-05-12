@@ -130,63 +130,111 @@ self-heal).
 
 ### 5.1 Add `s3-forward` sidecar to `statefulset.yaml`
 
-Second container in each pod of the `netbird-client` StatefulSet:
+Second container in each pod of the `netbird-client` StatefulSet runs
+`haproxy:2.8.10` (Debian/glibc) as a pure TCP forwarder. Its config is
+templated at container start by a small wrapper script that reads the local
+NetBird daemon's nameserver from `/etc/resolv.conf` and injects it into the
+haproxy `resolvers` section. This is the only practical way to do it: each
+pod's NetBird daemon runs its own embedded DNS server at its own WG IP, so
+the nameserver differs per pod and cannot be hardcoded.
 
 ```yaml
 - name: s3-forward
-  image: alpine/socat:1.7.4.4
+  image: haproxy:2.8.10
   imagePullPolicy: IfNotPresent
-  args:
-    - "-d"
-    - "TCP4-LISTEN:443,fork,reuseaddr"
-    - "TCP4:100.107.29.143:443"   # NetBird-side IP of backup-storage.vngenterprise.com
+  command:
+    - /bin/sh
+    - -c
+    - |
+      set -eu
+      i=0
+      while ! grep -qE "^nameserver 100\.107\." /etc/resolv.conf; do
+        i=$((i+1))
+        [ $i -ge 60 ] && { echo "[s3-forward] gave up after 120s" >&2; exit 1; }
+        echo "[s3-forward] waiting for NetBird DNS (attempt $i)"
+        sleep 2
+      done
+      ns=$(awk '/^nameserver 100\.107\./ {print $2; exit}' /etc/resolv.conf)
+      sed "s|__NETBIRD_DNS_IP__|$ns|g" \
+        /usr/local/etc/haproxy/haproxy.cfg > /run/haproxy/haproxy.cfg
+      exec haproxy -W -db -f /run/haproxy/haproxy.cfg
   ports:
     - name: s3
       containerPort: 443
       protocol: TCP
+  volumeMounts:
+    - name: s3-forward-config
+      mountPath: /usr/local/etc/haproxy
+      readOnly: true
+    - name: s3-forward-runtime
+      mountPath: /run/haproxy
   resources:
     requests:
       cpu: 10m
-      memory: 16Mi
+      memory: 32Mi
     limits:
-      cpu: 100m
-      memory: 64Mi
+      cpu: 200m
+      memory: 128Mi
   securityContext:
     capabilities:
       drop:
         - ALL
+      add:
+        - NET_BIND_SERVICE
     runAsNonRoot: false
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
 ```
 
-Important deployment note — the upstream is **hardcoded as the NetBird mesh
-IP** (`100.107.29.143`), not the hostname. The intent was to let `socat`
-resolve the hostname via the NetBird DNS that the in-pod NetBird daemon
-installs, but `socat` (built on alpine + musl libc) fails `getaddrinfo` with
-"Name has no usable address" against this resolv.conf shape (`ndots:5` plus
-six search domains). `nslookup` from the same container works (it queries the
-nameserver directly), and glibc-based clients work too, but musl's resolver
-does not. Switching to a glibc-based socat image is the cleaner long-term
-fix; until then, the literal IP works reliably. If the rustfs peer is ever
-re-registered in NetBird and gets a new mesh IP, update both this manifest
-and the design doc. Verify with:
+The haproxy config (mounted from `s3-forward-config` ConfigMap) defines a TCP
+frontend on `:443` and a backend that points at `backup-storage.vngenterprise.com:443`,
+with a `resolvers netbird-dns` block whose nameserver is `__NETBIRD_DNS_IP__`
+(substituted at startup). `resolve-prefer ipv4`, `init-addr none`, and no
+`check` directive — haproxy never marks the server administratively DOWN on
+DNS hiccups; it just keeps re-resolving per `hold valid` and trusts the
+upstream.
 
-```bash
-kubectl --context=admin@use1 -n netbird-client exec netbird-client-0 \
-  -c client -- nslookup backup-storage.vngenterprise.com
+Two additional volumes are added at the pod spec level:
+
+```yaml
+volumes:
+  - name: s3-forward-config       # the haproxy config template
+    configMap:
+      name: s3-forward-config
+  - name: s3-forward-runtime      # writable scratch for sed-substituted config
+    emptyDir:
+      medium: Memory
+      sizeLimit: 1Mi
 ```
+
+Failed attempts along the way (recorded so we don't redo them):
+
+1. **`alpine/socat`** — musl libc `getaddrinfo` fails with "Name has no
+   usable address" against NetBird's resolv.conf shape (`ndots:5` + 6
+   search domains). `nslookup` from the same container works; libc-based
+   resolution doesn't. Bypassed temporarily with a hardcoded NetBird IP,
+   then replaced.
+2. **`haproxy` with hardcoded nameserver** — only the pod whose NetBird IP
+   matched the hardcode could resolve. Other pods silently failed forwards.
+3. **`haproxy` with `parse-resolv-conf`** — haproxy parses
+   `/etc/resolv.conf` before NetBird overwrites it, ends up with the
+   kubelet-injected cluster CoreDNS IP, which resolves
+   `backup-storage.vngenterprise.com` to our own Service ClusterIP via the
+   CoreDNS rewrite — a forwarding loop. Wrapper-substituted nameserver is
+   the working approach.
 
 Notes:
 
-- TLS terminates end-to-end at rustfs; socat is pure TCP4 pass-through so
-  the in-cluster client's SNI for `backup-storage.vngenterprise.com` reaches
-  rustfs unmodified and the public cert verifies.
-- No NET_ADMIN required for the sidecar. The container runs as root inside
-  the `netbird-client` namespace (which has
-  `pod-security.kubernetes.io/enforce: privileged`), so root binds privileged
-  port 443 directly without any added capabilities.
-- Raw TCP pass-through. Sidecar never sees plaintext.
+- TLS terminates end-to-end at rustfs; haproxy is pure TCP forwarding in
+  `mode tcp`, so the in-cluster client's SNI for
+  `backup-storage.vngenterprise.com` reaches rustfs unmodified and the
+  public cert verifies.
+- No NET_ADMIN required for the sidecar. NET_BIND_SERVICE is added so
+  haproxy can bind 443 cleanly even if the image's USER changes in future
+  versions. The pod runs in a `pod-security.kubernetes.io/enforce: privileged`
+  namespace, so root works too.
+- The wrapper waits up to ~120s for NetBird DNS to be installed. In practice
+  it completes in 0–10s after pod start.
 
 ### 5.2 New `backup-storage-service.yaml`
 

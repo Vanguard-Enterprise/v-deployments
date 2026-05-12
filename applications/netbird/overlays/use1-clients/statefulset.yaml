@@ -34,10 +34,18 @@ spec:
         - name: s3-forward
           image: alpine/socat:1.7.4.4
           imagePullPolicy: IfNotPresent
+          # Hardcoded NetBird-side IP for backup-storage.vngenterprise.com.
+          # musl libc's getaddrinfo fails ("Name has no usable address") against
+          # NetBird's DNS with this resolv.conf shape (ndots:5 + 6 search
+          # domains). nslookup works, glibc would work, but socat-in-alpine
+          # doesn't. If the rustfs peer is re-registered in NetBird and gets a
+          # new mesh IP, update both the address here and §5.1 of the design
+          # spec. Verify with: nslookup backup-storage.vngenterprise.com from
+          # the client container.
           args:
             - "-d"
             - "TCP4-LISTEN:443,fork,reuseaddr"
-            - "TCP4:backup-storage.vngenterprise.com:443"
+            - "TCP4:100.107.29.143:443"
           ports:
             - name: s3
               containerPort: 443

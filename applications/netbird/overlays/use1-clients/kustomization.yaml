@@ -5,3 +5,4 @@ resources:
   - statefulset.yaml
   - external-secret.yaml
   - namespace.yaml
+  - backup-storage-service.yaml

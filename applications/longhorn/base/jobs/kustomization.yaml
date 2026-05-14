@@ -5,5 +5,4 @@ resources:
   - backup-daily.yaml
   - backup-weekly.yaml
   - backup-monthly.yaml
-  - system-backup-24.yaml
   - snapshot-30.yaml

@@ -6,6 +6,7 @@ metadata:
   namespace: rustfs
 spec:
   clusterIP: None
+  publishNotReadyAddresses: true
   selector:
     app.kubernetes.io/name: rustfs
   ports:

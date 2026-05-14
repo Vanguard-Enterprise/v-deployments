@@ -6,7 +6,7 @@ metadata:
 spec:
   cron: "*/30 * * * *"
   task: snapshot
-  retain: 12
+  retain: 2
   concurrency: 2
   groups:
     - default

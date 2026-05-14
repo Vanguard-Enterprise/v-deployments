@@ -15,6 +15,14 @@ spec:
       labels:
         app.kubernetes.io/name: rustfs
     spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -27,6 +35,11 @@ spec:
       containers:
         - name: rustfs
           image: rustfs/rustfs:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: false
           command:
             - /usr/bin/rustfs
           args:

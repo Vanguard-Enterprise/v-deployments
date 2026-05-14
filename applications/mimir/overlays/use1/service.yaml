@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mimir
+  namespace: mimir
+spec:
+  type: ClusterIP
+  selector:
+    app: mimir
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+    - name: grpc
+      port: 9095
+      targetPort: grpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mimir-headless
+  namespace: mimir
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app: mimir
+  ports:
+    - name: gossip
+      port: 7946
+      targetPort: gossip

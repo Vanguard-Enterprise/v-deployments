@@ -3,11 +3,6 @@ kind: Kustomization
 resources:
   - ../../base
   - external-secret.yaml
-  - prometheusrule.yaml
-helmCharts:
-  - name: mimir-distributed
-    version: "6.0.3"
-    repo: https://grafana.github.io/helm-charts
-    releaseName: mimir
-    namespace: mimir
-    valuesFile: values.yaml
+  - configmap.yaml
+  - statefulset.yaml
+  - service.yaml

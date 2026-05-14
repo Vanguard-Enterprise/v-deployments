@@ -30,6 +30,8 @@ data:
       backend: s3
       s3:
         bucket_name: ${TSDB_BUCKET_NAME}
+      bucket_store:
+        sync_dir: /data/tsdb-sync
       tsdb:
         dir: /data/tsdb
         block_ranges_period: ["1h"]
@@ -72,6 +74,7 @@ data:
 
     ruler:
       enable_api: false
+      rule_path: /data/ruler
 
     alertmanager:
       data_dir: /data/alertmanager

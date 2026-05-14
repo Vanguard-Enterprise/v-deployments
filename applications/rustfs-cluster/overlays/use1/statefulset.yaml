@@ -27,13 +27,15 @@ spec:
       containers:
         - name: rustfs
           image: rustfs/rustfs:latest
+          command:
+            - /usr/bin/rustfs
           args:
             - server
+            - --console-address
+            - ":9001"
             - http://rustfs-0.rustfs-headless.rustfs.svc.cluster.local:9000/data
             - http://rustfs-1.rustfs-headless.rustfs.svc.cluster.local:9000/data
             - http://rustfs-2.rustfs-headless.rustfs.svc.cluster.local:9000/data
-            - --console-address
-            - ":9001"
           env:
             - name: RUSTFS_ROOT_USER
               valueFrom: { secretKeyRef: { name: rustfs-root, key: ROOT_USER } }

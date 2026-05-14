@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mimir-config
+  namespace: mimir
+data:
+  mimir.yaml: |
+    target: all
+    multitenancy_enabled: true
+
+    server:
+      http_listen_port: 8080
+      grpc_listen_port: 9095
+      log_level: info
+
+    common:
+      storage:
+        backend: s3
+        s3:
+          endpoint: ${AWS_ENDPOINTS}
+          access_key_id: ${AWS_ACCESS_KEY_ID}
+          secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+          insecure: false
+          bucket_name: ${TSDB_BUCKET_NAME}
+
+    blocks_storage:
+      backend: s3
+      s3:
+        bucket_name: ${TSDB_BUCKET_NAME}
+      tsdb:
+        dir: /data/tsdb
+        block_ranges_period: ["1h"]
+        retention_period: 6h
+        head_compaction_interval: 15m
+        head_compaction_idle_timeout: 1h
+
+    ruler_storage:
+      backend: s3
+      s3:
+        bucket_name: ${RULER_BUCKET_NAME}
+
+    alertmanager_storage:
+      backend: s3
+      s3:
+        bucket_name: ${RULER_BUCKET_NAME}
+
+    ingester:
+      ring:
+        replication_factor: 1
+        kvstore:
+          store: memberlist
+
+    distributor:
+      ring:
+        kvstore:
+          store: memberlist
+
+    compactor:
+      data_dir: /data/compactor
+      sharding_ring:
+        kvstore:
+          store: memberlist
+
+    store_gateway:
+      sharding_ring:
+        replication_factor: 1
+        kvstore:
+          store: memberlist
+
+    ruler:
+      enable_api: false
+
+    alertmanager:
+      data_dir: /data/alertmanager
+      sharding_ring:
+        replication_factor: 1
+
+    memberlist:
+      bind_port: 7946
+      join_members:
+        - mimir-headless.mimir.svc.cluster.local:7946
+
+    limits:
+      compactor_blocks_retention_period: 14d
+      max_total_query_length: 72h
+
+    tenant_federation:
+      enabled: true

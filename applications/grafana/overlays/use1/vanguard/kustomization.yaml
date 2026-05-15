@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - grafana.vngenterprise.com.yaml
-  - datasources.configmap.yaml
   - ./alerts
   - ./dashboards
 helmCharts:

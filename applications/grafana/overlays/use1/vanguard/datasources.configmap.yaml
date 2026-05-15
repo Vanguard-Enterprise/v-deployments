@@ -29,5 +29,52 @@ data:
         editable: false
         jsonData:
           httpHeaderName1: "X-Scope-OrgID"
+          derivedFields:
+            - matcherRegex: 'trace_id[=:]\s*([a-fA-F0-9]{16,32})'
+              name: TraceID
+              datasourceUid: tempo
+              url: '$${__value.raw}'
         secureJsonData:
           httpHeaderValue1: "logs"
+
+      - name: Tempo
+        uid: tempo
+        type: tempo
+        access: proxy
+        url: http://tempo.tempo.svc.cluster.local:3200
+        editable: false
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+          tracesToLogsV2:
+            datasourceUid: loki
+            tags:
+              - key: "service.name"
+                value: "service"
+              - key: "namespace"
+              - key: "pod"
+            filterByTraceID: true
+            spanStartTimeShift: '-1m'
+            spanEndTimeShift: '1m'
+          tracesToMetrics:
+            datasourceUid: mimir
+            tags:
+              - key: "service.name"
+                value: "service"
+              - key: "namespace"
+          serviceMap:
+            datasourceUid: mimir
+          nodeGraph:
+            enabled: true
+        secureJsonData:
+          httpHeaderValue1: "traces"
+
+      - name: Pyroscope
+        uid: pyroscope
+        type: grafana-pyroscope-datasource
+        access: proxy
+        url: http://pyroscope.pyroscope.svc.cluster.local:4040
+        editable: false
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+          httpHeaderValue1: "profiles"

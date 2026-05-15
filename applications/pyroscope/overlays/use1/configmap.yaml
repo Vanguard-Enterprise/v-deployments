@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pyroscope-config
+  namespace: pyroscope
+data:
+  pyroscope.yaml: |
+    multitenancy_enabled: true
+
+    server:
+      http_listen_port: 4040
+      grpc_listen_port: 9095
+
+    storage:
+      backend: s3
+      s3:
+        bucket_name: ${BUCKET_NAME}
+        endpoint: backup-storage.vngenterprise.com
+        access_key_id: ${AWS_ACCESS_KEY_ID}
+        secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+        insecure: false
+        force_path_style: true
+
+    pyroscopedb:
+      data_path: /data
+
+    limits:
+      max_local_series_per_tenant: 50000
+      retention_period: 168h
+
+    memberlist:
+      bind_port: 7946
+      join_members:
+        - pyroscope-headless.pyroscope.svc.cluster.local:7946
+
+    analytics:
+      reporting_enabled: false

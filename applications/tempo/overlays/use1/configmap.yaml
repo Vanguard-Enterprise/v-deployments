@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-config
+  namespace: tempo
+data:
+  tempo.yaml: |
+    multitenancy_enabled: true
+
+    server:
+      http_listen_port: 3200
+      grpc_listen_port: 9095
+      log_level: info
+
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+
+    ingester:
+      max_block_duration: 5m
+      trace_idle_period: 30s
+
+    compactor:
+      compaction:
+        block_retention: 72h
+
+    storage:
+      trace:
+        backend: s3
+        s3:
+          bucket: ${BUCKET_NAME}
+          endpoint: backup-storage.vngenterprise.com
+          access_key: ${AWS_ACCESS_KEY_ID}
+          secret_key: ${AWS_SECRET_ACCESS_KEY}
+          forcepathstyle: true
+          insecure: false
+        wal:
+          path: /data/wal
+        local:
+          path: /data/blocks
+
+    memberlist:
+      bind_port: 7946
+      join_members:
+        - tempo-headless.tempo.svc.cluster.local:7946
+
+    metrics_generator_enabled: false
+
+    usage_report:
+      reporting_enabled: false

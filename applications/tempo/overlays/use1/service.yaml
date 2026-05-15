@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tempo
+  namespace: tempo
+spec:
+  type: ClusterIP
+  selector:
+    app: tempo
+  ports:
+    - name: http
+      port: 3200
+      targetPort: http
+    - name: grpc
+      port: 9095
+      targetPort: grpc
+    - name: otlp-grpc
+      port: 4317
+      targetPort: otlp-grpc
+    - name: otlp-http
+      port: 4318
+      targetPort: otlp-http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tempo-headless
+  namespace: tempo
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app: tempo
+  ports:
+    - name: gossip
+      port: 7946
+      targetPort: gossip

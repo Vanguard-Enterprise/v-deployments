@@ -20,3 +20,14 @@ data:
           httpHeaderName1: "X-Scope-OrgID"
         secureJsonData:
           httpHeaderValue1: "metrics"
+
+      - name: Loki
+        uid: loki
+        type: loki
+        access: proxy
+        url: http://loki.loki.svc.cluster.local:3100
+        editable: false
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+          httpHeaderValue1: "logs"

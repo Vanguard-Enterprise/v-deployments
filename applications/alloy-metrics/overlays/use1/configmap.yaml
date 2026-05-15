@@ -6,6 +6,9 @@ metadata:
 data:
   config.alloy: |
     prometheus.remote_write "mimir" {
+      external_labels = {
+        cluster = "use1",
+      }
       endpoint {
         url = "http://mimir.mimir.svc.cluster.local:8080/api/v1/push"
         headers = {

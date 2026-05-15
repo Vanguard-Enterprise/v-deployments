@@ -1,0 +1,35 @@
+fullnameOverride: node-exporter
+
+hostNetwork: true
+hostPID: true
+hostRootFsMount:
+  enabled: true
+  mountPropagation: HostToContainer
+
+extraArgs:
+  - --collector.systemd
+  - --collector.processes
+  - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
+  - --collector.netclass.ignored-devices=^(veth.*|cali.*|cbr.*|cni.*|docker.*|flannel.*|kube-ipvs.*|nodelocaldns)$
+
+tolerations:
+  - operator: Exists      # run on all nodes including tainted control-plane
+
+resources:
+  requests: { cpu: 50m, memory: 64Mi }
+  limits:   { cpu: 200m, memory: 256Mi }
+
+service:
+  port: 9100
+  targetPort: 9100
+
+prometheus:
+  monitor:
+    enabled: true
+    additionalLabels:
+      instance: primary       # matches alloy-metrics ServiceMonitor selector
+    jobLabel: app.kubernetes.io/name
+    relabelings:
+      - action: replace
+        sourceLabels: [__meta_kubernetes_pod_node_name]
+        targetLabel: instance

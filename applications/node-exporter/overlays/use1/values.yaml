@@ -13,7 +13,7 @@ extraArgs:
   - --collector.netclass.ignored-devices=^(veth.*|cali.*|cbr.*|cni.*|docker.*|flannel.*|kube-ipvs.*|nodelocaldns)$
 
 tolerations:
-  - operator: Exists      # run on all nodes including tainted control-plane
+  - operator: Exists
 
 resources:
   requests: { cpu: 50m, memory: 64Mi }
@@ -23,13 +23,8 @@ service:
   port: 9100
   targetPort: 9100
 
+# Chart-generated ServiceMonitor is disabled; we write our own simpler one below
+# via the kustomization so alloy's prometheus.operator.servicemonitors picks it up cleanly.
 prometheus:
   monitor:
-    enabled: true
-    additionalLabels:
-      instance: primary       # matches alloy-metrics ServiceMonitor selector
-    jobLabel: app.kubernetes.io/name
-    relabelings:
-      - action: replace
-        sourceLabels: [__meta_kubernetes_pod_node_name]
-        targetLabel: instance
+    enabled: false

@@ -1,0 +1,36 @@
+alloy:
+  configMap:
+    create: false
+    name: alloy-config
+    key: config.alloy
+  mounts:
+    varlog: true
+    dockercontainers: true
+  clustering:
+    enabled: false
+  resources:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits:   { cpu: 500m, memory: 1Gi }
+
+rbac:
+  create: true
+  clusterRules:
+    - apiGroups: [""]
+      resources: ["pods", "namespaces", "nodes"]
+      verbs: ["get", "list", "watch"]
+
+serviceAccount:
+  create: true
+  name: alloy-logs
+
+controller:
+  type: daemonset
+  hostPID: false
+  volumes:
+    extra:
+      - name: positions
+        emptyDir: {}
+  volumeMounts:
+    extra:
+      - name: positions
+        mountPath: /tmp/alloy/positions

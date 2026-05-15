@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alloy-config
+  namespace: alloy-logs
+data:
+  config.alloy: |
+    // Discover all pods cluster-wide. loki.source.kubernetes only tails logs
+    // from /var/log/pods on the local node (DaemonSet mount), so per-node
+    // filtering happens implicitly via filesystem access.
+    discovery.kubernetes "pods" {
+      role = "pod"
+    }
+
+    discovery.relabel "pods" {
+      targets = discovery.kubernetes.pods.targets
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        regex         = "kube-system"
+        action        = "drop"
+      }
+      rule {
+        action = "labelmap"
+        regex  = "__meta_kubernetes_pod_label_(.+)"
+      }
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        target_label  = "namespace"
+      }
+      rule {
+        source_labels = ["__meta_kubernetes_pod_name"]
+        target_label  = "pod"
+      }
+      rule {
+        source_labels = ["__meta_kubernetes_pod_container_name"]
+        target_label  = "container"
+      }
+    }
+
+    loki.source.kubernetes "pods" {
+      targets    = discovery.relabel.pods.output
+      forward_to = [loki.process.extract.receiver]
+    }
+
+    loki.process "extract" {
+      forward_to = [loki.write.loki.receiver]
+      stage.regex {
+        expression = `trace_id[=:]\s*(?P<trace_id>[a-fA-F0-9]{16,32})`
+      }
+      stage.labels {
+        values = { trace_id = "" }
+      }
+    }
+
+    loki.write "loki" {
+      endpoint {
+        url = "http://loki.loki.svc.cluster.local:3100/loki/api/v1/push"
+        headers = {
+          "X-Scope-OrgID" = "logs",
+        }
+      }
+    }

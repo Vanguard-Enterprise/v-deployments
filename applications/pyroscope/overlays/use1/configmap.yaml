@@ -26,7 +26,6 @@ data:
 
     limits:
       max_local_series_per_tenant: 50000
-      retention_period: 168h
 
     memberlist:
       bind_port: 7946

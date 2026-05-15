@@ -6,7 +6,7 @@ metadata:
   labels:
     grafana_alert: "1"
 data:
-  rules.yaml: |
+  rules-cnpg.yaml: |
     apiVersion: 1
     groups:
       - orgId: 1

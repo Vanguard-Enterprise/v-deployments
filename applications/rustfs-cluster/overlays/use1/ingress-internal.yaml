@@ -13,7 +13,7 @@ spec:
       kind: Rule
       services:
         - name: rustfs
-          port: 9000
+          port: 9001
   tls:
     store:
       name: default

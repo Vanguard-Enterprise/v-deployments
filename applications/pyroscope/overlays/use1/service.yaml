@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pyroscope
+  namespace: pyroscope
+spec:
+  type: ClusterIP
+  selector:
+    app: pyroscope
+  ports:
+    - name: http
+      port: 4040
+      targetPort: http
+    - name: grpc
+      port: 9095
+      targetPort: grpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pyroscope-headless
+  namespace: pyroscope
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app: pyroscope
+  ports:
+    - name: gossip
+      port: 7946
+      targetPort: gossip

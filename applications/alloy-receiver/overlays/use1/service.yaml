@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alloy-receiver
+  namespace: alloy-receiver
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: alloy
+    app.kubernetes.io/instance: alloy-receiver
+  ports:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+      protocol: TCP
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+      protocol: TCP
+    - name: pyroscope
+      port: 4040
+      targetPort: 4040
+      protocol: TCP

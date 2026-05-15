@@ -54,9 +54,7 @@ data:
 
     loki.write "loki" {
       endpoint {
-        url = "http://loki.loki.svc.cluster.local:3100/loki/api/v1/push"
-        headers = {
-          "X-Scope-OrgID" = "logs",
-        }
+        url       = "http://loki.loki.svc.cluster.local:3100/loki/api/v1/push"
+        tenant_id = "logs"
       }
     }

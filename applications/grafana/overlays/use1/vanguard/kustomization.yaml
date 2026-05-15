@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - grafana.vngenterprise.com.yaml
+  - datasources.configmap.yaml
 helmCharts:
   - name: grafana
     version: "10.1.4"

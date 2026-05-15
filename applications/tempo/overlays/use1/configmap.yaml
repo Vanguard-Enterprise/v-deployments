@@ -49,7 +49,5 @@ data:
       join_members:
         - tempo-headless.tempo.svc.cluster.local:7946
 
-    metrics_generator_enabled: false
-
     usage_report:
       reporting_enabled: false

@@ -9,7 +9,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`rustfs.vngenterprise.com`)
+    - match: Host(`storage.vngenterprise.com`)
       kind: Rule
       services:
         - name: rustfs

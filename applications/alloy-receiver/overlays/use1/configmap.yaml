@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alloy-config
+  namespace: alloy-receiver
+data:
+  config.alloy: |
+    // OTLP receiver for traces
+    otelcol.receiver.otlp "default" {
+      grpc {
+        endpoint = "0.0.0.0:4317"
+      }
+      http {
+        endpoint = "0.0.0.0:4318"
+      }
+      output {
+        traces = [otelcol.processor.batch.traces.input]
+      }
+    }
+
+    otelcol.processor.batch "traces" {
+      output {
+        traces = [otelcol.exporter.otlp.tempo.input]
+      }
+    }
+
+    otelcol.exporter.otlp "tempo" {
+      client {
+        endpoint = "tempo.tempo.svc.cluster.local:4317"
+        headers  = { "X-Scope-OrgID" = "traces" }
+        tls {
+          insecure = true
+        }
+      }
+    }
+
+    // Pyroscope HTTP ingest passthrough
+    pyroscope.receive_http "default" {
+      http {
+        listen_address = "0.0.0.0"
+        listen_port    = 4040
+      }
+      forward_to = [pyroscope.write.default.receiver]
+    }
+
+    pyroscope.write "default" {
+      endpoint {
+        url = "http://pyroscope.pyroscope.svc.cluster.local:4040"
+        headers = {
+          "X-Scope-OrgID" = "profiles",
+        }
+      }
+    }

@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - configmap.yaml
+  - service.yaml
+helmCharts:
+  - name: alloy
+    version: 1.4.0
+    repo: https://grafana.github.io/helm-charts
+    releaseName: alloy-receiver
+    namespace: alloy-receiver
+    valuesFile: values.yaml

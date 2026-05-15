@@ -21,10 +21,11 @@ data:
     prometheus.relabel "drop_high_cardinality" {
       forward_to = [prometheus.remote_write.mimir.receiver]
 
-      // Drop container id/name labels that explode cardinality
+      // Drop container id/name labels that explode cardinality.
+      // KEEP image: mixin dashboards filter `image!=""` to exclude pause containers.
       rule {
         action = "labeldrop"
-        regex  = "id|name|container_id|image_id|image"
+        regex  = "id|name|container_id|image_id"
       }
 
       // Drop metrics that are rarely used

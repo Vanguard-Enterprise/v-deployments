@@ -1,0 +1,68 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: grafana
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    grafana_dashboard: "1"
+configMapGenerator:
+  - name: grafana-dashboard-kubernetes-cluster
+    files:
+      - files/kubernetes-cluster.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Kubernetes
+  - name: grafana-dashboard-kubernetes-pods
+    files:
+      - files/kubernetes-pods.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Kubernetes
+  - name: grafana-dashboard-longhorn
+    files:
+      - files/longhorn.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Longhorn
+  - name: grafana-dashboard-cnpg
+    files:
+      - files/cnpg.json
+    options:
+      annotations:
+        grafana_dashboard_folder: CNPG
+  - name: grafana-dashboard-traefik
+    files:
+      - files/traefik.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Traefik
+  - name: grafana-dashboard-argocd
+    files:
+      - files/argocd.json
+    options:
+      annotations:
+        grafana_dashboard_folder: ArgoCD
+  - name: grafana-dashboard-mimir-overview
+    files:
+      - files/mimir-overview.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Monitoring
+  - name: grafana-dashboard-loki-overview
+    files:
+      - files/loki-overview.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Monitoring
+  - name: grafana-dashboard-tempo-overview
+    files:
+      - files/tempo-overview.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Monitoring
+  - name: grafana-dashboard-alloy
+    files:
+      - files/alloy.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Monitoring

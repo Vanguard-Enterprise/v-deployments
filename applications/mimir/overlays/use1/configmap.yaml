@@ -89,6 +89,7 @@ data:
     limits:
       compactor_blocks_retention_period: 14d
       max_total_query_length: 72h
+      out_of_order_time_window: 5m
 
     tenant_federation:
       enabled: true

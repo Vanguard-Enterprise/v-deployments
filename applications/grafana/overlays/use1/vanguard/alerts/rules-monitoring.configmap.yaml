@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-monitoring
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules.yaml: |
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: monitoring
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: monitoring-mimir-down
+            title: MimirDown
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'up{namespace="mimir"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Mimir appears down"
+
+          - uid: monitoring-loki-down
+            title: LokiDown
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'up{namespace="loki"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Loki appears down"
+
+          - uid: monitoring-tempo-down
+            title: TempoDown
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'up{namespace="tempo"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Tempo appears down"
+
+          - uid: monitoring-alloy-dropped-samples
+            title: AlloyDroppedSamples
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'rate(alloy_prometheus_remote_write_samples_failed_total[10m]) > 0'
+                  refId: A
+            noDataState: OK
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Alloy is dropping samples on remote_write"

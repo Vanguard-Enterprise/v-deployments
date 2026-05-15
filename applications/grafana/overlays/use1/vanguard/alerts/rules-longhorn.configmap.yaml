@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-longhorn
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules.yaml: |
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: longhorn
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: longhorn-volume-degraded
+            title: LonghornVolumeDegraded
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'longhorn_volume_robustness == 2'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Longhorn volume {{ $labels.volume }} is degraded"
+
+          - uid: longhorn-volume-faulted
+            title: LonghornVolumeFaulted
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'longhorn_volume_robustness == 3'
+                  refId: A
+            noDataState: OK
+            for: 2m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Longhorn volume {{ $labels.volume }} FAULTED"

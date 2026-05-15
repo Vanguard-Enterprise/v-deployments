@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-platform
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules.yaml: |
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: platform
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: platform-node-not-ready
+            title: NodeNotReady
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_node_status_condition{condition="Ready",status="true"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Node {{ $labels.node }} is not Ready"
+
+          - uid: platform-node-mem-pressure
+            title: NodeMemoryPressure
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_node_status_condition{condition="MemoryPressure",status="true"} == 1'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Node {{ $labels.node }} under memory pressure"
+
+          - uid: platform-node-disk-pressure
+            title: NodeDiskPressure
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_node_status_condition{condition="DiskPressure",status="true"} == 1'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Node {{ $labels.node }} under disk pressure"
+
+          - uid: platform-fs-usage-high
+            title: FilesystemUsageHigh
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '(node_filesystem_size_bytes - node_filesystem_avail_bytes) / node_filesystem_size_bytes > 0.85'
+                  refId: A
+            noDataState: OK
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is >85% used"
+
+          - uid: platform-kubelet-down
+            title: KubeletDown
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'up{job="kubelet"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Kubelet on {{ $labels.node }} is down"

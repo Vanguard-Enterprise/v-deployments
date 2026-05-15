@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-cnpg
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules.yaml: |
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: cnpg
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: cnpg-replication-lag
+            title: CNPGReplicationLag
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'cnpg_pg_replication_lag_seconds > 60'
+                  refId: A
+            noDataState: OK
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "CNPG replication lag >60s for {{ $labels.namespace }}/{{ $labels.cluster }}"
+
+          - uid: cnpg-not-ready-instances
+            title: CNPGNoReadyInstances
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'cnpg_collector_pg_replication_in_recovery == 1 unless on(cluster) (cnpg_collector_up == 1)'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "CNPG cluster {{ $labels.namespace }}/{{ $labels.cluster }} has no ready instances"

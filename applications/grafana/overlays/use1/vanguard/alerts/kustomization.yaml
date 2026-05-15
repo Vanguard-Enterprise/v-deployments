@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - external-secret.yaml
+  - contact-points.configmap.yaml
+  - notification-policies.configmap.yaml
+  - rules-platform.configmap.yaml
+  - rules-kubernetes.configmap.yaml
+  - rules-longhorn.configmap.yaml
+  - rules-cnpg.configmap.yaml
+  - rules-argocd.configmap.yaml
+  - rules-traefik.configmap.yaml
+  - rules-monitoring.configmap.yaml
+  - rules-heartbeat.configmap.yaml

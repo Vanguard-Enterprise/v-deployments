@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - ../../base
   - configmap.yaml
-  - service.yaml
 helmCharts:
   - name: alloy
     version: 1.4.0

@@ -28,12 +28,11 @@ grafana.ini:
     auto_login: true
     use_pkce: true
     use_refresh_token: true
-env:
+envValueFrom:
   GF_DATABASE_PASSWORD:
-    valueFrom:
-      secretKeyRef:
-        name: grafana-db-app
-        key: password
+    secretKeyRef:
+      name: grafana-db-app
+      key: password
 sidecar:
   dashboards:
     enabled: true

@@ -5,6 +5,7 @@ resources:
   - grafana.vngenterprise.com.yaml
   - datasources.configmap.yaml
   - ./alerts
+  - ./dashboards
 helmCharts:
   - name: grafana
     version: "10.1.4"

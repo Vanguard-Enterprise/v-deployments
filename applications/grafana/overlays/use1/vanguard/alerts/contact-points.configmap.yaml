@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-contact-points
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  contact-points.yaml: |
+    apiVersion: 1
+    contactPoints:
+      - orgId: 1
+        name: discord-platform
+        receivers:
+          - uid: discord-platform
+            type: discord
+            settings:
+              url: $DISCORD_PLATFORM_WEBHOOK
+              use_discord_username: false
+              message: |
+                **{{ .Status }}** — {{ .CommonLabels.alertname }}
+                {{ range .Alerts }}
+                  *Severity*: {{ .Labels.severity }}
+                  *Namespace*: {{ .Labels.namespace }}
+                  *Summary*: {{ .Annotations.summary }}
+                {{ end }}
+
+      - orgId: 1
+        name: discord-rustlens
+        receivers:
+          - uid: discord-rustlens
+            type: discord
+            settings:
+              url: $DISCORD_RUSTLENS_WEBHOOK
+
+      - orgId: 1
+        name: discord-vanguard
+        receivers:
+          - uid: discord-vanguard
+            type: discord
+            settings:
+              url: $DISCORD_VANGUARD_WEBHOOK

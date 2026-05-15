@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-traefik
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules.yaml: |
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: traefik
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: traefik-5xx-rate
+            title: Traefik5xxRate
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'sum(rate(traefik_service_requests_total{code=~"5.."}[5m])) / sum(rate(traefik_service_requests_total[5m])) > 0.01'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Traefik 5xx rate >1% over 5m"
+
+          - uid: traefik-cert-expiry
+            title: TraefikCertExpiry
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 86400, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '(traefik_tls_certs_not_after - time()) / 86400 < 7'
+                  refId: A
+            noDataState: OK
+            for: 1h
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Cert {{ $labels.sans }} expires in <7d"

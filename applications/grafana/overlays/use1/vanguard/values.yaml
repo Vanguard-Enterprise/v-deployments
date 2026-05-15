@@ -33,6 +33,8 @@ envValueFrom:
     secretKeyRef:
       name: grafana-db-app
       key: password
+envFromSecrets:
+  - name: grafana-alerting
 sidecar:
   dashboards:
     enabled: true

@@ -1,24 +1,12 @@
-datasources:
-  datasources.yaml:
-    datasources:
-      - name: Mimir-Pods-Tenant
-        type: prometheus
-        access: proxy
-        orgId: 1
-        url: http://mimir-gateway.mimir.svc.cluster.local/prometheus
-        isDefault: true
-        version: 1
-        editable: true
-        jsonData:
-          httpHeaderName1: "X-Scope-OrgID"
-          alertmanagerUid: "alertmanager"
-        secureJsonData:
-          httpHeaderValue1: "pods"
 persistence:
-  storageClassName: longhorn
-  enabled: true
-  size: 1Gi
+  enabled: false
 grafana.ini:
+  database:
+    type: postgres
+    host: grafana-db-rw.grafana.svc.cluster.local:5432
+    name: grafana
+    user: grafana
+    ssl_mode: require
   grafana_net:
     url: https://grafana.vngenterprise.com
   server:
@@ -40,5 +28,35 @@ grafana.ini:
     auto_login: true
     use_pkce: true
     use_refresh_token: true
+env:
+  GF_DATABASE_PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: grafana-db-app
+        key: password
+sidecar:
+  dashboards:
+    enabled: true
+    label: grafana_dashboard
+    labelValue: "1"
+    searchNamespace: ALL
+    folderAnnotation: grafana_dashboard_folder
+    provider:
+      foldersFromFilesStructure: true
+  datasources:
+    enabled: true
+    label: grafana_datasource
+    labelValue: "1"
+    searchNamespace: ALL
+  alerts:
+    enabled: true
+    label: grafana_alert
+    labelValue: "1"
+    searchNamespace: ALL
+  notifiers:
+    enabled: false
+resources:
+  requests: { cpu: 100m, memory: 256Mi }
+  limits:   { cpu: 500m, memory: 1Gi }
 deploymentStrategy:
   type: Recreate

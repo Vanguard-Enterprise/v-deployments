@@ -13,3 +13,6 @@ spec:
     - port: http
       path: /metrics
       interval: 60s
+      relabelings:
+        - targetLabel: job
+          replacement: tempo/tempo

@@ -17,16 +17,12 @@ data:
       }
     }
 
-    // Relabel to drop high-cardinality labels and unused metrics
+    // Relabel to drop rarely-used high-volume metrics.
+    // KEEP all labels: mixin/alloy dashboards filter by id="/" (cgroup root),
+    // image!="" (exclude pause containers), node, etc. Mimir per-tenant limits
+    // are 1M series so cardinality from cAdvisor's id/name/image is fine.
     prometheus.relabel "drop_high_cardinality" {
       forward_to = [prometheus.remote_write.mimir.receiver]
-
-      // Drop container id/name labels that explode cardinality.
-      // KEEP image: mixin dashboards filter `image!=""` to exclude pause containers.
-      rule {
-        action = "labeldrop"
-        regex  = "id|name|container_id|image_id"
-      }
 
       // Drop metrics that are rarely used
       rule {

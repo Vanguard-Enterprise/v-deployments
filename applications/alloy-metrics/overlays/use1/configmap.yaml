@@ -17,19 +17,12 @@ data:
       }
     }
 
-    // Relabel to drop rarely-used high-volume metrics.
-    // KEEP all labels: mixin/alloy dashboards filter by id="/" (cgroup root),
-    // image!="" (exclude pause containers), node, etc. Mimir per-tenant limits
-    // are 1M series so cardinality from cAdvisor's id/name/image is fine.
+    // Pass-through relabel — keeps the wiring shape but forwards everything
+    // (Mimir per-tenant limit is 1M series, so we keep all cAdvisor metrics
+    // including container_spec_cpu_quota, container_fs_limit_bytes, etc.
+    // which dashboards filter on).
     prometheus.relabel "drop_high_cardinality" {
       forward_to = [prometheus.remote_write.mimir.receiver]
-
-      // Drop metrics that are rarely used
-      rule {
-        source_labels = ["__name__"]
-        regex         = "container_tasks_state|container_memory_failures_total|container_blkio_device_usage_total|container_fs_inodes_free|container_fs_inodes_total|container_fs_io_current|container_fs_io_time_seconds_total|container_fs_io_time_weighted_seconds_total|container_fs_limit_bytes|container_fs_read_seconds_total|container_fs_reads_merged_total|container_fs_sector_reads_total|container_fs_sector_writes_total|container_fs_write_seconds_total|container_fs_writes_merged_total|container_last_seen|container_scrape_error|container_sockets|container_spec_cpu_period|container_spec_cpu_quota|container_spec_cpu_shares|container_start_time_seconds|container_threads|container_threads_max|container_ulimits_soft"
-        action        = "drop"
-      }
     }
 
     discovery.kubernetes "nodes" {

@@ -44,6 +44,11 @@ data:
 
     loki.process "extract" {
       forward_to = [loki.write.loki.receiver]
+      // Parse CRI log format to extract stream (stdout/stderr) + tag.
+      stage.cri {}
+      stage.labels {
+        values = { stream = "" }
+      }
       stage.regex {
         expression = `trace_id[=:]\s*(?P<trace_id>[a-fA-F0-9]{16,32})`
       }

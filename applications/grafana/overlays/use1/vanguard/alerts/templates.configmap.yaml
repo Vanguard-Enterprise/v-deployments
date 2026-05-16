@@ -10,7 +10,7 @@ data:
     apiVersion: 1
     templates:
       - orgId: 1
-        name: discord_templates
+        name: discord.title
         template: |
           {{ define "discord.title" -}}
           {{- if .Alerts.Firing -}}
@@ -20,6 +20,9 @@ data:
           {{- end -}}
           {{- end }}
 
+      - orgId: 1
+        name: discord.alert
+        template: |
           {{ define "discord.alert" -}}
           {{ if eq .Status "firing" }}🔴{{ else }}🟢{{ end }} **{{ .Labels.alertname }}**
           {{ if .Annotations.summary }}> {{ .Annotations.summary }}{{ end }}
@@ -31,6 +34,9 @@ data:
           {{ if .GeneratorURL }}[Grafana]({{ .GeneratorURL }}){{ end }}{{ if .SilenceURL }} · [Silence]({{ .SilenceURL }}){{ end }}{{ if .Annotations.runbook_url }} · [Runbook]({{ .Annotations.runbook_url }}){{ end }}{{ if .Annotations.dashboard_url }} · [Dashboard]({{ .Annotations.dashboard_url }}){{ end }}
           {{- end }}
 
+      - orgId: 1
+        name: discord.message
+        template: |
           {{ define "discord.message" -}}
           {{ range $i, $a := .Alerts -}}
           {{ if $i }}

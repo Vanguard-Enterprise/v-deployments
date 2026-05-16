@@ -13,10 +13,11 @@ data:
         name: discord.title
         template: |
           {{ define "discord.title" -}}
+          {{- $name := .CommonLabels.alertname -}}{{- if not $name -}}{{- $name = "alerts" -}}{{- end -}}
           {{- if .Alerts.Firing -}}
-          🔥 {{ len .Alerts.Firing }} firing{{ if .Alerts.Resolved }} · ✅ {{ len .Alerts.Resolved }} resolved{{ end }} — {{ .CommonLabels.alertname | default "alerts" }}
+          🔥 {{ len .Alerts.Firing }} firing{{ if .Alerts.Resolved }} · ✅ {{ len .Alerts.Resolved }} resolved{{ end }} — {{ $name }}
           {{- else -}}
-          ✅ {{ len .Alerts.Resolved }} resolved — {{ .CommonLabels.alertname | default "alerts" }}
+          ✅ {{ len .Alerts.Resolved }} resolved — {{ $name }}
           {{- end -}}
           {{- end }}
 
@@ -30,7 +31,7 @@ data:
 
           {{ .Annotations.description }}{{ end }}
 
-          `{{ if eq .Labels.severity "critical" }}🚨{{ else if eq .Labels.severity "warning" }}⚠️{{ else if eq .Labels.severity "info" }}ℹ️{{ else }}⚪{{ end }} {{ .Labels.severity | default "—" }}`{{ if .Labels.team }} `team:{{ .Labels.team }}`{{ end }}{{ if .Labels.namespace }} `ns:{{ .Labels.namespace }}`{{ end }}{{ if .Labels.node }} `node:{{ .Labels.node }}`{{ end }}{{ if .Labels.pod }} `pod:{{ .Labels.pod }}`{{ end }}{{ if .Labels.instance }} `instance:{{ .Labels.instance }}`{{ end }}
+          `{{ if eq .Labels.severity "critical" }}🚨 critical{{ else if eq .Labels.severity "warning" }}⚠️ warning{{ else if eq .Labels.severity "info" }}ℹ️ info{{ else if .Labels.severity }}⚪ {{ .Labels.severity }}{{ else }}⚪ —{{ end }}`{{ if .Labels.team }} `team:{{ .Labels.team }}`{{ end }}{{ if .Labels.namespace }} `ns:{{ .Labels.namespace }}`{{ end }}{{ if .Labels.node }} `node:{{ .Labels.node }}`{{ end }}{{ if .Labels.pod }} `pod:{{ .Labels.pod }}`{{ end }}{{ if .Labels.instance }} `instance:{{ .Labels.instance }}`{{ end }}
           {{ if .GeneratorURL }}[Grafana]({{ .GeneratorURL }}){{ end }}{{ if .SilenceURL }} · [Silence]({{ .SilenceURL }}){{ end }}{{ if .Annotations.runbook_url }} · [Runbook]({{ .Annotations.runbook_url }}){{ end }}{{ if .Annotations.dashboard_url }} · [Dashboard]({{ .Annotations.dashboard_url }}){{ end }}
           {{- end }}
 

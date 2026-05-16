@@ -52,6 +52,16 @@ datasources:
           httpHeaderName1: "X-Scope-OrgID"
         secureJsonData:
           httpHeaderValue1: "metrics"
+      - name: Mimir-Traces
+        uid: mimir-traces
+        type: prometheus
+        access: proxy
+        url: http://mimir.mimir.svc.cluster.local:8080/prometheus
+        editable: false
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+          httpHeaderValue1: "traces"
       - name: Loki
         uid: loki
         type: loki

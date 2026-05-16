@@ -52,6 +52,10 @@ data:
         replacement   = "/api/v1/nodes/$1/proxy/metrics"
       }
       rule {
+        source_labels = ["__meta_kubernetes_node_name"]
+        target_label  = "node"
+      }
+      rule {
         action = "labelmap"
         regex  = "__meta_kubernetes_node_label_(.+)"
       }
@@ -67,6 +71,10 @@ data:
         source_labels = ["__meta_kubernetes_node_name"]
         target_label  = "__metrics_path__"
         replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
+      }
+      rule {
+        source_labels = ["__meta_kubernetes_node_name"]
+        target_label  = "node"
       }
       rule {
         action = "labelmap"

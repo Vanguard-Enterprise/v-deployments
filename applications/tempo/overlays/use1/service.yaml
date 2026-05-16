@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: tempo
   namespace: tempo
+  labels:
+    app: tempo
 spec:
   type: ClusterIP
   selector:

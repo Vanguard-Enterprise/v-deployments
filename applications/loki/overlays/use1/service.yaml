@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: loki
   namespace: loki
+  labels:
+    app: loki
 spec:
   type: ClusterIP
   selector:

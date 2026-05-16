@@ -4,6 +4,7 @@ resources:
   - ../../base
   - configmap.yaml
   - prometheusrule.yaml
+  - monitoring.yaml
 helmCharts:
   - name: alloy
     version: 1.4.0

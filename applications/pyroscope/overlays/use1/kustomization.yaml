@@ -6,3 +6,4 @@ resources:
   - configmap.yaml
   - statefulset.yaml
   - service.yaml
+  - monitoring.yaml

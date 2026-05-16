@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argocd
+  namespace: argocd
+  labels:
+    instance: primary
+spec:
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - argocd-metrics
+          - argocd-server-metrics
+          - argocd-repo-server-metrics
+          - argocd-applicationset-controller-metrics
+          - argocd-notifications-controller-metrics
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 60s

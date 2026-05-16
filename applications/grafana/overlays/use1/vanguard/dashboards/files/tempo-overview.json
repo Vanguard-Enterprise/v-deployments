@@ -760,7 +760,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "mimir"
+        "uid": "mimir-traces"
       },
       "fieldConfig": {
         "defaults": {
@@ -843,7 +843,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "mimir"
+            "uid": "mimir-traces"
           },
           "editorMode": "code",
           "expr": "traces_service_graph_request_failed_total",
@@ -859,7 +859,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "mimir"
+        "uid": "mimir-traces"
       },
       "fieldConfig": {
         "defaults": {
@@ -942,7 +942,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "mimir"
+            "uid": "mimir-traces"
           },
           "editorMode": "code",
           "expr": "sum(rate(traces_spanmetrics_calls_total[$__rate_interval])) by(service,tenant)",
@@ -957,7 +957,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "mimir"
+        "uid": "mimir-traces"
       },
       "fieldConfig": {
         "defaults": {
@@ -1042,7 +1042,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "mimir"
+            "uid": "mimir-traces"
           },
           "editorMode": "code",
           "expr": "sum(rate(traces_service_graph_request_total[$__rate_interval])) by (tenant, client)",
@@ -3603,7 +3603,7 @@
           "refId": "A"
         }
       ],
-      "title": "🚨 receiver refused spans",
+      "title": "\u00f0\u0178\u0161\u00a8 receiver refused spans",
       "type": "timeseries"
     },
     {
@@ -3863,7 +3863,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": true
@@ -4557,7 +4557,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": true

@@ -9,4 +9,4 @@ resources:
 - service.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/rustlens-frontend
-  digest: sha256:ed604ee5d9ff70e0152bd53ba7a925a9a3cf9df80f548c9a420ead6a01442593
+  digest: sha256:37873973249d9b0b518e6887f33a47c6951556ce4b05ef33e37ed30a1583cf01

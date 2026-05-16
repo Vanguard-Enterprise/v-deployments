@@ -16,14 +16,9 @@ data:
             type: discord
             settings:
               url: $DISCORD_PLATFORM_WEBHOOK
-              use_discord_username: false
-              message: |
-                **{{ .Status }}** — {{ .CommonLabels.alertname }}
-                {{ range .Alerts }}
-                  *Severity*: {{ .Labels.severity }}
-                  *Namespace*: {{ .Labels.namespace }}
-                  *Summary*: {{ .Annotations.summary }}
-                {{ end }}
+              use_discord_username: true
+              title: '{{ template "discord.title" . }}'
+              message: '{{ template "discord.message" . }}'
 
       - orgId: 1
         name: discord-rustlens
@@ -32,6 +27,9 @@ data:
             type: discord
             settings:
               url: $DISCORD_RUSTLENS_WEBHOOK
+              use_discord_username: true
+              title: '{{ template "discord.title" . }}'
+              message: '{{ template "discord.message" . }}'
 
       - orgId: 1
         name: discord-vanguard
@@ -40,3 +38,6 @@ data:
             type: discord
             settings:
               url: $DISCORD_VANGUARD_WEBHOOK
+              use_discord_username: true
+              title: '{{ template "discord.title" . }}'
+              message: '{{ template "discord.message" . }}'

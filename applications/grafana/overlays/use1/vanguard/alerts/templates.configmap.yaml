@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-templates
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  templates.yaml: |
+    apiVersion: 1
+    templates:
+      - orgId: 1
+        name: discord_templates
+        template: |
+          {{ define "discord.title" -}}
+          {{- if .Alerts.Firing -}}
+          🔥 {{ len .Alerts.Firing }} firing{{ if .Alerts.Resolved }} · ✅ {{ len .Alerts.Resolved }} resolved{{ end }} — {{ .CommonLabels.alertname | default "alerts" }}
+          {{- else -}}
+          ✅ {{ len .Alerts.Resolved }} resolved — {{ .CommonLabels.alertname | default "alerts" }}
+          {{- end -}}
+          {{- end }}
+
+          {{ define "discord.alert" -}}
+          {{ if eq .Status "firing" }}🔴{{ else }}🟢{{ end }} **{{ .Labels.alertname }}**
+          {{ if .Annotations.summary }}> {{ .Annotations.summary }}{{ end }}
+          {{- if .Annotations.description }}
+
+          {{ .Annotations.description }}{{ end }}
+
+          `{{ if eq .Labels.severity "critical" }}🚨{{ else if eq .Labels.severity "warning" }}⚠️{{ else if eq .Labels.severity "info" }}ℹ️{{ else }}⚪{{ end }} {{ .Labels.severity | default "—" }}`{{ if .Labels.team }} `team:{{ .Labels.team }}`{{ end }}{{ if .Labels.namespace }} `ns:{{ .Labels.namespace }}`{{ end }}{{ if .Labels.node }} `node:{{ .Labels.node }}`{{ end }}{{ if .Labels.pod }} `pod:{{ .Labels.pod }}`{{ end }}{{ if .Labels.instance }} `instance:{{ .Labels.instance }}`{{ end }}
+          {{ if .GeneratorURL }}[Grafana]({{ .GeneratorURL }}){{ end }}{{ if .SilenceURL }} · [Silence]({{ .SilenceURL }}){{ end }}{{ if .Annotations.runbook_url }} · [Runbook]({{ .Annotations.runbook_url }}){{ end }}{{ if .Annotations.dashboard_url }} · [Dashboard]({{ .Annotations.dashboard_url }}){{ end }}
+          {{- end }}
+
+          {{ define "discord.message" -}}
+          {{ range $i, $a := .Alerts -}}
+          {{ if $i }}
+
+          ━━━━━━━━━━━━━━━━━━━
+
+          {{ end -}}
+          {{ template "discord.alert" $a }}
+          {{ end -}}
+          {{- end }}

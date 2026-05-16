@@ -49,5 +49,29 @@ data:
       join_members:
         - tempo-headless.tempo.svc.cluster.local:7946
 
+    metrics_generator:
+      registry:
+        external_labels:
+          source: tempo
+          cluster: use1
+      storage:
+        path: /data/metrics-generator
+        remote_write:
+          - url: http://mimir.mimir.svc.cluster.local:8080/api/v1/push
+            send_exemplars: true
+            headers:
+              X-Scope-OrgID: metrics
+      traces_storage:
+        path: /data/metrics-generator/traces
+      processor:
+        service_graphs:
+          enable_messaging_system_latency_histogram: true
+        span_metrics: {}
+
+    overrides:
+      defaults:
+        metrics_generator:
+          processors: [service-graphs, span-metrics]
+
     usage_report:
       reporting_enabled: false

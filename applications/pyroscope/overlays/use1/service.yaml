@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: pyroscope
   namespace: pyroscope
+  labels:
+    app: pyroscope
 spec:
   type: ClusterIP
   selector:

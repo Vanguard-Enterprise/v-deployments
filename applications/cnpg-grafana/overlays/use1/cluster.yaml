@@ -7,7 +7,11 @@ spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:16
   storage:
-    size: 2Gi
+    # Temp bump from 2Gi while USE2 WAL archive target is down — WALs accumulate
+    # locally and CNPG refuses to start at low free space. Shrink back once
+    # barman-cloud-wal-archive to s3://cnpg-grafana-use1 is healthy again
+    # (shrink requires cluster recreate; PVCs can't shrink in-place).
+    size: 10Gi
     storageClass: longhorn
   resources:
     requests: { cpu: 100m, memory: 256Mi }

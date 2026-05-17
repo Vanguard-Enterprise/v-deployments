@@ -1,0 +1,34 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: vngenterprise-com-db
+  namespace: vngenterprise-com
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+  storage:
+    size: 5Gi
+    storageClass: longhorn
+  resources:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits:   { cpu: 500m, memory: 1Gi }
+  bootstrap:
+    initdb:
+      database: vngenterprise
+      owner: vngenterprise
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://cnpg-vngenterprise-com-use1
+      endpointURL: https://backup-storage.vngenterprise.com
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-vngenterprise-com-backup
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: cnpg-vngenterprise-com-backup
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"

@@ -8,6 +8,7 @@ resources:
   - migration-job.yaml
   - deployment.yaml
   - service.yaml
+  - ingress.yaml
 images:
   - name: ghcr.io/vanguard-enterprise/vngenterprise-com
     newTag: main

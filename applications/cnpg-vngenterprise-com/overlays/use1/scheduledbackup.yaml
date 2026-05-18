@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: vngenterprise-com-db-twice-daily
+  namespace: vngenterprise-com
+spec:
+  schedule: "0 0 3,15 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: vngenterprise-com-db
+  method: barmanObjectStore

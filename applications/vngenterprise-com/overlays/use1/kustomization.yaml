@@ -1,14 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - namespace.yaml
-  - configmap.yaml
-  - github-pull-secret.yaml
-  - external-secret.yaml
-  - migration-job.yaml
-  - deployment.yaml
-  - service.yaml
-  - ingress.yaml
+- namespace.yaml
+- configmap.yaml
+- github-pull-secret.yaml
+- external-secret.yaml
+- migration-job.yaml
+- deployment.yaml
+- service.yaml
+- ingress.yaml
 images:
-  - name: ghcr.io/vanguard-enterprise/vngenterprise-com
-    newTag: main
+- name: ghcr.io/vanguard-enterprise/vngenterprise-com
+  digest: sha256:44c2354cd6208b5253e3c0752ccfe054e6576fb278b444938d00d406ba8d4646

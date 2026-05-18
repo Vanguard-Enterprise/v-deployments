@@ -33,13 +33,20 @@ rabbitmq:
   enabled: false
 
 # === Bundled Kafka (single broker; replicationFactor 1 since we run 1 replica) ===
+# NOTE: bitnami pulled docker.io/bitnami/* in late 2025; pin to bitnamilegacy/*.
 kafka:
   enabled: true
+  image:
+    repository: bitnamilegacy/kafka
   replicaCount: 1
   controller:
     replicaCount: 1
+    image:
+      repository: bitnamilegacy/kafka
   provisioning:
     replicationFactor: 1
+    image:
+      repository: bitnamilegacy/kafka
   persistence:
     enabled: true
     size: 20Gi
@@ -48,6 +55,8 @@ kafka:
 # === Bundled Zookeeper (used by ClickHouse) ===
 zookeeper:
   enabled: true
+  image:
+    repository: bitnamilegacy/zookeeper
   replicaCount: 1
   persistence:
     enabled: true

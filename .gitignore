@@ -2,3 +2,9 @@
 cloudflare-token-secret.*
 secret.yaml
 temp.yaml
+
+# kustomize+helm pulls chart deps into a local `charts/` cache next to
+# kustomization.yaml. ArgoCD pulls fresh on sync — don't commit the cache.
+applications/*/base/charts/
+applications/*/overlays/*/charts/
+.cache-*

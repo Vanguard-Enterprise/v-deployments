@@ -1,0 +1,125 @@
+# Sentry self-hosted, pinned to chart sentry/26.22.0.
+# Bundled: ClickHouse, Kafka, Zookeeper, Memcached.
+# External: Postgres (CNPG sentry-db), Redis (redis-operator master service).
+# Mail/SMTP: disabled (mail.backend: dummy).
+
+system:
+  url: "https://sentry.vngenterprise.com"
+  adminEmail: "frank@dobrovolny.dev"
+
+# === External Postgres (CNPG sentry-db in same namespace) ===
+postgresql:
+  enabled: false
+externalPostgresql:
+  host: sentry-db-rw.sentry.svc.cluster.local
+  port: 5432
+  username: sentry
+  database: sentry
+  existingSecret: sentry-db-app
+  existingSecretKeys:
+    password: password
+
+# === External Redis (master service from redis-operator, sentinel-managed under the hood) ===
+redis:
+  enabled: false
+externalRedis:
+  host: sentry-redis-master.sentry-redis.svc.cluster.local
+  port: 6379
+  existingSecret: sentry-redis-secret
+  existingSecretKey: password
+
+# === No RabbitMQ — use Redis as the Celery broker ===
+rabbitmq:
+  enabled: false
+
+# === Bundled Kafka (single broker; replicationFactor 1 since we run 1 replica) ===
+kafka:
+  enabled: true
+  replicaCount: 1
+  controller:
+    replicaCount: 1
+  provisioning:
+    replicationFactor: 1
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: longhorn-single
+
+# === Bundled Zookeeper (used by ClickHouse) ===
+zookeeper:
+  enabled: true
+  replicaCount: 1
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: longhorn-single
+
+# === Bundled ClickHouse (single node, longhorn-single) ===
+clickhouse:
+  enabled: true
+  clickhouse:
+    replicas: "1"
+    persistentVolumeClaim:
+      enabled: true
+      dataPersistentVolume:
+        enabled: true
+        storageClassName: longhorn-single
+        accessModes:
+          - ReadWriteOnce
+        storage: "50Gi"
+
+# === Bundled Memcached (cache layer) ===
+memcached:
+  enabled: true
+  replicaCount: 1
+
+# === Mail off (no SMTP configured) ===
+mail:
+  backend: dummy
+
+# === Filestore on S3 (offsite bucket via existing ExternalSecret `sentry-filestore`) ===
+filestore:
+  backend: s3
+  s3:
+    existingSecret: sentry-filestore
+    accessKeyIdRef: AWS_ACCESS_KEY_ID
+    secretAccessKeyRef: AWS_SECRET_ACCESS_KEY
+    bucketName: sentry-filestore-use1
+    endpointUrl: https://backup-storage.vngenterprise.com
+    signature_version: s3v4
+    region_name: us-east-1
+
+# === Phase 2: allow local registration for bootstrap admin only; flipped off in Phase 3 ===
+auth:
+  register: true
+
+# === Disable the chart's plain Ingress; we own IngressRoutes ourselves ===
+ingress:
+  enabled: false
+
+# === Disable bundled nginx and metrics-exporter; we use PodMonitor instead ===
+nginx:
+  enabled: false
+metrics:
+  enabled: false
+
+# === Phase 2 keeps these OFF ===
+symbolicator:
+  enabled: false
+vroom:
+  replicas: 0
+
+# === Sentry application (web, worker, cron, relay, ingest, snuba) ===
+sentry:
+  singleOrganization: true
+  features:
+    orgSubdomains: false
+    enableProfiling: false
+    enableSessionReplay: false
+    enableFeedback: false
+  web:
+    replicas: 2
+  worker:
+    replicas: 2
+  cron:
+    enabled: true

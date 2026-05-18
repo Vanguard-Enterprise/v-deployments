@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: rustlens-twice-daily
+  namespace: rustlens-db
+spec:
+  schedule: "0 0 3,15 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: rustlens
+  method: barmanObjectStore

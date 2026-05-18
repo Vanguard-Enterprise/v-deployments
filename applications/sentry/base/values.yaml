@@ -132,3 +132,11 @@ sentry:
     replicas: 2
   cron:
     enabled: true
+
+# === Wire Celery broker to externalRedis ===
+# The chart sets BROKER_URL as an env var when externalRedis is configured,
+# but the templated sentry.conf.py leaves the Queue section empty unless the
+# bundled redis or rabbitmq is enabled. Map the env var into Python config.
+config:
+  sentryConfPy: |
+    BROKER_URL = os.environ["BROKER_URL"]

@@ -135,8 +135,14 @@ sentry:
 
 # === Wire Celery broker to externalRedis ===
 # The chart sets BROKER_URL as an env var when externalRedis is configured,
-# but the templated sentry.conf.py leaves the Queue section empty unless the
-# bundled redis or rabbitmq is enabled. Map the env var into Python config.
+# but two problems:
+#   1. The templated sentry.conf.py leaves the Queue section empty unless the
+#      bundled redis or rabbitmq is enabled.
+#   2. The chart's BROKER_URL is built with raw shell-substituted password; if
+#      the password has URL-reserved chars (`:`, `/`, `@`, `?`, `#`) the URL
+#      parser breaks (`ValueError: Port could not be cast to integer`).
+# Build the URL in Python from REDIS_PASSWORD with proper URL-encoding.
 config:
   sentryConfPy: |
-    BROKER_URL = os.environ["BROKER_URL"]
+    import urllib.parse as _up
+    BROKER_URL = "redis://:" + _up.quote(os.environ["REDIS_PASSWORD"], safe="") + "@sentry-redis-master.sentry-redis.svc.cluster.local:6379/0"

@@ -7,3 +7,8 @@ helmCharts:
     version: 25.0.0
     repo: https://prometheus-community.github.io/helm-charts
     releaseName: prometheus-operator-crds
+    valuesInline:
+      crds:
+        # Force SSA per-resource: CRD spec >256KB overflows kubectl's last-applied-configuration annotation on client-side apply.
+        annotations:
+          argocd.argoproj.io/sync-options: ServerSideApply=true

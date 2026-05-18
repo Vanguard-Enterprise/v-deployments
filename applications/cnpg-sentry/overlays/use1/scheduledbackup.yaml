@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: sentry-db-twice-daily
+  namespace: sentry
+spec:
+  schedule: "0 0 3,15 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: sentry-db
+  method: barmanObjectStore

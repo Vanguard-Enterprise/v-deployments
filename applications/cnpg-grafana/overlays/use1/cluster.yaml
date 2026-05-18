@@ -13,11 +13,9 @@ spec:
     requests: { cpu: 100m, memory: 256Mi }
     limits:   { cpu: 500m, memory: 1Gi }
   bootstrap:
-    recovery:
+    initdb:
       database: grafana
       owner: grafana
-      backup:
-        name: grafana-db-preshrink
   backup:
     barmanObjectStore:
       destinationPath: s3://cnpg-grafana-use1

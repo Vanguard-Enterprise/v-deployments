@@ -18,3 +18,19 @@ spec:
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://cnpg-rustlens-use1
+      endpointURL: https://backup-storage.vngenterprise.com
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-rustlens-backup
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: cnpg-rustlens-backup
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"

@@ -6,4 +6,6 @@ resources:
   - poolers.yaml
   - pooler-rw-lb.yaml
   - external-secrets.yaml
+  - external-secret-backup.yaml
+  - scheduledbackup.yaml
   - podmonitor.yaml

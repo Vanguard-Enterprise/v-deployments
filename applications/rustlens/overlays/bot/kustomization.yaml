@@ -8,4 +8,4 @@ resources:
 - deployment.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/rustlens-bot
-  digest: sha256:a02c00ff8b9059ae13b05909a548605334ef7c08a673419932b51bd31364224e
+  digest: sha256:e4cc04c6b17980a9c9e318a6a261de20c7298835d8c23633f83adde240b0998b

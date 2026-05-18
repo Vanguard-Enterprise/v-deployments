@@ -14,6 +14,8 @@ spec:
     limits:   { cpu: 500m, memory: 1Gi }
   bootstrap:
     recovery:
+      database: grafana
+      owner: grafana
       backup:
         name: grafana-db-preshrink
   backup:

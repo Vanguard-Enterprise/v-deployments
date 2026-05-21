@@ -65,8 +65,8 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (rustlens_outbound_target) (rate(http_client_request_duration_seconds_count{job=\"rustlens/rustlens-backend\"}[1m]))",
-          "legendFormat": "{{rustlens_outbound_target}}",
+          "expr": "sum by (server_address) (rate(http_client_request_duration_count{job=\"rustlens/rustlens-backend\"}[1m]))",
+          "legendFormat": "{{server_address}}",
           "refId": "A"
         }
       ],

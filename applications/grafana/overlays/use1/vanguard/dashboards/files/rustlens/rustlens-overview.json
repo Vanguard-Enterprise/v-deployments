@@ -7,69 +7,170 @@
   "liveNow": false,
   "panels": [
     {
+      "type": "text",
+      "title": "Health",
+      "gridPos": { "h": 1, "w": 8, "x": 0, "y": 0 },
+      "options": { "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false }, "content": "", "mode": "markdown" }
+    },
+    {
+      "type": "text",
+      "title": "Traffic",
+      "gridPos": { "h": 1, "w": 8, "x": 8, "y": 0 },
+      "options": { "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false }, "content": "", "mode": "markdown" }
+    },
+    {
+      "type": "text",
+      "title": "Reliability",
+      "gridPos": { "h": 1, "w": 8, "x": 16, "y": 0 },
+      "options": { "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false }, "content": "", "mode": "markdown" }
+    },
+
+    {
       "type": "stat",
-      "title": "Available replicas",
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "title": "Backend",
+      "gridPos": { "h": 3, "w": 3, "x": 0, "y": 1 },
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (deployment) (kube_deployment_status_replicas_available{namespace=~\"rustlens-.*\",deployment=~\"rustlens-.*\"})",
-          "legendFormat": "{{deployment}}",
+          "expr": "kube_deployment_status_replicas_available{namespace=\"rustlens-backend\",deployment=\"rustlens-backend\"}",
+          "legendFormat": "ready",
           "refId": "A"
+        },
+        {
+          "expr": "kube_deployment_spec_replicas{namespace=\"rustlens-backend\",deployment=\"rustlens-backend\"}",
+          "legendFormat": "desired",
+          "refId": "B"
         }
       ],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "colorMode": "value" },
-      "fieldConfig": { "defaults": { "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 1 }, { "color": "green", "value": 2 }] } }, "overrides": [] }
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "value_and_name", "wideLayout": true },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 1 }, { "color": "green", "value": 2 }] }
+        },
+        "overrides": []
+      }
     },
     {
       "type": "stat",
-      "title": "Restart rate (15m)",
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "title": "Bot",
+      "gridPos": { "h": 3, "w": 3, "x": 3, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        { "expr": "kube_deployment_status_replicas_available{namespace=\"rustlens-bot\",deployment=\"rustlens-bot\"}", "legendFormat": "ready", "refId": "A" },
+        { "expr": "kube_deployment_spec_replicas{namespace=\"rustlens-bot\",deployment=\"rustlens-bot\"}", "legendFormat": "desired", "refId": "B" }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] }, "textMode": "value_and_name", "wideLayout": true },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 1 }, { "color": "green", "value": 2 }] } }, "overrides": [] }
+    },
+    {
+      "type": "stat",
+      "title": "Frontend",
+      "gridPos": { "h": 3, "w": 2, "x": 6, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        { "expr": "kube_deployment_status_replicas_available{namespace=\"rustlens-frontend\",deployment=\"rustlens-frontend\"}", "legendFormat": "ready", "refId": "A" },
+        { "expr": "kube_deployment_spec_replicas{namespace=\"rustlens-frontend\",deployment=\"rustlens-frontend\"}", "legendFormat": "desired", "refId": "B" }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] }, "textMode": "value_and_name", "wideLayout": true },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 1 }, { "color": "green", "value": 2 }] } }, "overrides": [] }
+    },
+
+    {
+      "type": "stat",
+      "title": "Request rate",
+      "gridPos": { "h": 3, "w": 4, "x": 8, "y": 1 },
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (namespace) (rate(kube_pod_container_status_restarts_total{namespace=~\"rustlens-.*\"}[15m]))",
-          "legendFormat": "{{namespace}}",
+          "expr": "sum(rate(http_server_request_duration_count{job=~\"rustlens/.*\"}[1m]))",
+          "legendFormat": "req/s",
           "refId": "A"
         }
       ],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "fieldConfig": { "defaults": { "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] } }, "overrides": [] }
+      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] }, "textMode": "value", "wideLayout": true },
+      "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "fixed", "fixedColor": "blue" }, "decimals": 1 }, "overrides": [] }
     },
+    {
+      "type": "stat",
+      "title": "Active services",
+      "gridPos": { "h": 3, "w": 4, "x": 12, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "count(group by (job) (target_info{job=~\"rustlens/.*\"}))",
+          "legendFormat": "services",
+          "refId": "A"
+        }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] }, "textMode": "auto" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [{ "type": "value", "options": { "3": { "color": "green", "index": 0, "text": "3 / 3" }, "2": { "color": "yellow", "index": 1, "text": "2 / 3" }, "1": { "color": "orange", "index": 2, "text": "1 / 3" }, "0": { "color": "red", "index": 3, "text": "0 / 3" } } }],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }] }
+        },
+        "overrides": []
+      }
+    },
+
     {
       "type": "stat",
       "title": "5xx rate (5m)",
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "gridPos": { "h": 3, "w": 4, "x": 16, "y": 1 },
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (job) (rate(http_server_request_duration_count{job=~\"rustlens/.*\",http_response_status_code=~\"5..\"}[5m]))",
-          "legendFormat": "{{job}}",
+          "expr": "sum(rate(http_server_request_duration_count{job=~\"rustlens/.*\",http_response_status_code=~\"5..\"}[5m]))",
+          "legendFormat": "5xx/s",
           "refId": "A"
         }
       ],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "fieldConfig": { "defaults": { "unit": "reqps", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.5 }] } }, "overrides": [] }
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] }, "textMode": "auto" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps", "decimals": 2,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.1 }, { "color": "red", "value": 0.5 }] },
+          "noValue": "0"
+        },
+        "overrides": []
+      }
     },
     {
       "type": "stat",
       "title": "P99 latency (5m)",
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "gridPos": { "h": 3, "w": 4, "x": 20, "y": 1 },
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum by (le, job) (rate(http_server_request_duration_bucket{job=~\"rustlens/.*\"}[5m])))",
-          "legendFormat": "{{job}}",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_request_duration_bucket{job=~\"rustlens/.*\"}[5m])))",
+          "legendFormat": "p99",
           "refId": "A"
         }
       ],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "fieldConfig": { "defaults": { "unit": "s", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } }, "overrides": [] }
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] }, "textMode": "auto" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s", "decimals": 3,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "red", "value": 1 }] }
+        },
+        "overrides": []
+      }
     },
+
+    {
+      "type": "row",
+      "title": "HTTP Traffic",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 4 }
+    },
+
     {
       "type": "timeseries",
       "title": "Request rate by service",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
@@ -78,13 +179,20 @@
           "refId": "A"
         }
       ],
-      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-      "options": { "legend": { "showLegend": true, "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2, "fillOpacity": 15, "gradientMode": "opacity", "showPoints": "never", "stacking": { "mode": "none" } },
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "showLegend": true, "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] }, "tooltip": { "mode": "multi", "sort": "desc" } }
     },
     {
       "type": "timeseries",
       "title": "Error rate by service",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 },
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
@@ -93,12 +201,70 @@
           "refId": "A"
         }
       ],
-      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1 }, "overrides": [] }
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit", "min": 0, "max": 1,
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2, "fillOpacity": 15, "gradientMode": "opacity", "showPoints": "never" },
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "showLegend": true, "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] }, "tooltip": { "mode": "multi", "sort": "desc" } }
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Latency percentiles (all services)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 13 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        { "expr": "histogram_quantile(0.5, sum by (le) (rate(http_server_request_duration_bucket{job=~\"rustlens/.*\"}[5m])))", "legendFormat": "p50", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_request_duration_bucket{job=~\"rustlens/.*\"}[5m])))", "legendFormat": "p95", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_request_duration_bucket{job=~\"rustlens/.*\"}[5m])))", "legendFormat": "p99", "refId": "C" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2, "fillOpacity": 10, "gradientMode": "opacity", "showPoints": "never" },
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "showLegend": true, "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi", "sort": "desc" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Pod restarts (15m rate)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 13 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (namespace) (rate(kube_pod_container_status_restarts_total{namespace=~\"rustlens-.*\"}[15m]))",
+          "legendFormat": "{{namespace}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "drawStyle": "bars", "lineWidth": 1, "fillOpacity": 60, "gradientMode": "opacity", "showPoints": "never", "barAlignment": 0 },
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] }, "tooltip": { "mode": "multi", "sort": "desc" } }
+    },
+
+    {
+      "type": "row",
+      "title": "Logs",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 21 }
     },
     {
       "type": "logs",
       "title": "Error logs across RustLens",
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 12 },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 22 },
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
@@ -106,21 +272,30 @@
           "refId": "A"
         }
       ],
-      "options": { "showTime": true, "wrapLogMessage": false, "enableLogDetails": true }
+      "options": { "showTime": true, "wrapLogMessage": false, "enableLogDetails": true, "sortOrder": "Descending", "dedupStrategy": "none" }
+    },
+
+    {
+      "type": "row",
+      "title": "Traces",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 }
     },
     {
       "type": "table",
-      "title": "Top slow traces (5m)",
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 22 },
+      "title": "Recent traces (last 5m)",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 33 },
       "datasource": { "type": "tempo", "uid": "tempo" },
       "targets": [
         {
           "query": "{ resource.service.namespace = \"rustlens\" }",
           "queryType": "traceql",
           "refId": "A",
-          "tableType": "traces"
+          "tableType": "traces",
+          "limit": 50
         }
-      ]
+      ],
+      "options": { "showHeader": true }
     }
   ],
   "refresh": "30s",
@@ -131,6 +306,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "RustLens — Overview",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

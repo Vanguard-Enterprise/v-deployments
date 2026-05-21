@@ -94,17 +94,6 @@ data:
       max_global_series_per_metric: 100000
       ingestion_rate: 100000
       ingestion_burst_size: 200000
-      # Promote OTel resource attributes to labels so service identity
-      # survives the OTLP-to-Prometheus translation. Without this, Mimir
-      # folds service.name + service.namespace into a single `job` label
-      # and apps that emit OTLP lose their service_name label.
-      promote_otel_resource_attributes:
-        - service.name
-        - service.namespace
-        - service.instance.id
-        - deployment.environment
-        - k8s.pod.name
-        - k8s.namespace.name
 
     tenant_federation:
       enabled: true

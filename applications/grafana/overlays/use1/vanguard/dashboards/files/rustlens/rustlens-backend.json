@@ -10,7 +10,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{job=\"rustlens/rustlens-backend\"}[1m]))",
+          "expr": "sum by (http_route) (rate(http_server_request_duration_count{job=\"rustlens/rustlens-backend\"}[1m]))",
           "legendFormat": "{{http_route}}",
           "refId": "A"
         }
@@ -24,7 +24,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{job=\"rustlens/rustlens-backend\"}[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_bucket{job=\"rustlens/rustlens-backend\"}[5m])))",
           "legendFormat": "{{http_route}}",
           "refId": "A"
         }
@@ -38,7 +38,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{job=\"rustlens/rustlens-backend\",http_response_status_code=~\"5..\"}[5m]))",
+          "expr": "sum by (http_route) (rate(http_server_request_duration_count{job=\"rustlens/rustlens-backend\",http_response_status_code=~\"5..\"}[5m]))",
           "legendFormat": "{{http_route}}",
           "refId": "A"
         }

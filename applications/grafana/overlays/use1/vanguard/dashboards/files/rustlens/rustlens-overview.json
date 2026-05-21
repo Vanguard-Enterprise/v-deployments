@@ -102,7 +102,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{service_name=~\"rustlens-.*\"} | json | level=~\"error|ERROR|err|fatal\"",
+          "expr": "{service_name=~\"rustlens-.*\"} |~ \"(?i)error|fatal\"",
           "refId": "A"
         }
       ],
@@ -115,7 +115,7 @@
       "datasource": { "type": "tempo", "uid": "tempo" },
       "targets": [
         {
-          "query": "{ resource.service.namespace=\"rustlens\" } | select(duration) | order by duration desc",
+          "query": "{ resource.service.namespace = \"rustlens\" }",
           "queryType": "traceql",
           "refId": "A",
           "tableType": "traces"

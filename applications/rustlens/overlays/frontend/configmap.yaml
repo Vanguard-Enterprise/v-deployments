@@ -15,8 +15,10 @@ data:
   OTEL_SERVICE_NAME: rustlens-frontend
   OTEL_SERVICE_NAMESPACE: rustlens
   OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=use1,team=rustlens"
-  OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4317"
-  OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+  # @vercel/otel doesn't support OTLP gRPC; point at the alloy-receiver HTTP
+  # endpoint (4318) and use the http/protobuf protocol.
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4318"
+  OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
   OTEL_TRACES_SAMPLER: parentbased_traceidratio
   OTEL_TRACES_SAMPLER_ARG: "0.1"
   DEPLOYMENT_ENV: use1

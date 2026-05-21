@@ -1,0 +1,124 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "BattleMetrics poll duration",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        { "expr": "histogram_quantile(0.5, sum by (le) (rate(rustlens_battlemetrics_poll_duration_seconds_bucket[5m])))", "legendFormat": "p50", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(rustlens_battlemetrics_poll_duration_seconds_bucket[5m])))", "legendFormat": "p95", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, sum by (le) (rate(rustlens_battlemetrics_poll_duration_seconds_bucket[5m])))", "legendFormat": "p99", "refId": "C" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "BattleMetrics errors",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (reason) (rate(rustlens_battlemetrics_poll_error_total[5m]))",
+          "legendFormat": "{{reason}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Events published per channel",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (channel) (rate(rustlens_events_published_total[1m]))",
+          "legendFormat": "{{channel}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Fraud signals by type",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (signal_type) (rate(rustlens_fraud_signal_total[5m]))",
+          "legendFormat": "{{signal_type}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Rate-limit rejections by bucket",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (bucket) (rate(rustlens_ratelimit_rejection_total[5m]))",
+          "legendFormat": "{{bucket}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Outbound proxy auto-disable events",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (target) (rate(rustlens_outbound_auto_disabled_total[15m]))",
+          "legendFormat": "{{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Wipe scheduler run duration",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(rustlens_wipe_scheduler_run_duration_seconds_bucket[15m])))",
+          "legendFormat": "p95",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Wipe scheduler errors",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "rate(rustlens_wipe_scheduler_run_error_total[15m])",
+          "legendFormat": "errors/s",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["rustlens", "data-pipeline"],
+  "templating": { "list": [] },
+  "time": { "from": "now-3h", "to": "now" },
+  "title": "RustLens — Data Pipeline",
+  "version": 1
+}

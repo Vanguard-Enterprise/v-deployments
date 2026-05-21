@@ -1,0 +1,138 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Request rate by route",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{service_name=\"rustlens-backend\"}[1m]))",
+          "legendFormat": "{{http_route}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "P99 latency by route",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{service_name=\"rustlens-backend\"}[5m])))",
+          "legendFormat": "{{http_route}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Error rate by route",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{service_name=\"rustlens-backend\",http_response_status_code=~\"5..\"}[5m]))",
+          "legendFormat": "{{http_route}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Pool: connections in use",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "db_client_connections_usage{service_name=\"rustlens-backend\"}",
+          "legendFormat": "{{state}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Outbound HTTP calls by target",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (rustlens_outbound_target) (rate(http_client_request_duration_seconds_count{service_name=\"rustlens-backend\"}[1m]))",
+          "legendFormat": "{{rustlens_outbound_target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "BattleMetrics poll duration p99",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(rustlens_battlemetrics_poll_duration_seconds_bucket[5m])))",
+          "legendFormat": "p99",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "BattleMetrics errors by reason",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (reason) (rate(rustlens_battlemetrics_poll_error_total[5m]))",
+          "legendFormat": "{{reason}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Shard heartbeat age per worker",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "rustlens_shard_heartbeat_age_seconds",
+          "legendFormat": "{{worker_id}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "type": "logs",
+      "title": "Backend logs",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 32 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{service_name=\"rustlens-backend\"} | json",
+          "refId": "A"
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": false, "enableLogDetails": true }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["rustlens", "backend"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "RustLens — Backend",
+  "version": 1
+}

@@ -1,0 +1,136 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Available replicas",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (deployment) (kube_deployment_status_replicas_available{namespace=~\"rustlens-.*\",deployment=~\"rustlens-.*\"})",
+          "legendFormat": "{{deployment}}",
+          "refId": "A"
+        }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "colorMode": "value" },
+      "fieldConfig": { "defaults": { "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 1 }, { "color": "green", "value": 2 }] } }, "overrides": [] }
+    },
+    {
+      "type": "stat",
+      "title": "Restart rate (15m)",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (namespace) (rate(kube_pod_container_status_restarts_total{namespace=~\"rustlens-.*\"}[15m]))",
+          "legendFormat": "{{namespace}}",
+          "refId": "A"
+        }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] } }, "overrides": [] }
+    },
+    {
+      "type": "stat",
+      "title": "5xx rate (5m)",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"rustlens-.*\",http_response_status_code=~\"5..\"}[5m]))",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "reqps", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.5 }] } }, "overrides": [] }
+    },
+    {
+      "type": "stat",
+      "title": "P99 latency (5m)",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(http_server_request_duration_seconds_bucket{service_name=~\"rustlens-.*\"}[5m])))",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "s", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Request rate by service",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"rustlens-.*\"}[1m]))",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "options": { "legend": { "showLegend": true, "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Error rate by service",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "targets": [
+        {
+          "expr": "sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"rustlens-.*\",http_response_status_code=~\"5..\"}[1m])) / sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"rustlens-.*\"}[1m]))",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1 }, "overrides": [] }
+    },
+    {
+      "type": "logs",
+      "title": "Error logs across RustLens",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 12 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{service_name=~\"rustlens-.*\"} | json | level=~\"error|ERROR|err|fatal\"",
+          "refId": "A"
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": false, "enableLogDetails": true }
+    },
+    {
+      "type": "table",
+      "title": "Top slow traces (5m)",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 22 },
+      "datasource": { "type": "tempo", "uid": "tempo" },
+      "targets": [
+        {
+          "query": "{ resource.service.namespace=\"rustlens\" } | select(duration) | order by duration desc",
+          "queryType": "traceql",
+          "refId": "A",
+          "tableType": "traces"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["rustlens", "overview"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "RustLens — Overview",
+  "version": 1,
+  "weekStart": ""
+}

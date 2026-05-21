@@ -5,7 +5,7 @@ metadata:
   namespace: alloy-receiver
 data:
   config.alloy: |
-    // OTLP receiver for traces
+    // OTLP receiver for traces, metrics, and logs.
     otelcol.receiver.otlp "default" {
       grpc {
         endpoint = "0.0.0.0:4317"
@@ -14,7 +14,9 @@ data:
         endpoint = "0.0.0.0:4318"
       }
       output {
-        traces = [otelcol.processor.batch.traces.input]
+        traces  = [otelcol.processor.batch.traces.input]
+        metrics = [otelcol.processor.batch.metrics.input]
+        logs    = [otelcol.processor.batch.logs.input]
       }
     }
 
@@ -31,6 +33,37 @@ data:
         tls {
           insecure = true
         }
+      }
+    }
+
+    otelcol.processor.batch "metrics" {
+      output {
+        metrics = [otelcol.exporter.otlphttp.mimir.input]
+      }
+    }
+
+    // Mimir accepts OTLP metrics over HTTP at /otlp/v1/metrics. The
+    // otlphttp exporter appends that path, so the endpoint is the /otlp
+    // base.
+    otelcol.exporter.otlphttp "mimir" {
+      client {
+        endpoint = "http://mimir.mimir.svc.cluster.local:8080/otlp"
+        headers  = { "X-Scope-OrgID" = "metrics" }
+      }
+    }
+
+    otelcol.processor.batch "logs" {
+      output {
+        logs = [otelcol.exporter.otlphttp.loki.input]
+      }
+    }
+
+    // Loki accepts OTLP logs at /otlp/v1/logs. The otlphttp exporter
+    // appends the /v1/logs suffix to the configured endpoint.
+    otelcol.exporter.otlphttp "loki" {
+      client {
+        endpoint = "http://loki.loki.svc.cluster.local:3100/otlp"
+        headers  = { "X-Scope-OrgID" = "logs" }
       }
     }
 

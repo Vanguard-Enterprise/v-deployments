@@ -6,3 +6,13 @@ metadata:
 data:
   BACKEND_URL: "http://rustlens-backend.rustlens-backend.svc.cluster.local:8080"
   BOT_TARGET_SHARDS: "2"
+  OBSERVABILITY_ENABLED: "true"
+  OTEL_SERVICE_NAME: rustlens-bot
+  OTEL_SERVICE_NAMESPACE: rustlens
+  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=use1,team=rustlens"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4317"
+  OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+  OTEL_TRACES_SAMPLER: parentbased_traceidratio
+  OTEL_TRACES_SAMPLER_ARG: "0.1"
+  PYROSCOPE_SERVER_ADDRESS: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4040"
+  DEPLOYMENT_ENV: use1

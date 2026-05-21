@@ -12,3 +12,13 @@ data:
   APP_ORIGIN: "https://rustlens.com"
   ALLOW_AUTH_DEBUG_TOKENS: "false"
   PROXY_ENABLED: "true"
+  OBSERVABILITY_ENABLED: "true"
+  OTEL_SERVICE_NAME: rustlens-backend
+  OTEL_SERVICE_NAMESPACE: rustlens
+  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=use1,team=rustlens"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4317"
+  OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+  OTEL_TRACES_SAMPLER: parentbased_traceidratio
+  OTEL_TRACES_SAMPLER_ARG: "0.1"
+  PYROSCOPE_SERVER_ADDRESS: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4040"
+  DEPLOYMENT_ENV: use1

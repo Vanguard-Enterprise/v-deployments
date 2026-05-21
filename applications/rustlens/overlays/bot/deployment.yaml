@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: rustlens-bot
+        app.kubernetes.io/name: rustlens-bot
+        app.kubernetes.io/part-of: rustlens
+        team: rustlens
     spec:
       imagePullSecrets:
         - name: github-pull-secret

@@ -1,0 +1,40 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: rustlens-frontend
+  namespace: rustlens-frontend
+  labels:
+    alloy_rules: pods
+    team: rustlens
+    service: rustlens-frontend
+spec:
+  groups:
+    - name: rustlens-frontend.availability
+      rules:
+        - alert: RustLensFrontendDown
+          expr: kube_deployment_status_replicas_available{namespace="rustlens-frontend",deployment="rustlens-frontend"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: rustlens
+            service: rustlens-frontend
+          annotations:
+            summary: "rustlens-frontend has zero ready replicas"
+        - alert: RustLensFrontendDegraded
+          expr: kube_deployment_status_replicas_available{namespace="rustlens-frontend",deployment="rustlens-frontend"} < kube_deployment_spec_replicas{namespace="rustlens-frontend",deployment="rustlens-frontend"}
+          for: 15m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-frontend
+          annotations:
+            summary: "rustlens-frontend has fewer ready replicas than desired"
+        - alert: RustLensFrontendCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total{namespace="rustlens-frontend"}[15m]) > 0
+          for: 15m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-frontend
+          annotations:
+            summary: "rustlens-frontend pod is restarting repeatedly"

@@ -10,7 +10,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{service_name=\"rustlens-backend\"}[1m]))",
+          "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{job=\"rustlens/rustlens-backend\"}[1m]))",
           "legendFormat": "{{http_route}}",
           "refId": "A"
         }
@@ -24,7 +24,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{service_name=\"rustlens-backend\"}[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{job=\"rustlens/rustlens-backend\"}[5m])))",
           "legendFormat": "{{http_route}}",
           "refId": "A"
         }
@@ -38,7 +38,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{service_name=\"rustlens-backend\",http_response_status_code=~\"5..\"}[5m]))",
+          "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{job=\"rustlens/rustlens-backend\",http_response_status_code=~\"5..\"}[5m]))",
           "legendFormat": "{{http_route}}",
           "refId": "A"
         }
@@ -52,7 +52,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "db_client_connections_usage{service_name=\"rustlens-backend\"}",
+          "expr": "db_client_connections_usage{job=\"rustlens/rustlens-backend\"}",
           "legendFormat": "{{state}}",
           "refId": "A"
         }
@@ -65,7 +65,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (rustlens_outbound_target) (rate(http_client_request_duration_seconds_count{service_name=\"rustlens-backend\"}[1m]))",
+          "expr": "sum by (rustlens_outbound_target) (rate(http_client_request_duration_seconds_count{job=\"rustlens/rustlens-backend\"}[1m]))",
           "legendFormat": "{{rustlens_outbound_target}}",
           "refId": "A"
         }

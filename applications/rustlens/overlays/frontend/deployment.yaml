@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: rustlens-frontend
+        app.kubernetes.io/name: rustlens-frontend
+        app.kubernetes.io/part-of: rustlens
+        team: rustlens
     spec:
       imagePullSecrets:
         - name: github-pull-secret

@@ -11,3 +11,12 @@ data:
   TRUST_PROXY_HEADERS: "true"
   TRUST_PROXY_IP_HEADER: "X-Forwarded-For"
   AUTH_DEBUG_TOKEN_PREVIEW: "false"
+  OBSERVABILITY_ENABLED: "true"
+  OTEL_SERVICE_NAME: rustlens-frontend
+  OTEL_SERVICE_NAMESPACE: rustlens
+  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=use1,team=rustlens"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4317"
+  OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+  OTEL_TRACES_SAMPLER: parentbased_traceidratio
+  OTEL_TRACES_SAMPLER_ARG: "0.1"
+  DEPLOYMENT_ENV: use1

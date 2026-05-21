@@ -52,7 +52,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{service_name=\"rustlens-frontend\"}[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{job=\"rustlens/rustlens-frontend\"}[5m])))",
           "legendFormat": "{{http_route}}",
           "refId": "A"
         }

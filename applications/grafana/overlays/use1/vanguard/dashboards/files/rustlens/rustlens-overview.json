@@ -43,8 +43,8 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"rustlens-.*\",http_response_status_code=~\"5..\"}[5m]))",
-          "legendFormat": "{{service_name}}",
+          "expr": "sum by (job) (rate(http_server_request_duration_seconds_count{job=~\"rustlens/.*\",http_response_status_code=~\"5..\"}[5m]))",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],
@@ -58,8 +58,8 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(http_server_request_duration_seconds_bucket{service_name=~\"rustlens-.*\"}[5m])))",
-          "legendFormat": "{{service_name}}",
+          "expr": "histogram_quantile(0.99, sum by (le, job) (rate(http_server_request_duration_seconds_bucket{job=~\"rustlens/.*\"}[5m])))",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],
@@ -73,8 +73,8 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"rustlens-.*\"}[1m]))",
-          "legendFormat": "{{service_name}}",
+          "expr": "sum by (job) (rate(http_server_request_duration_seconds_count{job=~\"rustlens/.*\"}[1m]))",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],
@@ -88,8 +88,8 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"rustlens-.*\",http_response_status_code=~\"5..\"}[1m])) / sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"rustlens-.*\"}[1m]))",
-          "legendFormat": "{{service_name}}",
+          "expr": "sum by (job) (rate(http_server_request_duration_seconds_count{job=~\"rustlens/.*\",http_response_status_code=~\"5..\"}[1m])) / sum by (job) (rate(http_server_request_duration_seconds_count{job=~\"rustlens/.*\"}[1m]))",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],

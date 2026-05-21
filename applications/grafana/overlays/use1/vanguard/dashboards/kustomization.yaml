@@ -68,3 +68,33 @@ configMapGenerator:
     options:
       annotations:
         grafana_dashboard_folder: Monitoring
+  - name: grafana-dashboard-rustlens-overview
+    files:
+      - files/rustlens/rustlens-overview.json
+    options:
+      annotations:
+        grafana_dashboard_folder: RustLens
+  - name: grafana-dashboard-rustlens-backend
+    files:
+      - files/rustlens/rustlens-backend.json
+    options:
+      annotations:
+        grafana_dashboard_folder: RustLens
+  - name: grafana-dashboard-rustlens-bot
+    files:
+      - files/rustlens/rustlens-bot.json
+    options:
+      annotations:
+        grafana_dashboard_folder: RustLens
+  - name: grafana-dashboard-rustlens-frontend
+    files:
+      - files/rustlens/rustlens-frontend.json
+    options:
+      annotations:
+        grafana_dashboard_folder: RustLens
+  - name: grafana-dashboard-rustlens-data-pipeline
+    files:
+      - files/rustlens/rustlens-data-pipeline.json
+    options:
+      annotations:
+        grafana_dashboard_folder: RustLens

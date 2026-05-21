@@ -1,0 +1,64 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: rustlens-bot
+  namespace: rustlens-bot
+  labels:
+    alloy_rules: pods
+    team: rustlens
+    service: rustlens-bot
+spec:
+  groups:
+    - name: rustlens-bot.availability
+      rules:
+        - alert: RustLensBotDown
+          expr: kube_deployment_status_replicas_available{namespace="rustlens-bot",deployment="rustlens-bot"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: rustlens
+            service: rustlens-bot
+          annotations:
+            summary: "rustlens-bot has zero ready replicas"
+        - alert: RustLensBotDegraded
+          expr: kube_deployment_status_replicas_available{namespace="rustlens-bot",deployment="rustlens-bot"} < kube_deployment_spec_replicas{namespace="rustlens-bot",deployment="rustlens-bot"}
+          for: 15m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-bot
+          annotations:
+            summary: "rustlens-bot has fewer ready replicas than desired"
+        - alert: RustLensBotCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total{namespace="rustlens-bot"}[15m]) > 0
+          for: 15m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-bot
+          annotations:
+            summary: "rustlens-bot pod is restarting repeatedly"
+
+    - name: rustlens-bot.domain
+      rules:
+        - alert: RustLensBotShardDisconnected
+          expr: min(rustlens_bot_shard_state) == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: rustlens
+            service: rustlens-bot
+          annotations:
+            summary: "at least one rustlens-bot shard is disconnected"
+        - alert: RustLensBotCommandFailureRate
+          expr: |
+            sum(rate(rustlens_bot_command_failure_total[10m]))
+            /
+            sum(rate(rustlens_bot_command_duration_seconds_count[10m])) > 0.1
+          for: 15m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-bot
+          annotations:
+            summary: "rustlens-bot command failure rate > 10%"

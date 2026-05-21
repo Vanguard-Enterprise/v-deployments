@@ -1,0 +1,99 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: rustlens-backend
+  namespace: rustlens-backend
+  labels:
+    alloy_rules: pods
+    team: rustlens
+    service: rustlens-backend
+spec:
+  groups:
+    - name: rustlens-backend.availability
+      rules:
+        - alert: RustLensBackendDown
+          expr: kube_deployment_status_replicas_available{namespace="rustlens-backend",deployment="rustlens-backend"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: rustlens
+            service: rustlens-backend
+          annotations:
+            summary: "rustlens-backend has zero ready replicas"
+        - alert: RustLensBackendDegraded
+          expr: kube_deployment_status_replicas_available{namespace="rustlens-backend",deployment="rustlens-backend"} < kube_deployment_spec_replicas{namespace="rustlens-backend",deployment="rustlens-backend"}
+          for: 15m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-backend
+          annotations:
+            summary: "rustlens-backend has fewer ready replicas than desired"
+        - alert: RustLensBackendCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total{namespace="rustlens-backend"}[15m]) > 0
+          for: 15m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-backend
+          annotations:
+            summary: "rustlens-backend pod is restarting repeatedly"
+
+    - name: rustlens-backend.http
+      rules:
+        - alert: RustLensBackendHighErrorRate
+          expr: |
+            sum(rate(http_server_request_duration_seconds_count{service_name="rustlens-backend",http_response_status_code=~"5.."}[5m]))
+            /
+            sum(rate(http_server_request_duration_seconds_count{service_name="rustlens-backend"}[5m])) > 0.05
+          for: 10m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-backend
+          annotations:
+            summary: "rustlens-backend 5xx rate above 5% for 10m"
+        - alert: RustLensBackendHighLatencyP99
+          expr: |
+            histogram_quantile(0.99,
+              sum by (le) (rate(http_server_request_duration_seconds_bucket{service_name="rustlens-backend"}[5m]))
+            ) > 1
+          for: 10m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-backend
+          annotations:
+            summary: "rustlens-backend p99 request latency > 1s for 10m"
+
+    - name: rustlens-backend.domain
+      rules:
+        - alert: RustLensBackendDBPoolExhausted
+          expr: |
+            (sum(db_client_connections_usage{state="used",service_name="rustlens-backend"})
+             / sum(db_client_connections_max{service_name="rustlens-backend"})) > 0.9
+          for: 10m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-backend
+          annotations:
+            summary: "rustlens-backend pg pool > 90% utilization for 10m"
+        - alert: RustLensBackendBattleMetricsErrors
+          expr: sum(rate(rustlens_battlemetrics_poll_error_total[10m])) > 0.5
+          for: 15m
+          labels:
+            severity: warning
+            team: rustlens
+            service: rustlens-backend
+          annotations:
+            summary: "rustlens-backend battlemetrics poll error rate elevated"
+        - alert: RustLensBackendShardAssignmentStalled
+          expr: max(rustlens_shard_heartbeat_age_seconds) > 120
+          for: 5m
+          labels:
+            severity: critical
+            team: rustlens
+            service: rustlens-backend
+          annotations:
+            summary: "rustlens-backend has a shard with stale heartbeat (>2m)"

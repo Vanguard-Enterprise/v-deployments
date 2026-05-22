@@ -24,7 +24,7 @@
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_bucket{job=\"rustlens/rustlens-backend\"}[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le, http_route) (rate(http_server_request_duration_bucket{job=\"rustlens/rustlens-backend\",http_route!=\"/api/events/stream\"}[5m])))",
           "legendFormat": "{{http_route}}",
           "refId": "A"
         }
@@ -134,5 +134,5 @@
   "templating": { "list": [] },
   "time": { "from": "now-1h", "to": "now" },
   "title": "RustLens — Backend",
-  "version": 1
+  "version": 2
 }

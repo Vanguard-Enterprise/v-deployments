@@ -10,4 +10,4 @@ resources:
 - prometheusrule.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/rustlens-frontend
-  digest: sha256:5974f264a4058c5eedf057d5520565a161c3f9dce678f3b018862376da748184
+  digest: sha256:9314856e0c4e8691bf4b2231994b9fa51f126332bc59818f32ab78fda3bbd8a1

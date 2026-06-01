@@ -6,14 +6,6 @@ metadata:
 spec:
   serviceName: netbird-client
   replicas: 3
-  # CANARY: convert only netbird-client-2 (ordinal >= 2) to hostNetwork.
-  # partition=2 leaves client-0/1 on the prior (pod-network) template. Verify
-  # P2P + that haproxy:443 / Longhorn backups still work on pod-2, then drop
-  # partition to 0 to roll the rest.
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      partition: 2
   selector:
     matchLabels:
       app: netbird-client

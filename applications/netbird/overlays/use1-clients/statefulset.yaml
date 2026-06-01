@@ -6,6 +6,15 @@ metadata:
 spec:
   serviceName: netbird-client
   replicas: 3
+  # CANARY: convert only the highest-ordinal pod (netbird-client-2) to
+  # hostNetwork first. partition=2 means only ordinals >= 2 take the new
+  # template; netbird-client-0/1 stay on the previous (pod-network) spec.
+  # After verifying P2P + that haproxy:443/Longhorn backups still work on
+  # pod-2, drop partition to 0 to roll the remaining two.
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 2
   selector:
     matchLabels:
       app: netbird-client
@@ -14,6 +23,15 @@ spec:
       labels:
         app: netbird-client
     spec:
+      # Run in the node's network namespace so pod egress goes through the
+      # node interface -> UniFi gateway (single NAT), instead of the pod's
+      # double NAT (CNI SNAT is symmetric: a different source port per
+      # destination, which makes STUN srflx candidates useless and forces
+      # relay). hostNetwork also exposes the node's routable 10.1.x LAN IP as
+      # an ICE host candidate for direct P2P with other LAN peers.
+      # ClusterFirstWithHostNet keeps in-cluster DNS working under hostNetwork.
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       # Pin the management/signal/relay hostname to the in-cluster Traefik
       # ClusterIP. NetBird overwrites /etc/resolv.conf to its own embedded
       # resolver, which forwards vngenterprise.com to 1.1.1.1 -> Cloudflare;

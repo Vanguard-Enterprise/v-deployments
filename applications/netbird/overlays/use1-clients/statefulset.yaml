@@ -6,6 +6,15 @@ metadata:
 spec:
   serviceName: netbird-client
   replicas: 3
+  # CANARY: bump only netbird-client-2 (ordinal >= 2) to the client image
+  # below. partition=2 leaves client-0/1 on the prior image. Testing whether
+  # the newer client initializes ICE in this restricted-container context
+  # (0.70.4 never inits the ICE agent -> relay-only, even pod-to-pod). Drop
+  # partition to 0 once verified, or revert if it does not help.
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 2
   selector:
     matchLabels:
       app: netbird-client
@@ -29,7 +38,7 @@ spec:
             - netbird.vngenterprise.com
       containers:
         - name: client
-          image: netbirdio/netbird:0.70.4
+          image: netbirdio/netbird:0.71.4
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:

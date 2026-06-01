@@ -14,6 +14,19 @@ spec:
       labels:
         app: netbird-client
     spec:
+      # Pin the management/signal/relay hostname to the in-cluster Traefik
+      # ClusterIP. NetBird overwrites /etc/resolv.conf to its own embedded
+      # resolver, which forwards vngenterprise.com to 1.1.1.1 -> Cloudflare;
+      # CF's ~100s connection cap then kills the long-lived gRPC stream
+      # (continuous 504s -> ICE never initializes -> peers stuck on relay).
+      # /etc/hosts is consulted before any resolver and NetBird does not touch
+      # it, so this keeps the client on the internal path. Traefik serves the
+      # valid LE *.vngenterprise.com cert, so TLS/h2 still verify. The matching
+      # CoreDNS rewrite covers bootstrap resolution before NetBird takes over.
+      hostAliases:
+        - ip: 10.108.30.208
+          hostnames:
+            - netbird.vngenterprise.com
       containers:
         - name: client
           image: netbirdio/netbird:0.70.4

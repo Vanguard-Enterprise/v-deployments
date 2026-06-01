@@ -6,13 +6,6 @@ metadata:
 spec:
   serviceName: netbird-client
   replicas: 3
-  # CANARY: apply the src_valid_mark init fix to netbird-client-2 only
-  # (ordinal >= 2) first. Verify internal LAN routing returns before rolling
-  # 0/1 by dropping partition to 0.
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      partition: 2
   selector:
     matchLabels:
       app: netbird-client
@@ -21,41 +14,18 @@ spec:
       labels:
         app: netbird-client
     spec:
-      # Routing peers advertise 10.1.50.0/24 into the NetBird mesh, which
-      # requires net.ipv4.conf.all.src_valid_mark=1. Under hostNetwork the
-      # main container has /proc/sys mounted read-only, so NetBird logs
-      # "src_valid_mark: read-only file system" and cannot forward LAN traffic
-      # (breaks internal access). A short privileged initContainer sets that
-      # one sysctl in the shared host netns at startup; the long-running
-      # client/haproxy containers stay non-privileged. ip_forward is already 1.
-      initContainers:
-        - name: enable-src-valid-mark
-          image: busybox:1.36
-          command:
-            - sh
-            - -c
-            - sysctl -w net.ipv4.conf.all.src_valid_mark=1
-          securityContext:
-            privileged: true
-      # Run in the node's network namespace. Flannel's per-pod masquerade is
-      # SYMMETRIC (verified: the same socket gets different public ports from
-      # different STUN servers), which defeats STUN srflx and forces relay.
-      # The node/host netns is CONE NAT (verified via a hostNetwork probe:
-      # both STUN servers returned the same public port), so srflx works there
-      # and direct P2P becomes possible. hostNetwork also exposes the node's
-      # routable 10.1.x LAN IP as an ICE host candidate for LAN peers.
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
-      # Pin the mgmt/signal/relay hostname to the Traefik LoadBalancer IP, NOT
-      # the ClusterIP. Under hostNetwork, kube-proxy REJECTs UDP to a TCP-only
-      # ClusterIP (the relay dials QUIC/UDP -> sendmsg: operation not permitted,
-      # which broke an earlier attempt). UDP to the MetalLB LB IP works, and it
-      # serves the same IngressRoute with the valid LE *.vngenterprise.com cert.
-      # /etc/hosts is consulted before any resolver; NetBird only rewrites
-      # resolv.conf, not /etc/hosts, so this keeps clients off the Cloudflare
-      # hairpin (the ~100s CF cap was killing the long-lived gRPC stream).
+      # Pin the mgmt/signal/relay hostname to the in-cluster Traefik ClusterIP
+      # so clients stay off the public Cloudflare hairpin (CF's ~100s cap was
+      # killing the long-lived gRPC stream -> continuous 504s). NetBird rewrites
+      # resolv.conf to its own resolver (which forwards vngenterprise.com to
+      # Cloudflare), but /etc/hosts is consulted first and NetBird does not
+      # touch it. Traefik serves the valid LE *.vngenterprise.com cert (h2).
+      # NOTE: hostNetwork was trialed for pod P2P but REVERTED — it broke these
+      # pods' routing-peer role (could not reach in-cluster MetalLB VIPs like
+      # the internal Traefik .176, taking down internal-only sources e.g.
+      # grafana). These pods stay on the pod network; relay P2P is fine.
       hostAliases:
-        - ip: 10.1.50.175
+        - ip: 10.108.30.208
           hostnames:
             - netbird.vngenterprise.com
       containers:
@@ -136,12 +106,6 @@ spec:
               add:
                 - NET_BIND_SERVICE
             runAsNonRoot: false
-            # Bind host :443 under hostNetwork. K8s sets
-            # net.ipv4.ip_unprivileged_port_start=0 inside a POD netns, so the
-            # default haproxy user (UID 99) could bind :443 there; in the HOST
-            # netns the threshold is 1024, so the non-root user is denied even
-            # with NET_BIND_SERVICE. Run as root to bind the privileged port.
-            runAsUser: 0
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
       volumes:

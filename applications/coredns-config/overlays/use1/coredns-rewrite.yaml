@@ -16,6 +16,13 @@ data:
         }
         ready
         rewrite name backup-storage.vngenterprise.com backup-storage.netbird-client.svc.cluster.local
+        # Keep in-cluster netbird-client pods off the public Cloudflare path.
+        # netbird.vngenterprise.com is CF-proxied; CF's ~100s connection cap
+        # kept killing the long-lived management/signal gRPC stream (repeated
+        # 504s -> ICE agent never initialized -> peers stuck on relay).
+        # Resolve it to the in-cluster Traefik service instead; the Host header
+        # is unchanged so the existing IngressRoute still routes mgmt/signal/relay.
+        rewrite name netbird.vngenterprise.com traefik.traefik.svc.cluster.local
         log . {
             class error
         }

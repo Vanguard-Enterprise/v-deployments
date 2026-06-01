@@ -121,6 +121,12 @@ spec:
               add:
                 - NET_BIND_SERVICE
             runAsNonRoot: false
+            # Bind host :443 under hostNetwork. K8s sets
+            # net.ipv4.ip_unprivileged_port_start=0 inside a POD netns, so the
+            # default haproxy user (UID 99) could bind :443 there; in the HOST
+            # netns the threshold is 1024, so the non-root user is denied even
+            # with NET_BIND_SERVICE. Run as root to bind the privileged port.
+            runAsUser: 0
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
       volumes:

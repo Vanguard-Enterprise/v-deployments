@@ -37,7 +37,7 @@ spec:
             - netbird.vngenterprise.com
       containers:
         - name: client
-          image: netbirdio/netbird:0.70.4
+          image: netbirdio/netbird:0.71.4
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:

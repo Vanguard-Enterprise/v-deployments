@@ -6,6 +6,14 @@ metadata:
 spec:
   serviceName: netbird-client
   replicas: 3
+  # CANARY: convert only netbird-client-2 (ordinal >= 2) to hostNetwork.
+  # partition=2 leaves client-0/1 on the prior (pod-network) template. Verify
+  # P2P + that haproxy:443 / Longhorn backups still work on pod-2, then drop
+  # partition to 0 to roll the rest.
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 2
   selector:
     matchLabels:
       app: netbird-client
@@ -14,17 +22,25 @@ spec:
       labels:
         app: netbird-client
     spec:
-      # Pin the management/signal/relay hostname to the in-cluster Traefik
-      # ClusterIP. NetBird overwrites /etc/resolv.conf to its own embedded
-      # resolver, which forwards vngenterprise.com to 1.1.1.1 -> Cloudflare;
-      # CF's ~100s connection cap then kills the long-lived gRPC stream
-      # (continuous 504s -> ICE never initializes -> peers stuck on relay).
-      # /etc/hosts is consulted before any resolver and NetBird does not touch
-      # it, so this keeps the client on the internal path. Traefik serves the
-      # valid LE *.vngenterprise.com cert, so TLS/h2 still verify. The matching
-      # CoreDNS rewrite covers bootstrap resolution before NetBird takes over.
+      # Run in the node's network namespace. Flannel's per-pod masquerade is
+      # SYMMETRIC (verified: the same socket gets different public ports from
+      # different STUN servers), which defeats STUN srflx and forces relay.
+      # The node/host netns is CONE NAT (verified via a hostNetwork probe:
+      # both STUN servers returned the same public port), so srflx works there
+      # and direct P2P becomes possible. hostNetwork also exposes the node's
+      # routable 10.1.x LAN IP as an ICE host candidate for LAN peers.
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      # Pin the mgmt/signal/relay hostname to the Traefik LoadBalancer IP, NOT
+      # the ClusterIP. Under hostNetwork, kube-proxy REJECTs UDP to a TCP-only
+      # ClusterIP (the relay dials QUIC/UDP -> sendmsg: operation not permitted,
+      # which broke an earlier attempt). UDP to the MetalLB LB IP works, and it
+      # serves the same IngressRoute with the valid LE *.vngenterprise.com cert.
+      # /etc/hosts is consulted before any resolver; NetBird only rewrites
+      # resolv.conf, not /etc/hosts, so this keeps clients off the Cloudflare
+      # hairpin (the ~100s CF cap was killing the long-lived gRPC stream).
       hostAliases:
-        - ip: 10.108.30.208
+        - ip: 10.1.50.175
           hostnames:
             - netbird.vngenterprise.com
       containers:

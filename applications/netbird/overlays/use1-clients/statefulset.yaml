@@ -6,6 +6,13 @@ metadata:
 spec:
   serviceName: netbird-client
   replicas: 3
+  # CANARY: apply the src_valid_mark init fix to netbird-client-2 only
+  # (ordinal >= 2) first. Verify internal LAN routing returns before rolling
+  # 0/1 by dropping partition to 0.
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 2
   selector:
     matchLabels:
       app: netbird-client
@@ -14,6 +21,22 @@ spec:
       labels:
         app: netbird-client
     spec:
+      # Routing peers advertise 10.1.50.0/24 into the NetBird mesh, which
+      # requires net.ipv4.conf.all.src_valid_mark=1. Under hostNetwork the
+      # main container has /proc/sys mounted read-only, so NetBird logs
+      # "src_valid_mark: read-only file system" and cannot forward LAN traffic
+      # (breaks internal access). A short privileged initContainer sets that
+      # one sysctl in the shared host netns at startup; the long-running
+      # client/haproxy containers stay non-privileged. ip_forward is already 1.
+      initContainers:
+        - name: enable-src-valid-mark
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - sysctl -w net.ipv4.conf.all.src_valid_mark=1
+          securityContext:
+            privileged: true
       # Run in the node's network namespace. Flannel's per-pod masquerade is
       # SYMMETRIC (verified: the same socket gets different public ports from
       # different STUN servers), which defeats STUN srflx and forces relay.

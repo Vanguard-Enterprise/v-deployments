@@ -21,7 +21,7 @@ spec:
   backup:
     barmanObjectStore:
       destinationPath: s3://cnpg-rustlens-use1
-      endpointURL: https://backup-storage.vngenterprise.com
+      endpointURL: https://s3.us-east-1.wasabisys.com
       s3Credentials:
         accessKeyId:
           name: cnpg-rustlens-backup

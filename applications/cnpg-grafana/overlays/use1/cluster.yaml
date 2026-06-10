@@ -7,7 +7,7 @@ spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:16
   storage:
-    size: 2Gi
+    size: 5Gi
     storageClass: longhorn
   resources:
     requests: { cpu: 100m, memory: 256Mi }

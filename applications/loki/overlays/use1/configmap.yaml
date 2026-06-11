@@ -21,6 +21,7 @@ data:
       storage:
         s3:
           endpoint: s3.us-east-1.wasabisys.com
+          region: us-east-1
           bucketnames: ${BUCKET_NAME}
           access_key_id: ${AWS_ACCESS_KEY_ID}
           secret_access_key: ${AWS_SECRET_ACCESS_KEY}
@@ -49,6 +50,7 @@ data:
       aws:
         s3: s3://${BUCKET_NAME}
         endpoint: s3.us-east-1.wasabisys.com
+        region: us-east-1
         s3forcepathstyle: true
 
     compactor:

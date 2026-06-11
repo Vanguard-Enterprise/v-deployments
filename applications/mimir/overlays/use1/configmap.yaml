@@ -21,6 +21,7 @@ data:
         backend: s3
         s3:
           endpoint: s3.us-east-1.wasabisys.com
+          region: us-east-1
           access_key_id: ${AWS_ACCESS_KEY_ID}
           secret_access_key: ${AWS_SECRET_ACCESS_KEY}
           insecure: false

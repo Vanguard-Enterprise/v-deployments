@@ -15,7 +15,7 @@ data:
       backend: s3
       s3:
         bucket_name: ${BUCKET_NAME}
-        endpoint: backup-storage.vngenterprise.com
+        endpoint: s3.us-east-1.wasabisys.com
         access_key_id: ${AWS_ACCESS_KEY_ID}
         secret_access_key: ${AWS_SECRET_ACCESS_KEY}
         insecure: false

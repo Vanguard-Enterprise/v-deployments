@@ -20,7 +20,7 @@ data:
           store: memberlist
       storage:
         s3:
-          endpoint: backup-storage.vngenterprise.com
+          endpoint: s3.us-east-1.wasabisys.com
           bucketnames: ${BUCKET_NAME}
           access_key_id: ${AWS_ACCESS_KEY_ID}
           secret_access_key: ${AWS_SECRET_ACCESS_KEY}
@@ -48,7 +48,7 @@ data:
         cache_ttl: 24h
       aws:
         s3: s3://${BUCKET_NAME}
-        endpoint: backup-storage.vngenterprise.com
+        endpoint: s3.us-east-1.wasabisys.com
         s3forcepathstyle: true
 
     compactor:

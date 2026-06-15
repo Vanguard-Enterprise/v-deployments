@@ -1,5 +1,6 @@
 # Corefile body captured verbatim from kube-system/coredns on 2026-05-12
-# (cluster: use1) with one inserted rewrite directive for backup-storage.
+# (cluster: use1) with one inserted rewrite directive that keeps in-cluster
+# netbird-client pods off the public Cloudflare path for netbird.vngenterprise.com.
 # Re-capture and update this file before any CoreDNS upgrade that may
 # modify the default Corefile shape.
 apiVersion: v1
@@ -15,7 +16,6 @@ data:
             lameduck 5s
         }
         ready
-        rewrite name backup-storage.vngenterprise.com backup-storage.netbird-client.svc.cluster.local
         # Keep in-cluster netbird-client pods off the public Cloudflare path.
         # netbird.vngenterprise.com is CF-proxied; CF's ~100s connection cap
         # kept killing the long-lived management/signal gRPC stream (repeated

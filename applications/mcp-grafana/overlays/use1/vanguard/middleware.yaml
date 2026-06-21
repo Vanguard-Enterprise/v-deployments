@@ -6,8 +6,11 @@ metadata:
 spec:
   # Static-credential gate in front of the MCP server. OSS Traefik has no native
   # static-bearer middleware, so this uses basicAuth (username `claude`); the
-  # htpasswd hash is delivered via the `users` key of the mcp-grafana-secrets
+  # htpasswd hash is delivered via the `users` key of the mcp-grafana-basicauth
   # Secret (ESO -> Vault monitoring/mcp-grafana:basic-auth-users).
+  # NOTE: this Secret must contain ONLY the `users` key — Traefik's basicAuth
+  # loader rejects a Secret with more than one element ("must be single element
+  # exactly"), which silently drops the whole IngressRoute (-> 404 on all paths).
   basicAuth:
-    secret: mcp-grafana-secrets
+    secret: mcp-grafana-basicauth
     removeHeader: true

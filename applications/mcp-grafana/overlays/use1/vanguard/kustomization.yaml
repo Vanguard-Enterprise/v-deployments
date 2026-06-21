@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - external-secret.yaml
+  - external-secret-basicauth.yaml
   - middleware.yaml
   - mcp-grafana.vngenterprise.com.yaml
 helmCharts:

@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mcp-grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/mcp-grafana/overlays/use1/vanguard/
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mcp-grafana
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - CreateNamespace=true
+      - ServerSideApply=true

@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: mcp-grafana-auth
+  namespace: mcp-grafana
+spec:
+  # Static-credential gate in front of the MCP server. OSS Traefik has no native
+  # static-bearer middleware, so this uses basicAuth (username `claude`); the
+  # htpasswd hash is delivered via the `users` key of the mcp-grafana-secrets
+  # Secret (ESO -> Vault monitoring/mcp-grafana:basic-auth-users).
+  basicAuth:
+    secret: mcp-grafana-secrets
+    removeHeader: true

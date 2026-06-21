@@ -1,0 +1,23 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mcp-grafana
+  namespace: mcp-grafana
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`mcp-grafana.vngenterprise.com`)
+      kind: Rule
+      middlewares:
+        - name: mcp-grafana-auth
+          namespace: mcp-grafana
+      services:
+        - name: mcp-grafana
+          port: 8000
+  tls:
+    store:
+      name: default
+      namespace: traefik

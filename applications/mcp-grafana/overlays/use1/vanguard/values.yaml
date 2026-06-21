@@ -1,0 +1,27 @@
+fullnameOverride: mcp-grafana
+
+image:
+  repository: grafana/mcp-grafana
+
+service:
+  type: ClusterIP
+  port: 8000
+
+grafana:
+  # In-cluster Grafana API endpoint (cross-namespace DNS). MCP traffic never
+  # leaves the cluster; only operator traffic reaches the ingress over NetBird.
+  url: "http://grafana.grafana.svc.cluster.local"
+  # Admin service-account token, sourced from Vault via External Secrets.
+  apiKeySecret:
+    name: mcp-grafana-secrets
+    key: grafana-api-key
+
+# The server defaults to stdio on localhost:8000, which neither serves HTTP nor
+# is reachable from the Service. Force streamable-http bound to all interfaces.
+extraArgs:
+  - -t
+  - streamable-http
+  - --address
+  - 0.0.0.0:8000
+  - --endpoint-path
+  - /mcp

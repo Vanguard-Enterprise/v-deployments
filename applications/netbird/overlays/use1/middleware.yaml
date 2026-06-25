@@ -13,6 +13,16 @@ spec:
   # ranges (https://www.cloudflare.com/ips-v4 + ips-v6).
   ipAllowList:
     sourceRange:
+      # In-cluster + LAN sources. REQUIRED: the CoreDNS rewrite resolves
+      # netbird.vngenterprise.com -> traefik.traefik.svc for in-cluster pods
+      # (keeps the netbird-client routing peers off CF's 100s-capped path), so
+      # those peers reach this SAME IngressRoute from a pod IP (10.244.x), not a
+      # Cloudflare IP. Omitting these 403s the in-cluster routing peers, which
+      # drops the 10.1.50.0/24 mesh route. The lockdown still forces all EXTERNAL
+      # (internet) traffic through Cloudflare.
+      - 10.244.0.0/16
+      - 10.1.50.0/24
+      # Cloudflare published edge ranges (https://www.cloudflare.com/ips-v4 + ips-v6)
       - 173.245.48.0/20
       - 103.21.244.0/22
       - 103.22.200.0/22

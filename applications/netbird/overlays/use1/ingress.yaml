@@ -11,33 +11,51 @@ spec:
   routes:
     - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/management.ManagementService/`)
       kind: Rule
+      middlewares:
+        - name: cloudflare-only
+          namespace: netbird
       services:
         - name: netbird-server
           port: 80
           scheme: h2c
     - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/signalexchange.SignalExchange/`)
       kind: Rule
+      middlewares:
+        - name: cloudflare-only
+          namespace: netbird
       services:
         - name: netbird-server
           port: 80
           scheme: h2c
     - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/relay`)
       kind: Rule
+      middlewares:
+        - name: cloudflare-only
+          namespace: netbird
       services:
         - name: netbird-server
           port: 80
     - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/api`)
       kind: Rule
+      middlewares:
+        - name: cloudflare-only
+          namespace: netbird
       services:
         - name: netbird-server
           port: 80
     - match: Host(`netbird.vngenterprise.com`) && PathPrefix(`/oauth2`)
       kind: Rule
+      middlewares:
+        - name: cloudflare-only
+          namespace: netbird
       services:
         - name: netbird-server
           port: 80
     - match: Host(`netbird.vngenterprise.com`)
       kind: Rule
+      middlewares:
+        - name: cloudflare-only
+          namespace: netbird
       services:
         - name: netbird-dashboard
           port: 80

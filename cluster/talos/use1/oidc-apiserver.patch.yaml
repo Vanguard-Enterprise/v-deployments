@@ -1,0 +1,23 @@
+# kube-apiserver OIDC integration with Zitadel (issuer https://accounts.vngenterprise.com).
+#
+# NOTE: This is NOT applied by ArgoCD. Talos machine config is node-level and applied
+# out-of-band with `talosctl`. This file is version-controlled only as the source of record.
+#
+# Apply canary-style (one control plane at a time), replacing <KUBECTL_CLIENT_ID> with the
+# Zitadel "kubectl" OIDC application's Client ID:
+#
+#   talosctl -n 10.1.50.31 patch mc -p @cluster/talos/use1/oidc-apiserver.patch.yaml
+#   # verify apiserver healthy on that node, then:
+#   talosctl -n 10.1.50.32 patch mc -p @cluster/talos/use1/oidc-apiserver.patch.yaml
+#   talosctl -n 10.1.50.33 patch mc -p @cluster/talos/use1/oidc-apiserver.patch.yaml
+#
+# Rollback: re-apply a patch that removes /cluster/apiServer/extraArgs (op: remove).
+- op: add
+  path: /cluster/apiServer/extraArgs
+  value:
+    oidc-issuer-url: https://accounts.vngenterprise.com
+    oidc-client-id: "379128889202443581"
+    oidc-username-claim: email
+    oidc-username-prefix: "oidc:"
+    oidc-groups-claim: groups
+    oidc-groups-prefix: "oidc:"

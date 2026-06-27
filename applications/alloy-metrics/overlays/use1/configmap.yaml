@@ -17,12 +17,19 @@ data:
       }
     }
 
-    // Pass-through relabel — keeps the wiring shape but forwards everything
-    // (Mimir per-tenant limit is 1M series, so we keep all cAdvisor metrics
-    // including container_spec_cpu_quota, container_fs_limit_bytes, etc.
-    // which dashboards filter on).
+    // cAdvisor relabel. Drops high-cardinality container_* metrics that no
+    // dashboard uses (per-device blkio, per-interface network error/packet
+    // counters, memory sub-breakdowns, load averages, task states, fd counts).
+    // Keeps cpu_usage, memory_working_set/usage/rss, network_*_bytes_total,
+    // fs_*, and the container_spec_* / container_fs_limit_bytes series that
+    // dashboards filter on.
     prometheus.relabel "drop_high_cardinality" {
       forward_to = [prometheus.remote_write.mimir.receiver]
+      rule {
+        source_labels = ["__name__"]
+        regex = "container_(tasks_state|memory_failures_total|blkio_device_usage_total|network_(receive|transmit)_(errors|packets|packets_dropped)_total|memory_(swap|kernel_usage|total_active_file_bytes|total_inactive_file_bytes)|cpu_load(_d)?_average_10s|file_descriptors)"
+        action = "drop"
+      }
     }
 
     // Drop client-go / controller-runtime latency histograms. Their _bucket

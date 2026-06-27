@@ -25,6 +25,19 @@ data:
       forward_to = [prometheus.remote_write.mimir.receiver]
     }
 
+    // Drop client-go / controller-runtime latency histograms. Their _bucket
+    // series are internal instrumentation nobody dashboards and dominate some
+    // exporters (longhorn-backend was ~10k of its ~16k series). Applied to the
+    // operator pod/service monitor scrapes (longhorn, argocd, etc.).
+    prometheus.relabel "drop_clientgo_histograms" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
+      rule {
+        source_labels = ["__name__"]
+        regex         = "(.*_)?(rest_client|workqueue)_.+_bucket"
+        action        = "drop"
+      }
+    }
+
     discovery.kubernetes "nodes" {
       role = "node"
     }
@@ -114,11 +127,11 @@ data:
     }
 
     prometheus.operator.podmonitors "primary" {
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.drop_clientgo_histograms.receiver]
       selector { match_labels = { instance = "primary" } }
     }
 
     prometheus.operator.servicemonitors "primary" {
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.drop_clientgo_histograms.receiver]
       selector { match_labels = { instance = "primary" } }
     }

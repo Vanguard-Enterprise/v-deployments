@@ -6,6 +6,21 @@ alloy:
   clustering:
     enabled: true
     portName: http
+  # Bound the collector's footprint. It previously ran with no limit and ~1
+  # GiB RSS/pod (~820 MiB live Go heap for ~120k active series). GOMEMLIMIT
+  # (~88% of the memory limit) makes the Go GC reclaim headroom before the
+  # hard cap, holding RSS down without thrashing; the limit prevents
+  # unbounded growth / node memory pressure. No CPU limit — don't throttle a
+  # scraper.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+    limits:
+      memory: 1536Mi
+  extraEnv:
+    - name: GOMEMLIMIT
+      value: "1350MiB"
 rbac:
   create: true
   #rules: []

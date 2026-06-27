@@ -3,6 +3,18 @@ redis:
 
 redis-ha:
   enabled: true
+  # Workaround for the sentinel container pinning 100% CPU after a rolling
+  # restart (argoproj/argo-cd#16360, fix PR #20645). The sentinel event loop
+  # wedges on stale sentinel/replica state; a `sentinel reset` shortly after
+  # startup clears it. master group name is "argocd".
+  sentinel:
+    lifecycle:
+      postStart:
+        exec:
+          command:
+            - /bin/sh
+            - -c
+            - sleep 30; redis-cli -p 26379 sentinel reset argocd
 
 controller:
   replicas: 1

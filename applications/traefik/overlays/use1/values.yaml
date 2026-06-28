@@ -25,6 +25,15 @@ deployment:
   additionalContainers: []
   initContainers: []
 
+# Memory bound (use1 is memory-bound). limit ~1.5x observed 7d peak (~131Mi);
+# cpu request only (no cpu limit, avoids ingress-path throttling).
+resources:
+  requests:
+    cpu: 50m
+    memory: 96Mi
+  limits:
+    memory: 256Mi
+
 # Spread the 3 external Traefik replicas across nodes. Soft (preferred) so it
 # never blocks scheduling, but with externalTrafficPolicy=Local (below) MetalLB
 # only sends the VIP to nodes running a ready Traefik pod — piling every replica

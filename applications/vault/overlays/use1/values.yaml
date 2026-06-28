@@ -6,6 +6,17 @@ injector:
     repository: "hashicorp/vault-k8s"
     tag: "1.5.0"
 server:
+  # Memory bound (use1 is memory-bound). limit ~1.5x observed 7d peak (~298Mi);
+  # cpu request only. GOMEMLIMIT (~90% of limit) makes the Go runtime GC before
+  # hitting the hard cap, avoiding OOMKill near the limit.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  extraEnvironmentVars:
+    GOMEMLIMIT: "460MiB"
   dataStorage:
     enabled: true
     size: 512Mi

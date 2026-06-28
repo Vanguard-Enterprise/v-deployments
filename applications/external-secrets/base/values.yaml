@@ -15,7 +15,29 @@ serviceMonitor:
 webhook:
   serviceMonitor:
     enabled: false
+  resources:
+    requests:
+      cpu: 10m
+      memory: 48Mi
+    limits:
+      memory: 128Mi
 
 certController:
   serviceMonitor:
     enabled: false
+  resources:
+    requests:
+      cpu: 10m
+      memory: 48Mi
+    limits:
+      memory: 192Mi
+
+# Memory bounds (use1 is memory-bound). limit ~1.5x observed 7d peak working
+# set; cpu request only. Peaks: controller ~117Mi, certController ~105Mi,
+# webhook ~71Mi.
+resources:
+  requests:
+    cpu: 10m
+    memory: 96Mi
+  limits:
+    memory: 192Mi

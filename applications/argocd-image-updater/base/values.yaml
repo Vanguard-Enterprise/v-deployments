@@ -22,3 +22,12 @@ metrics:
 
 rbac:
   enabled: true
+
+# Memory bound (use1 is memory-bound). limit ~1.5x observed 7d peak (~65Mi);
+# cpu request only.
+resources:
+  requests:
+    cpu: 10m
+    memory: 48Mi
+  limits:
+    memory: 128Mi

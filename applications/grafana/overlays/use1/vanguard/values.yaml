@@ -122,6 +122,14 @@ datasources:
         secureJsonData:
           httpHeaderValue1: "profiles"
 sidecar:
+  # Memory bound for the sc-dashboard / sc-alerts sidecars (use1 is
+  # memory-bound). limit ~1.5x observed 7d peak (~99Mi each); cpu request only.
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 192Mi
   dashboards:
     enabled: true
     label: grafana_dashboard

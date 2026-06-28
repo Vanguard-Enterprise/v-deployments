@@ -4,3 +4,16 @@ monitoring:
   podMonitorEnabled: true
   podMonitorAdditionalLabels:
     instance: primary
+
+# Memory bound (use1 is memory-bound). limit ~1.5x observed 7d peak (~252Mi);
+# cpu request only. GOMEMLIMIT (~90% of limit) makes the Go runtime GC before
+# the hard cap, avoiding OOMKill near the limit.
+additionalEnv:
+  - name: GOMEMLIMIT
+    value: "460MiB"
+resources:
+  requests:
+    cpu: 50m
+    memory: 160Mi
+  limits:
+    memory: 512Mi

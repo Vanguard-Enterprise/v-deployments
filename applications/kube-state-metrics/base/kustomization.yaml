@@ -8,3 +8,4 @@ helmCharts:
     repo: https://prometheus-community.github.io/helm-charts
     releaseName: kube-state-metrics
     namespace: monitoring
+    valuesFile: values.yaml

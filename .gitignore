@@ -7,4 +7,5 @@ temp.yaml
 # kustomization.yaml. ArgoCD pulls fresh on sync — don't commit the cache.
 applications/*/base/charts/
 applications/*/overlays/*/charts/
+applications/*/overlays/*/*/charts/
 .cache-*

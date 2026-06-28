@@ -25,6 +25,15 @@ deployment:
   additionalContainers: []
   initContainers: []
 
+# Memory bound (use1 is memory-bound). limit ~1.5x observed 7d peak (~145Mi);
+# cpu request only (no cpu limit, avoids ingress-path throttling).
+resources:
+  requests:
+    cpu: 50m
+    memory: 96Mi
+  limits:
+    memory: 256Mi
+
 ports:
   websecure:
     tls:

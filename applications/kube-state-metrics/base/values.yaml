@@ -1,0 +1,12 @@
+# Memory bound (use1 is memory-bound). KSM memory scales with cluster object
+# count. limit ~1.5x observed 7d peak (~279Mi); cpu request only. GOMEMLIMIT
+# (~90% of limit) makes the Go runtime GC before the hard cap, avoiding OOMKill.
+resources:
+  requests:
+    cpu: 50m
+    memory: 192Mi
+  limits:
+    memory: 512Mi
+env:
+  - name: GOMEMLIMIT
+    value: "460MiB"

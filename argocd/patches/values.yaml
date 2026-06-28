@@ -3,6 +3,21 @@ redis:
 
 redis-ha:
   enabled: true
+  # Memory bounds: haproxy 7d peak ~82Mi, redis ~30Mi, sentinel ~7Mi.
+  haproxy:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        memory: 192Mi
+  redis:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
   # Workaround for the sentinel container pinning 100% CPU after a rolling
   # restart (argoproj/argo-cd#16360, fix PR #20645). The sentinel event loop
   # wedges on stale sentinel/replica state; a `sentinel reset` shortly after
@@ -15,24 +30,80 @@ redis-ha:
             - /bin/sh
             - -c
             - sleep 30; redis-cli -p 26379 sentinel reset argocd
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        memory: 128Mi
 
 controller:
   replicas: 1
+  # Largest unbounded stateless workload on use1: ~553Mi live Go heap, 966Mi 7d
+  # peak. limit ~1.5x peak; GOMEMLIMIT (~90% of limit) GCs before the hard cap.
+  resources:
+    requests:
+      cpu: 250m
+      memory: 768Mi
+    limits:
+      memory: 1536Mi
+  env:
+    - name: GOMEMLIMIT
+      value: "1375MiB"
 
 server:
   autoscaling:
     enabled: true
     minReplicas: 2
     targetCPUUtilizationPercentage: 80
+  # 7d peak ~160Mi. cpu request only.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
 
 repoServer:
   autoscaling:
     enabled: true
     minReplicas: 2
     targetCPUUtilizationPercentage: 80
+  # 7d peak ~455Mi (manifest rendering / kustomize+helm). cpu request only.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 768Mi
 
 applicationSet:
   replicas: 2
+  # 7d peak ~149Mi.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+
+dex:
+  # 7d peak ~126Mi.
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+
+notifications:
+  # 7d peak ~38Mi.
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      memory: 192Mi
 
 global:
   domain: argocd.vngenterprise.com

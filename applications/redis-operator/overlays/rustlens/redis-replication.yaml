@@ -14,9 +14,25 @@ spec:
     redisSecret:
       name: rustlens-redis-secrets
       key: password
+    # Memory bound (use1 is memory-bound). Real usage ~5Mi; generous limit is a
+    # node-OOM backstop, effectively never hit. cpu request only.
+    # NOTE follow-up: set redis maxmemory (+policy) via additionalRedisConfig so
+    # data growth is bounded gracefully rather than OOMKilled at the cgroup cap.
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
   redisExporter:
     enabled: true
     image: quay.io/opstree/redis-exporter:v1.44.0
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        memory: 64Mi
   storage:
     volumeClaimTemplate:
       spec:

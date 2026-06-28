@@ -13,6 +13,15 @@ auth:
 primary:
   persistence:
     size: 5Gi
+  # Memory bound (use1 is memory-bound). This DB was node-OOMKilled while
+  # unbounded during the phase-1 roll. Real (anon) usage is tiny (~tens of Mi);
+  # limit gives ample headroom + node-OOM protection. cpu request only.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
 
 image:
   registry: docker.io

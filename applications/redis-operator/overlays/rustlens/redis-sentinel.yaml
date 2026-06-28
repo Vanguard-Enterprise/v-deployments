@@ -22,9 +22,23 @@ spec:
     redisSecret:
       name: rustlens-redis-secrets
       key: password
+    # Memory bound (use1 is memory-bound). Sentinels are tiny (~16Mi); generous
+    # limit is a node-OOM backstop. cpu request only.
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 128Mi
   redisExporter:
     enabled: true
     image: quay.io/opstree/redis-exporter:v1.44.0
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        memory: 64Mi
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:

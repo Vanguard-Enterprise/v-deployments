@@ -4,8 +4,23 @@ metadata:
   name: rustlens
   namespace: rustlens-db
 spec:
-  instances: 3
+  # Scaled 3 -> 1 (HA removed) as a deliberate storage/resource optimization on
+  # the memory-bound use1 cluster. The app connects only via the rw pooler ->
+  # primary (no read-replica dependency); continuous WAL archiving to S3 remains
+  # the recovery path. Replica volumes (Retain reclaim policy) are cleaned up
+  # manually post-migration.
+  instances: 1
   primaryUpdateStrategy: unsupervised
+  # Memory bound. Postgres real (anon) usage is tiny (~80Mi); the multi-GB cgroup
+  # figure is reclaimable OS page cache. request covers shared_buffers (CNPG
+  # auto-tunes to ~25% of memory) + headroom; limit caps page-cache growth.
+  # cpu request only (no cpu limit).
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
   bootstrap:
     initdb:
       database: rustlens

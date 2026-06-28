@@ -4,3 +4,42 @@ resources:
   - ../../base
   - ippool.yaml
   - l2advertisement.yaml
+
+# Memory bounds (use1 is memory-bound) for the vendored upstream manifest.
+# limit ~1.5x observed 7d peak (controller ~107Mi, speaker ~37Mi); cpu request
+# only. Strategic-merge patches keyed by container name.
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: controller
+        namespace: metallb-system
+      spec:
+        template:
+          spec:
+            containers:
+              - name: controller
+                resources:
+                  requests:
+                    cpu: 50m
+                    memory: 64Mi
+                  limits:
+                    memory: 192Mi
+  - patch: |-
+      apiVersion: apps/v1
+      kind: DaemonSet
+      metadata:
+        name: speaker
+        namespace: metallb-system
+      spec:
+        template:
+          spec:
+            containers:
+              - name: speaker
+                resources:
+                  requests:
+                    cpu: 50m
+                    memory: 48Mi
+                  limits:
+                    memory: 128Mi

@@ -25,3 +25,12 @@ extraArgs:
   - 0.0.0.0:8000
   - --endpoint-path
   - /mcp
+
+# Memory bound (use1 is memory-bound). limit ~1.5x observed 7d peak (~20Mi);
+# cpu request only.
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 64Mi

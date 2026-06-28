@@ -21,3 +21,27 @@ prometheus:
     interval: 60s
     scrapeTimeout: 30s
     path: /metrics
+
+# Memory bounds (use1 is memory-bound). limit ~1.5x observed 7d peak working
+# set; cpu request only (no cpu limit, avoids throttling). Peaks: controller
+# ~91Mi, cainjector ~95Mi, webhook ~67Mi.
+resources:
+  requests:
+    cpu: 10m
+    memory: 64Mi
+  limits:
+    memory: 192Mi
+cainjector:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 192Mi
+webhook:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 48Mi
+    limits:
+      memory: 128Mi

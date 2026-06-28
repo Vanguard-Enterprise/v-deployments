@@ -19,6 +19,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: netbird-dashboard-env
+          # Memory bound (use1 is memory-bound). limit ~1.5x 7d peak (~33Mi).
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 96Mi
           ports:
             - name: http
               containerPort: 80
@@ -43,6 +50,13 @@ spec:
       containers:
         - name: server
           image: netbirdio/netbird-server:0.73.2
+          # Memory bound (use1 is memory-bound). limit ~1.5x 7d peak (~84Mi).
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 160Mi
           args:
             - "--config"
             - "/etc/netbird/config.yaml"

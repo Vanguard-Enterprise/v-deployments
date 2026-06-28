@@ -36,3 +36,16 @@ ingress:
   enabled: false
 login:
   enabled: false
+
+# Memory bound (use1 is memory-bound). limit ~1.5x observed 7d peak (~186Mi);
+# cpu request only. GOMEMLIMIT (~90% of limit) makes the Go runtime GC before
+# hitting the hard cap, avoiding OOMKill near the limit.
+env:
+  - name: GOMEMLIMIT
+    value: "345MiB"
+resources:
+  requests:
+    cpu: 100m
+    memory: 160Mi
+  limits:
+    memory: 384Mi

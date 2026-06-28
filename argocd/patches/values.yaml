@@ -5,6 +5,12 @@ redis-ha:
   enabled: true
   # Memory bounds: haproxy 7d peak ~82Mi, redis ~30Mi, sentinel ~7Mi.
   haproxy:
+    # Soft anti-affinity: with 3 replicas hard-pinned across exactly 3 schedulable
+    # workers and maxUnavailable=0/maxSurge=1, any rolling update deadlocks (the
+    # surge pod can't place on an occupied node). Soft lets it co-locate briefly
+    # during rolls while still preferring spread. (redis is a StatefulSet — rolls
+    # one ordinal at a time, no surge — so its hardAntiAffinity stays true.)
+    hardAntiAffinity: false
     resources:
       requests:
         cpu: 25m

@@ -1,0 +1,30 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cupboard
+  namespace: cupboard-db
+spec:
+  # Phase 0 / staging: single instance on the memory-bound use1 cluster. The
+  # gateway connects only via the rw pooler -> primary. No S3 backup configured
+  # for staging (the baseline DB is throwaway); add barmanObjectStore +
+  # ScheduledBackup when a prod cluster lands (mirror the rustlens overlay).
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  # Postgres real (anon) usage is tiny; the multi-GB cgroup figure is reclaimable
+  # OS page cache. request covers shared_buffers (CNPG auto-tunes to ~25% of the
+  # memory limit) + headroom; limit caps page-cache growth. cpu request only.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  bootstrap:
+    initdb:
+      database: cupboard
+      owner: cupboard
+      secret:
+        name: cupboard-pg-bootstrap
+  storage:
+    size: 5Gi
+    storageClass: longhorn

@@ -1,0 +1,36 @@
+# Phase 0 alerts are built on kube-state-metrics (deployment/pod state), which is
+# present and label-stable regardless of how the app's own OTLP metrics land in
+# Mimir. HTTP error-rate / latency / db-pool alerts (cf. the rustlens overlay)
+# are deferred to Phase 1, once the actual job/service labels for cupboard's
+# OTLP-pushed http_server_request_duration metrics are confirmed in Grafana.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cupboard-gateway
+  namespace: cupboard-gateway
+  labels:
+    alloy_rules: pods
+    team: cupboard
+    service: cupboard-gateway
+spec:
+  groups:
+    - name: cupboard-gateway.availability
+      rules:
+        - alert: CupboardGatewayDown
+          expr: kube_deployment_status_replicas_available{namespace="cupboard-gateway",deployment="cupboard-gateway"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: cupboard
+            service: cupboard-gateway
+          annotations:
+            summary: "cupboard-gateway has zero ready replicas"
+        - alert: CupboardGatewayCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total{namespace="cupboard-gateway"}[15m]) > 0
+          for: 15m
+          labels:
+            severity: warning
+            team: cupboard
+            service: cupboard-gateway
+          annotations:
+            summary: "cupboard-gateway pod is restarting repeatedly"

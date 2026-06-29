@@ -1,0 +1,17 @@
+# Phase 0 needs only the rw pooler (the gateway is the sole client). Add a `ro`
+# pooler when read-heavy services arrive.
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: cupboard-pooled-rw
+  namespace: cupboard-db
+spec:
+  cluster:
+    name: cupboard
+  instances: 2
+  type: rw
+  pgbouncer:
+    poolMode: session
+    parameters:
+      max_client_conn: "1000"
+      default_pool_size: "20"

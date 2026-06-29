@@ -32,13 +32,16 @@ spec:
         - name: client
           image: netbirdio/netbird:0.73.1
           imagePullPolicy: IfNotPresent
-          # Memory bound (use1 is memory-bound). limit ~1.5x 7d peak (~74Mi).
+          # Routing/NAT peer for the whole 10.1.50.0/24 subnet — memory is
+          # traffic-dependent, not the ~74Mi idle peak. A tight 160Mi cap
+          # OOMKilled all 3 routers on rollout (b7830bf7), taking down VPN
+          # access to the cluster. Generous headroom while still bounded.
           resources:
             requests:
               cpu: 50m
-              memory: 48Mi
+              memory: 64Mi
             limits:
-              memory: 160Mi
+              memory: 512Mi
           envFrom:
             - secretRef:
                 name: netbird-client-setup

@@ -1,0 +1,23 @@
+# The dashboard. Internal-only for staging (NetBird via traefik-internal), TLS from the
+# default store's *.vngenterprise.com wildcard. The web BFF reaches the gateway over
+# ClusterIP; only Discord's browser redirect needs the public gateway host.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cupboard-web
+  namespace: cupboard-web
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`cupboard-app-staging.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: cupboard-web
+          port: 3000
+  tls:
+    store:
+      name: default
+      namespace: traefik

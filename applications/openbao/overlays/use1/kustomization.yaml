@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - servicemonitor.yaml
+  - prometheusrule.yaml
+  - openbao.vngenterprise.com.yaml
+helmCharts:
+  - name: openbao
+    version: "0.28.4"
+    repo: https://openbao.github.io/openbao-helm
+    releaseName: openbao
+    valuesFile: values.yaml
+    namespace: openbao

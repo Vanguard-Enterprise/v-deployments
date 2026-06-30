@@ -1,0 +1,92 @@
+global:
+  enabled: true
+injector:
+  # OpenBao Agent Injector unused (ESO is the only consumer). Mirrors Vault setup.
+  enabled: false
+server:
+  # Memory bound (use1 is memory-bound). Mirrors the Vault baseline: limit ~1.5x
+  # observed peak, cpu request only. GOMEMLIMIT (~90% of limit) makes the Go
+  # runtime GC before hitting the hard cap, avoiding OOMKill near the limit.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  extraEnvironmentVars:
+    GOMEMLIMIT: "460MiB"
+  dataStorage:
+    enabled: true
+    size: 512Mi
+    mountPath: "/openbao/data"
+    storageClass: longhorn
+    accessMode: ReadWriteOnce
+    annotations: {}
+  image:
+    registry: "quay.io"
+    repository: "openbao/openbao"
+    tag: "v2.5.5"
+  readinessProbe:
+    enabled: false
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+  livenessProbe:
+    enabled: false
+    path: "/v1/sys/health?standbyok=true"
+    initialDelaySeconds: 60
+  auditStorage:
+    enabled: true
+    size: 256Mi
+  standalone:
+    enabled: false
+  # Static-seal key material. Injected from the manually-created `openbao-seal`
+  # Secret (see MIGRATION.md, Phase 2). NOT managed by ESO — ESO depends on this
+  # instance being unsealed, so the seal key must exist before OpenBao starts.
+  extraSecretEnvironmentVars:
+    - envName: OPENBAO_STATIC_SEAL_KEY
+      secretName: openbao-seal
+      secretKey: seal-key
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      setNodeId: false
+      config: |
+        ui = true
+
+        telemetry {
+          prometheus_retention_time = "30s"
+          disable_hostname = true
+        }
+
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+
+        seal "static" {
+          current_key_id = "1"
+          current_key    = "env://OPENBAO_STATIC_SEAL_KEY"
+        }
+
+        storage "raft" {
+          path = "/openbao/data"
+
+          retry_join {
+            leader_api_addr = "http://openbao-0.openbao-internal.openbao.svc.cluster.local:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://openbao-1.openbao-internal.openbao.svc.cluster.local:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://openbao-2.openbao-internal.openbao.svc.cluster.local:8200"
+          }
+        }
+
+        service_registration "kubernetes" {}
+ui:
+  enabled: true
+  serviceType: "ClusterIP"
+  serviceNodePort: null
+  externalPort: 8200

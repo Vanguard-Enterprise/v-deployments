@@ -32,18 +32,16 @@ spec:
         - name: client
           image: netbirdio/netbird:0.73.1
           imagePullPolicy: IfNotPresent
-          # Routing/NAT peer for the whole 10.1.50.0/24 subnet. These pods run
-          # userspace WireGuard (no kernel module in-container), so memory scales
-          # with routed traffic — NOT the ~74Mi idle peak. A 160Mi cap (b7830bf7)
-          # OOMKilled all 3 on rollout and took down cluster VPN access; a 512Mi
-          # cap let them start but they died again once carrying the subnet. This
-          # tier ran unbounded and stable for weeks pre-incident — keep it
-          # request-only (no memory limit) until real routing usage is observed
-          # and a safe bound can be set. Request sized for scheduling headroom.
+          # Memory bound (use1 is memory-bound). Measured working set ~40MiB
+          # (cgroup memory.current), so 160Mi is ~4x headroom. NB: the Jun 28
+          # routing outage was a firewall change blocking these peers' management
+          # connectivity, NOT OOM — they were never memory-starved at 160Mi.
           resources:
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 48Mi
+            limits:
+              memory: 160Mi
           envFrom:
             - secretRef:
                 name: netbird-client-setup

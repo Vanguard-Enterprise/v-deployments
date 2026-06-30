@@ -39,6 +39,12 @@ bao write auth/use1/role/external-secrets \
   bound_service_account_namespaces="external-secrets" \
   token_policies="use1" \
   token_ttl="1h"
+# Break-glass admin (Zitadel-independent): SA openbao-break-glass -> global-admin.
+bao write auth/use1/role/break-glass \
+  bound_service_account_names="openbao-break-glass" \
+  bound_service_account_namespaces="openbao" \
+  token_policies="vault-global-admin" \
+  token_ttl="15m"
 
 if [ -z "${OIDC_CLIENT_SECRET:-}" ]; then
   echo "==> OIDC auth: SKIPPED (set OIDC_CLIENT_SECRET to configure human login)"

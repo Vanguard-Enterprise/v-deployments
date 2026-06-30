@@ -28,3 +28,18 @@ spec:
   storage:
     size: 5Gi
     storageClass: longhorn
+  # Phase 1: a dedicated NON-OWNER application role. RLS only isolates tenants when the
+  # request path connects as a non-owner (a table owner bypasses RLS), so the auth
+  # service's "app" pool uses this role while migrations/system work use the `cupboard`
+  # owner. Password sourced from Vault via the cupboard-app-role ExternalSecret.
+  managed:
+    roles:
+      - name: cupboard_app
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inRoles: []
+        passwordSecret:
+          name: cupboard-app-role

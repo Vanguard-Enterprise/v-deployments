@@ -16,3 +16,5 @@ data:
   # tower_http span is emitted at INFO so it survives the filter and exports as a trace.
   RUST_LOG: "info,sqlx=warn,hyper=warn,tower_http=info"
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4317"
+  # Phase 1: reverse-proxy /auth/* to the auth service (ClusterIP, in-cluster).
+  AUTH_SERVICE_URL: "http://cupboard-auth.cupboard-auth.svc.cluster.local:8080"

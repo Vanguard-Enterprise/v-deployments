@@ -34,12 +34,10 @@ def get_secret(path):
     return json.loads(out)["data"]["data"]
 
 def put_secret(path, kv):
-    args = ["bao", "kv", "put", f"{MOUNT}/{path}"]
-    for k, v in kv.items():
-        if not isinstance(v, str):
-            v = json.dumps(v)
-        args.append(f"{k}={v}")
-    subprocess.run(args, check=True, capture_output=True, text=True)
+    # Write the full data map as JSON via stdin so nested objects and non-string
+    # types are preserved exactly (key=value CLI args would coerce them to strings).
+    subprocess.run(["bao", "kv", "put", f"{MOUNT}/{path}", "-"],
+                   input=json.dumps(kv), check=True, capture_output=True, text=True)
 
 count = 0
 def walk(prefix=""):

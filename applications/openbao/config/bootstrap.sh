@@ -65,20 +65,43 @@ bao write auth/oidc/config \
 # /ui/vault/auth/<mount>/oidc/callback — NOT /ui/auth/... despite rootURL=/ui/.
 REDIRECTS="https://openbao.vngenterprise.com/ui/vault/auth/oidc/oidc/callback,http://localhost:8250/oidc/callback,http://127.0.0.1:8250/oidc/callback"
 
-oidc_role() { # name policy
-  bao write "auth/oidc/role/$1" \
-    user_claim="sub" \
-    oidc_scopes="openid,profile,email" \
-    bound_audiences="356671706259064302" \
-    allowed_redirect_uris="$REDIRECTS" \
-    token_policies="$2" \
-    token_ttl="28800" \
-    role_type="oidc"
+# Per-role bound_claims on `sub` (Zitadel user ID) — an ALLOWLIST so a user can
+# only assume a role they're entitled to (Zitadel's native roles claim is a
+# nested map OpenBao can't bound_claims-match; sub is a flat string that can).
+#
+# MAINTENANCE: update these sub lists when Zitadel grants change. Sources of
+# truth = Zitadel VAULT project grants (users/grants/_search). Roles with no
+# grantees are locked to a sentinel sub that matches nobody.
+# (Scalable alternative: a Zitadel Action that emits a flat `roles` array claim,
+#  then bound_claims on `roles` — auto-syncs with grants. Not set up yet.)
+SUB_FRANK="355717786942637389"   # vault_global_admin, rustlens-admin
+SUB_SEM="355982315320509547"     # rustlens-admin
+SUB_KAPPU="355846454918513997"   # rustlens-admin
+
+oidc_role() { # name  policy  bound_claims_json ("" = open, no sub restriction)
+  python3 - "$1" "$2" "$3" "$REDIRECTS" <<'PY' | bao write "auth/oidc/role/$1" -
+import json, sys
+name, policy, bc, redirects = sys.argv[1:5]
+body = {
+  "user_claim": "sub",
+  "oidc_scopes": ["openid", "profile", "email"],
+  "bound_audiences": ["356671706259064302"],
+  "allowed_redirect_uris": redirects.split(","),
+  "token_policies": [policy],
+  "token_ttl": 28800,
+  "role_type": "oidc",
+  "verbose_oidc_logging": False,
 }
-oidc_role default        default
-oidc_role global-admin   vault-global-admin
-oidc_role global-readonly vault-global-readonly
-oidc_role hyplex-admin   vault-hyplex-admin
-oidc_role rustlens-admin vault-rustlens-admin
+if bc:
+  body["bound_claims"] = {"sub": json.loads(bc)}
+print(json.dumps(body))
+PY
+}
+# default: open (any authenticated Zitadel user) but maps to the no-access
+# `default` policy — used as the OIDC default_role fallback.
+oidc_role default         default                ""
+oidc_role global-admin    vault-global-admin     "[\"$SUB_FRANK\"]"
+oidc_role rustlens-admin  vault-rustlens-admin   "[\"$SUB_FRANK\",\"$SUB_SEM\",\"$SUB_KAPPU\"]"
+oidc_role global-readonly vault-global-readonly  "[\"__no-grantees__\"]"
 
 echo "==> Done. Verify: bao policy list ; bao auth list"

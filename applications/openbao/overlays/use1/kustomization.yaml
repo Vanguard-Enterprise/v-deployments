@@ -5,6 +5,7 @@ resources:
   - servicemonitor.yaml
   - prometheusrule.yaml
   - openbao.vngenterprise.com.yaml
+  - break-glass-sa.yaml
 helmCharts:
   - name: openbao
     version: "0.28.4"

@@ -54,10 +54,9 @@ bao write auth/oidc/config \
   oidc_client_secret="$OIDC_CLIENT_SECRET" \
   default_role="default"
 
-# Redirect URIs: OpenBao UI + CLI loopback. NOTE: confirm the exact UI callback
-# path on first login — OpenBao's rebranded UI may differ from Vault's
-# /ui/vault/auth/oidc/oidc/callback.
-REDIRECTS="https://openbao.vngenterprise.com/ui/vault/auth/oidc/oidc/callback,http://localhost:8250/oidc/callback,http://127.0.0.1:8250/oidc/callback"
+# Redirect URIs: OpenBao UI + CLI loopback. OpenBao's UI rootURL is /ui/ (Vault
+# used /ui/vault/), so the UI callback is /ui/auth/<mount>/oidc/callback.
+REDIRECTS="https://openbao.vngenterprise.com/ui/auth/oidc/oidc/callback,http://localhost:8250/oidc/callback,http://127.0.0.1:8250/oidc/callback"
 
 oidc_role() { # name policy
   bao write "auth/oidc/role/$1" \

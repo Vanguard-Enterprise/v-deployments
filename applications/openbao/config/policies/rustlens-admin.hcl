@@ -1,0 +1,11 @@
+path "kv/metadata"            { capabilities = ["list"] }
+path "kv/metadata/"           { capabilities = ["list"] }
+path "kv/metadata/rustlens"   { capabilities = ["list", "read"] }
+path "kv/metadata/rustlens/*" { capabilities = ["create", "read", "update", "delete", "list"] }
+path "kv/data/rustlens/*"     { capabilities = ["create", "read", "update", "delete", "list"] }
+path "kv/delete/rustlens/*"   { capabilities = ["update"] }
+path "kv/undelete/rustlens/*" { capabilities = ["update"] }
+path "kv/destroy/rustlens/*"  { capabilities = ["update"] }
+path "kv/subkeys/rustlens/*"  { capabilities = ["read"] }
+path "sys/internal/ui/mounts"     { capabilities = ["read"] }
+path "sys/internal/ui/mounts/kv"  { capabilities = ["read"] }

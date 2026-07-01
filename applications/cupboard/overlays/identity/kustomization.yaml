@@ -9,4 +9,4 @@ resources:
 - service.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-identity
-  digest: sha256:fbfe6c2e634bc7994697f6ff1b79bae9dc7afa16c664b3740ce165c8000b6682
+  digest: sha256:30ba14e24c4c0762844ee43519729d754481b717e7e1520159baf87b31c53504

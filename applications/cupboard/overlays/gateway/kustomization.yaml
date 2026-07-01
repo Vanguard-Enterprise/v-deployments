@@ -14,4 +14,4 @@ resources:
 # the first image is built and detected.
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-gateway
-  digest: sha256:d1644394282037fff5da0083d9dfd82f9b9d3c1202562dac9d4caf1e8f88f111
+  digest: sha256:a403cb5095ff339dc5eda154b18458886a60295fb3fe5110d2b9a7e9cb41e0d6

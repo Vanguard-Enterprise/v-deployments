@@ -18,6 +18,11 @@ spec:
     spec:
       imagePullSecrets:
         - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: web
           image: ghcr.io/vanguard-enterprise/cupboard-web:main
@@ -47,3 +52,9 @@ spec:
               memory: 96Mi
             limits:
               memory: 256Mi
+          # Next.js writes to /tmp + .next/cache at runtime, so root stays writable; the
+          # rest of the restricted controls still apply.
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]

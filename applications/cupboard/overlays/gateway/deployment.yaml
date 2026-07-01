@@ -20,6 +20,14 @@ spec:
     spec:
       imagePullSecrets:
         - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp
+          emptyDir: {}
       containers:
         - name: gateway
           image: ghcr.io/vanguard-enterprise/cupboard-gateway:main
@@ -53,3 +61,11 @@ spec:
               memory: 64Mi
             limits:
               memory: 128Mi   # Rust is frugal; cluster is memory-bound
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp

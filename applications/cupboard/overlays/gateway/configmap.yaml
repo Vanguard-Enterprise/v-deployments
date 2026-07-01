@@ -18,3 +18,6 @@ data:
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4317"
   # Phase 1: reverse-proxy /auth/* to the auth service (ClusterIP, in-cluster).
   AUTH_SERVICE_URL: "http://cupboard-auth.cupboard-auth.svc.cluster.local:8080"
+  # Phase 2: reverse-proxy /fleet/* and /players|bans|evasion/* to the new backends.
+  FLEET_SERVICE_URL: "http://cupboard-fleet.cupboard-fleet.svc.cluster.local:8080"
+  IDENTITY_SERVICE_URL: "http://cupboard-identity.cupboard-identity.svc.cluster.local:8080"

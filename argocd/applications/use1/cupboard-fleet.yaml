@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cupboard-fleet
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: fleet=ghcr.io/vanguard-enterprise/cupboard-fleet:main
+    argocd-image-updater.argoproj.io/fleet.update-strategy: digest
+    argocd-image-updater.argoproj.io/fleet.pull-secret: pullsecret:argocd/ghcr-image-updater
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+    argocd-image-updater.argoproj.io/git-branch: main
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/cupboard/overlays/fleet
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cupboard-fleet
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

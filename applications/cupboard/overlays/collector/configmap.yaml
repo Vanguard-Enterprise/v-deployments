@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cupboard-collector-config
+  namespace: cupboard-collector
+data:
+  BIND_ADDR: "0.0.0.0:8080"
+  ENVIRONMENT: "staging"
+  RUST_LOG: "info,sqlx=warn,hyper=warn,tower_http=info"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4317"
+  FLEET_INTERNAL_URL: "http://cupboard-fleet.cupboard-fleet.svc.cluster.local:8080"
+  IDENTITY_INTERNAL_URL: "http://cupboard-identity.cupboard-identity.svc.cluster.local:8080"
+  POLL_INTERVAL_SECS: "30"
+  RECONCILE_INTERVAL_SECS: "15"

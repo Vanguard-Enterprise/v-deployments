@@ -19,6 +19,14 @@ spec:
     spec:
       imagePullSecrets:
         - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp
+          emptyDir: {}
       containers:
         - name: auth
           image: ghcr.io/vanguard-enterprise/cupboard-auth:main
@@ -51,3 +59,11 @@ spec:
               memory: 64Mi
             limits:
               memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp

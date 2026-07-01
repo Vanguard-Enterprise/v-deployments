@@ -18,6 +18,12 @@ spec:
     spec:
       imagePullSecrets:
         - name: github-pull-secret
+      # Restricted-PSS-compliant pod hardening (image already runs as uid 10001).
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: fleet
           image: ghcr.io/vanguard-enterprise/cupboard-fleet:main
@@ -49,3 +55,15 @@ spec:
               memory: 64Mi
             limits:
               memory: 128Mi
+          # Drop all privileges; the Rust binary needs no writable root filesystem.
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

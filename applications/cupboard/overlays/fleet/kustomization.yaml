@@ -9,4 +9,4 @@ resources:
 - service.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-fleet
-  digest: sha256:e7224efad833722ec446f91867bceb0a5d36eca6c86494f4df050375c2826bcb
+  digest: sha256:4c5981d24cbfcc33407c3a99f6aea3c1882ebc0d3e54b00219d6b97a1353ce24

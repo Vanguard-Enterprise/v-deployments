@@ -21,3 +21,7 @@ data:
   # Phase 2: reverse-proxy /fleet/* and /players|bans|evasion/* to the new backends.
   FLEET_SERVICE_URL: "http://cupboard-fleet.cupboard-fleet.svc.cluster.local:8080"
   IDENTITY_SERVICE_URL: "http://cupboard-identity.cupboard-identity.svc.cluster.local:8080"
+  # Phase 3: /ingest/* → collector (push ingestion; token-authed at the collector, not
+  # JWT), and /perf/* → metrics (perf dashboards + recommendations, JWT + servers.view).
+  COLLECTOR_SERVICE_URL: "http://cupboard-collector.cupboard-collector.svc.cluster.local:8080"
+  METRICS_SERVICE_URL: "http://cupboard-metrics.cupboard-metrics.svc.cluster.local:8080"

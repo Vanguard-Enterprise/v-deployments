@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+- configmap.yaml
+- github-pull-secret.yaml
+- external-secret.yaml
+- deployment.yaml
+- service.yaml
+# No `images:` digest pin yet — the deployment pulls :main (imagePullPolicy: Always) on
+# first sync; argocd-image-updater writes back the digest-pinned entry after that.

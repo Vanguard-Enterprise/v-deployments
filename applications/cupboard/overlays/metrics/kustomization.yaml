@@ -9,3 +9,7 @@ resources:
 - service.yaml
 # No `images:` digest pin yet — the deployment pulls :main (imagePullPolicy: Always) on
 # first sync; argocd-image-updater writes back the digest-pinned entry after that.
+
+images:
+- name: ghcr.io/vanguard-enterprise/cupboard-metrics
+  digest: sha256:c55c6a6a44aebb15c7fbb64713326ba1d790ea63b2149a10285cb50a755456bb

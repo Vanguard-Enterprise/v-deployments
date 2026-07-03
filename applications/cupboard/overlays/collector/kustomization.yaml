@@ -9,4 +9,4 @@ resources:
 - service.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-collector
-  digest: sha256:824001b03f2c5417ef8c06e64ec074b0738ca842e3213a0d692ce0bb3b255b68
+  digest: sha256:7e164bcc98a5d9251a3ecebccddf8e6e8728b0fa427b6f0c73aeb38163338b79

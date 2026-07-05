@@ -34,16 +34,25 @@ spec:
           envFrom:
             - configMapRef:
                 name: cupboard-web-config
+          # Probes must present the admin Host: kubelet's default Host is the pod
+          # IP, which the Phase 5 host-routing middleware classifies as a storefront
+          # host (-> 404) rather than the dashboard.
           livenessProbe:
             httpGet:
               path: /login
               port: http
+              httpHeaders:
+                - name: Host
+                  value: cupboard-app-staging.vngenterprise.com
             initialDelaySeconds: 5
             periodSeconds: 20
           readinessProbe:
             httpGet:
               path: /login
               port: http
+              httpHeaders:
+                - name: Host
+                  value: cupboard-app-staging.vngenterprise.com
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:

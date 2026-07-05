@@ -1,0 +1,29 @@
+# Phase 5 PR3: the central PUBLIC player-login callback host. Only the Steam OpenID
+# callback is browser-facing (Steam redirects here after the player authenticates); every
+# other /auth/player/* endpoint is called cluster-internally by the web BFF via the
+# gateway. So this route exposes ONLY the callback path, on the external Traefik, covered
+# by the *.vngenterprise.com wildcard in the default TLS store. The browser is then handed
+# back to the tenant storefront with a one-time code.
+#
+# DO NOT apply before the cupboard-auth image carrying /auth/player/steam/callback is
+# live, and PLAYER_JWT_* + the cupboard-login DNS record exist.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cupboard-login
+  namespace: cupboard-auth
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`cupboard-login.vngenterprise.com`) && PathPrefix(`/auth/player/steam/callback`)
+      kind: Rule
+      services:
+        - name: cupboard-auth
+          port: 8080
+  tls:
+    store:
+      name: default
+      namespace: traefik

@@ -20,3 +20,6 @@ data:
   # The browser-facing callback registered with the Discord application. Discord login
   # stays inert until DISCORD_CLIENT_ID/SECRET + COOKIE_SIGNING_KEY are set in Vault.
   DISCORD_REDIRECT_URI: "https://cupboard-staging.vngenterprise.com/auth/discord/callback"
+  # Phase 5 PR3: the central PUBLIC host serving player OAuth callbacks (Steam return_to).
+  # The browser is handed back to the tenant storefront via a one-time code.
+  PLAYER_AUTH_CALLBACK_BASE_URL: "https://cupboard-login.vngenterprise.com"

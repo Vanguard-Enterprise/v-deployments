@@ -11,3 +11,6 @@ data:
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-receiver.alloy-receiver.svc.cluster.local:4317"
   # Phase 5: every tenant site gets {slug}.SITES_SUFFIX as its default public hostname.
   SITES_SUFFIX: "sites.vngenterprise.com"
+  # Phase 5 PR4: public host where providers deliver webhooks. The store runner registers
+  # {base}/webhooks/{provider}/{connection_id} per connection.
+  PUBLIC_WEBHOOK_BASE: "https://cupboard-hooks.vngenterprise.com"

@@ -11,7 +11,8 @@ data:
     {
       "records": [
         { "zone_name": "vngenterprise.com", "record_name": "*.sites.vngenterprise.com", "ttl": 1, "proxied": true },
-        { "zone_name": "vngenterprise.com", "record_name": "cupboard-login.vngenterprise.com", "ttl": 1, "proxied": true }
+        { "zone_name": "vngenterprise.com", "record_name": "cupboard-login.vngenterprise.com", "ttl": 1, "proxied": true },
+        { "zone_name": "vngenterprise.com", "record_name": "cupboard-hooks.vngenterprise.com", "ttl": 1, "proxied": true }
       ]
     }
   updater.py: |

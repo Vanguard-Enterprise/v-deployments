@@ -1,0 +1,40 @@
+# Phase 5 PR5: HTTP-01 ClusterIssuers for tenant CUSTOM domains (arbitrary, not
+# Cloudflare-managed, so the existing DNS-01 issuer cannot serve them). The tenant
+# service creates one Certificate per verified custom domain referencing these.
+#
+# HTTP-01 is solved over the EXTERNAL Traefik (ingressClass traefik-external), which
+# already listens on :80 with no routes. This requires internet:80 to reach the external
+# LB (10.1.50.175) and the tenant domain's DNS to be DNS-only (grey cloud) so the
+# challenge is not intercepted by Cloudflare.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-http01
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: frankdobrovolny@outlook.com
+    privateKeySecretRef:
+      name: letsencrypt-http01
+    solvers:
+      - http01:
+          ingress:
+            class: traefik-external
+---
+# Staging LE issuer for dry runs (higher rate limits, untrusted certs). Point the tenant
+# service's CERT_ISSUER at this first when validating the flow to protect the prod LE
+# rate limits, then switch to letsencrypt-http01.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-http01-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: frankdobrovolny@outlook.com
+    privateKeySecretRef:
+      name: letsencrypt-http01-staging
+    solvers:
+      - http01:
+          ingress:
+            class: traefik-external

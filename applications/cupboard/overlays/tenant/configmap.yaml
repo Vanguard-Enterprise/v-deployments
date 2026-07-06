@@ -14,3 +14,13 @@ data:
   # Phase 5 PR4: public host where providers deliver webhooks. The store runner registers
   # {base}/webhooks/{provider}/{connection_id} per connection.
   PUBLIC_WEBHOOK_BASE: "https://cupboard-hooks.vngenterprise.com"
+  # Phase 5 PR5: custom-domain TLS. Tenants CNAME their domains at EDGE_HOSTNAME (a
+  # grey-cloud A record -> our public IP); the tenant service creates a Certificate +
+  # IngressRoute per verified domain in CERT_NAMESPACE via CERT_ISSUER, routing to
+  # WEB_SERVICE_NAME. CERT_ISSUER starts on LE-staging to protect prod rate limits during
+  # the first live verify; flip to letsencrypt-http01 at closeout.
+  EDGE_HOSTNAME: "edge.vngenterprise.com"
+  CERT_NAMESPACE: "cupboard-web"
+  CERT_ISSUER: "letsencrypt-http01-staging"
+  WEB_SERVICE_NAME: "cupboard-web"
+  WEB_SERVICE_PORT: "3000"

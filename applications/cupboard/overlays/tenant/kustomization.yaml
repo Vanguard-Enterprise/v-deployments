@@ -8,6 +8,7 @@ resources:
 - deployment.yaml
 - service.yaml
 - ingress-webhooks.yaml
+- rbac-domains.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-tenant
   newTag: main

@@ -1875,6 +1875,8 @@
   "schemaVersion": 14,
   "style": "dark",
   "tags": [
+    "observability",
+    "lgtm",
     "mimir"
   ],
   "templating": {

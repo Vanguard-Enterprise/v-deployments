@@ -130,7 +130,7 @@
   ],
   "refresh": "30s",
   "schemaVersion": 39,
-  "tags": ["rustlens", "backend"],
+  "tags": ["application", "rustlens", "backend"],
   "templating": { "list": [] },
   "time": { "from": "now-1h", "to": "now" },
   "title": "RustLens — Backend",

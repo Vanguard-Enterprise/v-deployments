@@ -7374,7 +7374,7 @@
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1e-9
+              "le": 1e-09
             },
             "legend": {
               "show": false
@@ -9208,7 +9208,10 @@
   "revision": 1,
   "schemaVersion": 39,
   "tags": [
-    "cloudnativepg"
+    "platform",
+    "database",
+    "postgres",
+    "cnpg"
   ],
   "templating": {
     "list": [
@@ -9333,7 +9336,7 @@
     ]
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {

@@ -3720,7 +3720,11 @@
   "refresh": false,
   "schemaVersion": 30,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "platform",
+    "gitops",
+    "argocd"
+  ],
   "templating": {
     "list": [
       {

@@ -89,7 +89,9 @@ data:
 
     limits:
       compactor_blocks_retention_period: 14d
-      max_total_query_length: 72h
+      # Raised 72h -> 168h so 7d dashboards/queries work without err-mimir-max-total-query-length.
+      # Kept at 7d to match Loki retention; use1 is memory-bound so we do not go higher.
+      max_total_query_length: 168h
       out_of_order_time_window: 5m
       max_global_series_per_user: 1000000
       max_global_series_per_metric: 100000

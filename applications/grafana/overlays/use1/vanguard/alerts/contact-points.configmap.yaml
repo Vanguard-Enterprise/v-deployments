@@ -9,35 +9,104 @@ data:
   contact-points.yaml: |
     apiVersion: 1
     contactPoints:
+      # One Slack app / bot token ($SLACK_BOT_TOKEN) posts to every channel below.
+      # The bot must be invited to each channel. Channel names are not secrets, so
+      # they are set inline; only the token comes from Vault via the grafana-alerting secret.
+
+      # ---- platform ----
       - orgId: 1
-        name: discord-platform
+        name: slack-platform-critical
         receivers:
-          - uid: discord-platform
-            type: discord
+          - uid: slack-platform-critical
+            type: slack
             settings:
-              url: $DISCORD_PLATFORM_WEBHOOK
-              use_discord_username: true
-              title: '{{ template "discord.title" . }}'
-              message: '{{ template "discord.message" . }}'
+              token: $SLACK_BOT_TOKEN
+              recipient: "#alerts-platform-critical"
+              username: Grafana
+              mentionChannel: here
+              title: '{{ template "slack.title" . }}'
+              text: '{{ template "slack.text" . }}'
+              color: '{{ template "slack.color" . }}'
 
       - orgId: 1
-        name: discord-rustlens
+        name: slack-platform-warning
         receivers:
-          - uid: discord-rustlens
-            type: discord
+          - uid: slack-platform-warning
+            type: slack
             settings:
-              url: $DISCORD_RUSTLENS_WEBHOOK
-              use_discord_username: true
-              title: '{{ template "discord.title" . }}'
-              message: '{{ template "discord.message" . }}'
+              token: $SLACK_BOT_TOKEN
+              recipient: "#alerts-platform-warning"
+              username: Grafana
+              title: '{{ template "slack.title" . }}'
+              text: '{{ template "slack.text" . }}'
+              color: '{{ template "slack.color" . }}'
+
+      # ---- rustlens ----
+      - orgId: 1
+        name: slack-rustlens-critical
+        receivers:
+          - uid: slack-rustlens-critical
+            type: slack
+            settings:
+              token: $SLACK_BOT_TOKEN
+              recipient: "#alerts-rustlens-critical"
+              username: Grafana
+              mentionChannel: here
+              title: '{{ template "slack.title" . }}'
+              text: '{{ template "slack.text" . }}'
+              color: '{{ template "slack.color" . }}'
 
       - orgId: 1
-        name: discord-vanguard
+        name: slack-rustlens-warning
         receivers:
-          - uid: discord-vanguard
-            type: discord
+          - uid: slack-rustlens-warning
+            type: slack
             settings:
-              url: $DISCORD_VANGUARD_WEBHOOK
-              use_discord_username: true
-              title: '{{ template "discord.title" . }}'
-              message: '{{ template "discord.message" . }}'
+              token: $SLACK_BOT_TOKEN
+              recipient: "#alerts-rustlens-warning"
+              username: Grafana
+              title: '{{ template "slack.title" . }}'
+              text: '{{ template "slack.text" . }}'
+              color: '{{ template "slack.color" . }}'
+
+      # ---- vanguard ----
+      - orgId: 1
+        name: slack-vanguard-critical
+        receivers:
+          - uid: slack-vanguard-critical
+            type: slack
+            settings:
+              token: $SLACK_BOT_TOKEN
+              recipient: "#alerts-vanguard-critical"
+              username: Grafana
+              mentionChannel: here
+              title: '{{ template "slack.title" . }}'
+              text: '{{ template "slack.text" . }}'
+              color: '{{ template "slack.color" . }}'
+
+      - orgId: 1
+        name: slack-vanguard-warning
+        receivers:
+          - uid: slack-vanguard-warning
+            type: slack
+            settings:
+              token: $SLACK_BOT_TOKEN
+              recipient: "#alerts-vanguard-warning"
+              username: Grafana
+              title: '{{ template "slack.title" . }}'
+              text: '{{ template "slack.text" . }}'
+              color: '{{ template "slack.color" . }}'
+
+      # ---- shared low-priority / heartbeat ----
+      - orgId: 1
+        name: slack-info
+        receivers:
+          - uid: slack-info
+            type: slack
+            settings:
+              token: $SLACK_BOT_TOKEN
+              recipient: "#alerts-info"
+              username: Grafana
+              title: '{{ template "slack.title" . }}'
+              text: '{{ template "slack.text" . }}'
+              color: '{{ template "slack.color" . }}'

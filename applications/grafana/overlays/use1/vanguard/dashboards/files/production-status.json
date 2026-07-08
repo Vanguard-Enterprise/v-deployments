@@ -1,0 +1,329 @@
+{
+  "uid": "prod-status-overview",
+  "title": "Production Status",
+  "tags": ["overview", "platform", "birds-eye"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "editable": true,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "links": [],
+  "panels": [
+    {
+      "type": "row",
+      "id": 100,
+      "title": "Overall Health",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false
+    },
+    {
+      "type": "stat",
+      "id": 1,
+      "title": "Apps Out Of Sync",
+      "description": "ArgoCD applications not in Synced state.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "targets": [
+        { "refId": "A", "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "mappings": [{ "type": "value", "options": { "0": { "text": "0", "index": 0 } } }],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "id": 2,
+      "title": "Apps Degraded",
+      "description": "ArgoCD applications in Degraded health.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "targets": [
+        { "refId": "A", "expr": "count(argocd_app_info{health_status=\"Degraded\"}) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "id": 3,
+      "title": "Nodes Not Ready",
+      "description": "Kubernetes nodes whose Ready condition is not true.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "targets": [
+        { "refId": "A", "expr": "count(kube_node_status_condition{condition=\"Ready\",status=\"true\"} == 0) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "id": 4,
+      "title": "Backends Down",
+      "description": "LGTM backend targets (Mimir/Loki/Tempo/Pyroscope/Grafana) that are down.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "targets": [
+        { "refId": "A", "expr": "count(up{namespace=~\"mimir|loki|tempo|pyroscope|grafana\"} == 0) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "id": 5,
+      "title": "CNPG Instances Down",
+      "description": "CloudNativePG instances whose collector reports down.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 5 },
+      "targets": [
+        { "refId": "A", "expr": "count(cnpg_collector_up == 0) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "id": 6,
+      "title": "Longhorn Volumes Unhealthy",
+      "description": "Longhorn volumes that are degraded (2) or faulted (3).",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 5 },
+      "targets": [
+        { "refId": "A", "expr": "count(longhorn_volume_robustness >= 2) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "id": 7,
+      "title": "PVCs > 90% Full",
+      "description": "PersistentVolumeClaims over 90% utilization.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 5 },
+      "targets": [
+        { "refId": "A", "expr": "count((kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes) > 0.90) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "id": 8,
+      "title": "Certs Expiring < 14d",
+      "description": "cert-manager certificates expiring within 14 days.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 5 },
+      "targets": [
+        { "refId": "A", "expr": "count(((certmanager_certificate_expiration_timestamp_seconds - time()) / 86400) < 14) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "row",
+      "id": 101,
+      "title": "Firing Alerts",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "collapsed": false
+    },
+    {
+      "type": "alertlist",
+      "id": 9,
+      "title": "Currently Firing / Pending",
+      "description": "Live Grafana-managed alerts. Green here means nothing is firing.",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 10 },
+      "options": {
+        "viewMode": "list",
+        "groupMode": "default",
+        "maxItems": 30,
+        "sortOrder": 3,
+        "dashboardAlerts": false,
+        "alertName": "",
+        "alertInstanceLabelFilter": "",
+        "stateFilter": { "firing": true, "pending": true, "noData": false, "normal": false, "error": true },
+        "showInstances": true
+      }
+    },
+    {
+      "type": "row",
+      "id": 102,
+      "title": "Traffic & Errors (Traefik)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "id": 10,
+      "title": "Ingress Request Rate",
+      "description": "Total Traefik requests per second.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 19 },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(traefik_service_requests_total[5m]))", "legendFormat": "req/s", "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }, "color": { "mode": "palette-classic" } },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "hidden" }, "tooltip": { "mode": "single" } }
+    },
+    {
+      "type": "timeseries",
+      "id": 11,
+      "title": "Ingress 5xx Error Rate",
+      "description": "Percentage of Traefik responses that are 5xx. Alert fires above 1%.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 19 },
+      "targets": [
+        { "refId": "A", "expr": "100 * sum(rate(traefik_service_requests_total{code=~\"5..\"}[5m])) / clamp_min(sum(rate(traefik_service_requests_total[5m])), 0.001)", "legendFormat": "5xx %", "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": { "drawStyle": "line", "fillOpacity": 15, "lineWidth": 2, "thresholdsStyle": { "mode": "line" } },
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 } ] }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "hidden" }, "tooltip": { "mode": "single" } }
+    },
+    {
+      "type": "table",
+      "id": 12,
+      "title": "Top Services by 5xx",
+      "description": "Traefik services generating the most server errors right now.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 19 },
+      "targets": [
+        { "refId": "A", "expr": "topk(10, sum by (service) (rate(traefik_service_requests_total{code=~\"5..\"}[5m])))", "instant": true, "format": "table", "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "align": "auto" } },
+        "overrides": []
+      },
+      "options": { "showHeader": true }
+    },
+    {
+      "type": "row",
+      "id": 103,
+      "title": "Capacity & Headroom",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "id": 13,
+      "title": "Cluster CPU Used %",
+      "description": "Cluster-wide CPU utilization.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 27 },
+      "targets": [
+        { "refId": "A", "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))", "legendFormat": "cpu %", "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "custom": { "drawStyle": "line", "fillOpacity": 15, "lineWidth": 2 },
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 75 }, { "color": "red", "value": 90 } ] }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "hidden" }, "tooltip": { "mode": "single" } }
+    },
+    {
+      "type": "timeseries",
+      "id": 14,
+      "title": "Cluster Memory Used %",
+      "description": "Cluster-wide memory utilization. use1 is memory-bound, so watch this.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 27 },
+      "targets": [
+        { "refId": "A", "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes))", "legendFormat": "mem %", "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "custom": { "drawStyle": "line", "fillOpacity": 15, "lineWidth": 2 },
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 80 }, { "color": "red", "value": 92 } ] }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "hidden" }, "tooltip": { "mode": "single" } }
+    },
+    {
+      "type": "table",
+      "id": 15,
+      "title": "Top PVC Usage",
+      "description": "Fullest PersistentVolumeClaims in the cluster.",
+      "datasource": { "type": "prometheus", "uid": "mimir" },
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 27 },
+      "targets": [
+        { "refId": "A", "expr": "topk(10, kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes)", "instant": true, "format": "table", "datasource": { "type": "prometheus", "uid": "mimir" } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit", "min": 0, "max": 1,
+          "custom": { "align": "auto", "cellOptions": { "type": "gauge", "mode": "gradient" } },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 0.75 }, { "color": "red", "value": 0.9 } ] }
+        },
+        "overrides": []
+      },
+      "options": { "showHeader": true }
+    }
+  ]
+}

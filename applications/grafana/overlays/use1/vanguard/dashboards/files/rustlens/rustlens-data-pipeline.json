@@ -116,7 +116,7 @@
   ],
   "refresh": "30s",
   "schemaVersion": 39,
-  "tags": ["rustlens", "data-pipeline"],
+  "tags": ["application", "rustlens", "data-pipeline"],
   "templating": { "list": [] },
   "time": { "from": "now-3h", "to": "now" },
   "title": "RustLens — Data Pipeline",

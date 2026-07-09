@@ -51,3 +51,41 @@ data:
               team: platform
             annotations:
               summary: "CNPG cluster {{ $labels.namespace }}/{{ $labels.cluster }} has no ready instances"
+
+          - uid: cnpg-instance-down
+            title: CNPGInstanceDown
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'cnpg_collector_up == 0'
+                  refId: A
+            noDataState: OK
+            for: 2m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "CNPG instance {{ $labels.pod }} ({{ $labels.namespace }}) collector is down"
+
+          - uid: cnpg-backup-failed
+            title: CNPGBackupFailed
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'cnpg_collector_last_failed_backup_timestamp > cnpg_collector_last_available_backup_timestamp'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "CNPG cluster {{ $labels.namespace }}/{{ $labels.cluster }} last backup failed"

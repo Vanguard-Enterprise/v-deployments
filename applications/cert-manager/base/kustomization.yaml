@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - clusterissuer.yaml
-  - prometheusrule.yaml
 helmCharts:
   - name: cert-manager
     version: v1.19.1

@@ -6,7 +6,6 @@ resources:
 - github-pull-secret.yaml
 - external-secret.yaml
 - deployment.yaml
-- prometheusrule.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/rustlens-bot
   digest: sha256:b073f70d1d6b54755980a097f5b223650b25d4783f0aa1cc0da9fb844077852c

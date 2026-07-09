@@ -51,3 +51,22 @@ data:
               team: platform
             annotations:
               summary: "Cert {{ $labels.sans }} expires in <7d"
+
+          - uid: traefik-4xx-rate
+            title: TraefikHigh4xxRate
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'sum(rate(traefik_service_requests_total{code=~"4.."}[5m])) by (service) / sum(rate(traefik_service_requests_total[5m])) by (service) * 100 > 5'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Traefik service {{ $labels.service }} 4xx rate >5% over 5m"

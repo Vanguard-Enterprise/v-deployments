@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-metallb
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules-metallb.yaml: |
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: metallb
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: metallb-config-not-loaded
+            title: MetalLBConfigNotLoaded
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'metallb_k8s_client_config_loaded_bool == 0'
+                  refId: A
+            noDataState: OK
+            for: 1m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "MetalLB on {{ $labels.pod }} has not loaded a valid config"
+
+          - uid: metallb-pool-exhausted
+            title: MetalLBAddressPoolExhausted
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'metallb_allocator_addresses_in_use_total / metallb_allocator_addresses_total >= 1'
+                  refId: A
+            noDataState: OK
+            for: 1m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "MetalLB address pool {{ $labels.pool }} is exhausted"
+
+          - uid: metallb-pool-high
+            title: MetalLBAddressPoolHigh
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'metallb_allocator_addresses_in_use_total / metallb_allocator_addresses_total >= 0.9'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "MetalLB address pool {{ $labels.pool }} is >=90% allocated"

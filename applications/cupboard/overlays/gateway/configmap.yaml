@@ -25,3 +25,5 @@ data:
   # JWT), and /perf/* → metrics (perf dashboards + recommendations, JWT + servers.view).
   COLLECTOR_SERVICE_URL: "http://cupboard-collector.cupboard-collector.svc.cluster.local:8080"
   METRICS_SERVICE_URL: "http://cupboard-metrics.cupboard-metrics.svc.cluster.local:8080"
+  # Phase 5: /sites|/store (JWT) + /public (unauthenticated storefront reads) → tenant.
+  TENANT_SERVICE_URL: "http://cupboard-tenant.cupboard-tenant.svc.cluster.local:8080"

@@ -1,0 +1,45 @@
+# Phase 5 PR5: lets the cupboard-tenant pod create/manage the per-domain Certificate +
+# IngressRoute (and clean up the cert Secret) for custom-domain TLS. The resources live in
+# the cupboard-web namespace (same as the cupboard-web Service the IngressRoute targets,
+# so no cross-namespace service ref and tls.secretName resolves locally), so the Role +
+# binding live there too, granting a ServiceAccount that runs in cupboard-tenant.
+#
+# Template precedent: applications/zitadel/base/cert-job.yaml (SA + Role + RoleBinding for
+# a workload that writes to the API server at runtime).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cupboard-tenant-certs
+  namespace: cupboard-tenant
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cupboard-domain-certs
+  namespace: cupboard-web
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: ["traefik.io"]
+    resources: ["ingressroutes"]
+    verbs: ["get", "list", "create", "delete"]
+  # cert-manager does not delete the backing Secret on Certificate delete; the tenant
+  # cleans it up on domain removal.
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cupboard-domain-certs
+  namespace: cupboard-web
+subjects:
+  - kind: ServiceAccount
+    name: cupboard-tenant-certs
+    namespace: cupboard-tenant
+roleRef:
+  kind: Role
+  name: cupboard-domain-certs
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,289 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-rustlens
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules-rustlens.yaml: |
+    apiVersion: 1
+    groups:
+      # Note: RustLensBackendHighErrorRate, RustLensBackendHighLatencyP99 and
+      # RustLensBotCommandFailureRate from the old CRs were not migrated because their
+      # source metrics (http_server_request_duration_* for the rustlens-backend job,
+      # rustlens_bot_command_failure_total) are not present in Mimir. Re-add once emitted.
+      - orgId: 1
+        name: rustlens-backend
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: rustlens-backend-down
+            title: RustLensBackendDown
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_deployment_status_replicas_available{namespace="rustlens-backend",deployment="rustlens-backend"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: rustlens
+              service: rustlens-backend
+            annotations:
+              summary: "rustlens-backend has zero ready replicas"
+
+          - uid: rustlens-backend-degraded
+            title: RustLensBackendDegraded
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 900, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_deployment_status_replicas_available{namespace="rustlens-backend",deployment="rustlens-backend"} < kube_deployment_spec_replicas{namespace="rustlens-backend",deployment="rustlens-backend"}'
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: warning
+              team: rustlens
+              service: rustlens-backend
+            annotations:
+              summary: "rustlens-backend has fewer ready replicas than desired"
+
+          - uid: rustlens-backend-crashlooping
+            title: RustLensBackendCrashLooping
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 900, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'rate(kube_pod_container_status_restarts_total{namespace="rustlens-backend"}[15m]) > 0'
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: warning
+              team: rustlens
+              service: rustlens-backend
+            annotations:
+              summary: "rustlens-backend pod {{ $labels.pod }} is restarting repeatedly"
+
+          - uid: rustlens-backend-db-pool-exhausted
+            title: RustLensBackendDBPoolExhausted
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '(sum(db_client_connections_usage{state="used",job="rustlens/rustlens-backend"}) / sum(db_client_connections_max{job="rustlens/rustlens-backend"})) > 0.9'
+                  refId: A
+            noDataState: OK
+            for: 10m
+            labels:
+              severity: warning
+              team: rustlens
+              service: rustlens-backend
+            annotations:
+              summary: "rustlens-backend Postgres connection pool >90% utilized"
+
+          - uid: rustlens-backend-battlemetrics-errors
+            title: RustLensBackendBattleMetricsErrors
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'sum(rate(rustlens_battlemetrics_poll_error_total[10m])) > 0.5'
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: warning
+              team: rustlens
+              service: rustlens-backend
+            annotations:
+              summary: "rustlens-backend BattleMetrics poll error rate is elevated"
+
+          - uid: rustlens-backend-shard-stalled
+            title: RustLensBackendShardAssignmentStalled
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'max(rustlens_shard_heartbeat_age_seconds) > 120'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: rustlens
+              service: rustlens-backend
+            annotations:
+              summary: "rustlens-backend has a shard with a stale heartbeat (>2m)"
+
+      - orgId: 1
+        name: rustlens-bot
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: rustlens-bot-down
+            title: RustLensBotDown
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_deployment_status_replicas_available{namespace="rustlens-bot",deployment="rustlens-bot"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: rustlens
+              service: rustlens-bot
+            annotations:
+              summary: "rustlens-bot has zero ready replicas"
+
+          - uid: rustlens-bot-degraded
+            title: RustLensBotDegraded
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 900, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_deployment_status_replicas_available{namespace="rustlens-bot",deployment="rustlens-bot"} < kube_deployment_spec_replicas{namespace="rustlens-bot",deployment="rustlens-bot"}'
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: warning
+              team: rustlens
+              service: rustlens-bot
+            annotations:
+              summary: "rustlens-bot has fewer ready replicas than desired"
+
+          - uid: rustlens-bot-crashlooping
+            title: RustLensBotCrashLooping
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 900, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'rate(kube_pod_container_status_restarts_total{namespace="rustlens-bot"}[15m]) > 0'
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: warning
+              team: rustlens
+              service: rustlens-bot
+            annotations:
+              summary: "rustlens-bot pod {{ $labels.pod }} is restarting repeatedly"
+
+          - uid: rustlens-bot-shard-disconnected
+            title: RustLensBotShardDisconnected
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'min(rustlens_bot_shard_state) == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: rustlens
+              service: rustlens-bot
+            annotations:
+              summary: "rustlens-bot has at least one disconnected shard"
+
+      - orgId: 1
+        name: rustlens-frontend
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: rustlens-frontend-down
+            title: RustLensFrontendDown
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_deployment_status_replicas_available{namespace="rustlens-frontend",deployment="rustlens-frontend"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: rustlens
+              service: rustlens-frontend
+            annotations:
+              summary: "rustlens-frontend has zero ready replicas"
+
+          - uid: rustlens-frontend-degraded
+            title: RustLensFrontendDegraded
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 900, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_deployment_status_replicas_available{namespace="rustlens-frontend",deployment="rustlens-frontend"} < kube_deployment_spec_replicas{namespace="rustlens-frontend",deployment="rustlens-frontend"}'
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: warning
+              team: rustlens
+              service: rustlens-frontend
+            annotations:
+              summary: "rustlens-frontend has fewer ready replicas than desired"
+
+          - uid: rustlens-frontend-crashlooping
+            title: RustLensFrontendCrashLooping
+            condition: A
+            isPaused: true
+            data:
+              - refId: A
+                relativeTimeRange: { from: 900, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'rate(kube_pod_container_status_restarts_total{namespace="rustlens-frontend"}[15m]) > 0'
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: warning
+              team: rustlens
+              service: rustlens-frontend
+            annotations:
+              summary: "rustlens-frontend pod {{ $labels.pod }} is restarting repeatedly"

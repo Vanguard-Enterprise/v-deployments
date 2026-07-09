@@ -1,0 +1,27 @@
+# Phase 5: PUBLIC tenant storefronts. Every {slug}.sites.vngenterprise.com host serves
+# the same Next.js app (cupboard-web); its middleware routes by Host header into the
+# storefront segment, so admin routes are unreachable on these hosts by construction
+# (and the admin host stays on traefik-internal — see ingress.yaml).
+#
+# DO NOT apply before the cupboard-web image containing src/middleware.ts is deployed:
+# without the middleware, public hosts would serve the admin shell.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cupboard-web-public-sites
+  namespace: cupboard-web
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostRegexp(`^[a-z0-9-]+\.sites\.vngenterprise\.com$`)
+      kind: Rule
+      services:
+        - name: cupboard-web
+          port: 3000
+  tls:
+    store:
+      name: cupboard-sites
+      namespace: traefik

@@ -1,0 +1,17 @@
+# Phase 5: wildcard for tenant default storefront hostnames
+# ({slug}.sites.vngenterprise.com). The existing *.vngenterprise.com wildcard only covers
+# single-level hosts, so the two-level sites tier needs its own cert. DNS-01 via the
+# existing Cloudflare issuer — no HTTP-01 required for the default-subdomain tier.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cupboard-sites
+  namespace: traefik
+spec:
+  secretName: cupboard-sites-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "*.sites.vngenterprise.com"
+  dnsNames:
+    - "*.sites.vngenterprise.com"

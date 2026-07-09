@@ -7,6 +7,7 @@ resources:
 - deployment.yaml
 - service.yaml
 - ingress.yaml
+- ingress-public-sites.yaml
 # argocd-image-updater rewrites this to a pinned digest on each new :main build.
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-web

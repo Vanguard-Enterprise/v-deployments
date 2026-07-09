@@ -12,3 +12,7 @@ data:
   HOSTNAME: "0.0.0.0"
   GATEWAY_URL: "http://cupboard-gateway.cupboard-gateway.svc.cluster.local:8080"
   NEXT_PUBLIC_GATEWAY_URL: "https://cupboard-staging.vngenterprise.com"
+  # Phase 5: host-based routing. The admin dashboard answers only on ADMIN_HOSTS;
+  # every other Host header renders as a tenant storefront.
+  ADMIN_HOSTS: "cupboard-app-staging.vngenterprise.com"
+  SITES_SUFFIX: "sites.vngenterprise.com"

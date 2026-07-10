@@ -24,6 +24,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'up{namespace="mimir"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -43,6 +45,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'up{namespace="loki"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -62,6 +66,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'up{namespace="tempo"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -81,6 +87,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'rate(alloy_prometheus_remote_write_samples_failed_total[10m]) > 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 10m

@@ -28,6 +28,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_deployment_status_replicas_available{namespace="rustlens-backend",deployment="rustlens-backend"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -48,6 +50,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_deployment_status_replicas_available{namespace="rustlens-backend",deployment="rustlens-backend"} < kube_deployment_spec_replicas{namespace="rustlens-backend",deployment="rustlens-backend"}'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 15m
@@ -68,6 +72,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'rate(kube_pod_container_status_restarts_total{namespace="rustlens-backend"}[15m]) > 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 15m
@@ -88,6 +94,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: '(sum(db_client_connections_usage{state="used",job="rustlens/rustlens-backend"}) / sum(db_client_connections_max{job="rustlens/rustlens-backend"})) > 0.9'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 10m
@@ -108,6 +116,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'sum(rate(rustlens_battlemetrics_poll_error_total[10m])) > 0.5'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 15m
@@ -128,6 +138,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'max(rustlens_shard_heartbeat_age_seconds) > 120'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -153,6 +165,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_deployment_status_replicas_available{namespace="rustlens-bot",deployment="rustlens-bot"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -173,6 +187,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_deployment_status_replicas_available{namespace="rustlens-bot",deployment="rustlens-bot"} < kube_deployment_spec_replicas{namespace="rustlens-bot",deployment="rustlens-bot"}'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 15m
@@ -193,6 +209,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'rate(kube_pod_container_status_restarts_total{namespace="rustlens-bot"}[15m]) > 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 15m
@@ -213,6 +231,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'min(rustlens_bot_shard_state) == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -238,6 +258,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_deployment_status_replicas_available{namespace="rustlens-frontend",deployment="rustlens-frontend"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -258,6 +280,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_deployment_status_replicas_available{namespace="rustlens-frontend",deployment="rustlens-frontend"} < kube_deployment_spec_replicas{namespace="rustlens-frontend",deployment="rustlens-frontend"}'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 15m
@@ -278,6 +302,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'rate(kube_pod_container_status_restarts_total{namespace="rustlens-frontend"}[15m]) > 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 15m

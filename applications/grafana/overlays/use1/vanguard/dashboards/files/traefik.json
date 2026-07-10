@@ -1427,7 +1427,12 @@
   "refresh": false,
   "schemaVersion": 37,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "platform",
+    "network",
+    "ingress",
+    "traefik"
+  ],
   "templating": {
     "list": [
       {

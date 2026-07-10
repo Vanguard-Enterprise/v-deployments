@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-openbao
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules-openbao.yaml: |
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: openbao
+        folder: platform
+        interval: 1m
+        rules:
+          # Note: OpenBao does not currently export core/seal telemetry to Mimir, so the
+          # OpenBaoSealed and OpenBaoHighErrorRate alerts from the old CR could not be migrated.
+          # Only target-up coverage is available. Re-add seal alerting once bao_* telemetry exists.
+          - uid: openbao-not-ready
+            title: OpenBaoNotReady
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'up{job="openbao"} == 0'
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "OpenBao instance {{ $labels.instance }} is not ready to serve requests"

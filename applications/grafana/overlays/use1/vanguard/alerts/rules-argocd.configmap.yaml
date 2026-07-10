@@ -17,7 +17,7 @@ data:
           - uid: argocd-app-out-of-sync
             title: ArgoCDAppOutOfSync
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 1800, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: argocd-app-degraded
             title: ArgoCDAppDegraded
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }

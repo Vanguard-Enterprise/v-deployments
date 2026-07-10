@@ -89,7 +89,7 @@
   ],
   "refresh": "30s",
   "schemaVersion": 39,
-  "tags": ["rustlens", "bot"],
+  "tags": ["application", "rustlens", "bot"],
   "templating": { "list": [] },
   "time": { "from": "now-1h", "to": "now" },
   "title": "RustLens — Bot",

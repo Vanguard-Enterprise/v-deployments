@@ -174,7 +174,11 @@
   "refresh": false,
   "schemaVersion": 30,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "observability",
+    "lgtm",
+    "loki"
+  ],
   "templating": {
     "list": [
       {

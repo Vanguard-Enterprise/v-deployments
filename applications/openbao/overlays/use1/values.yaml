@@ -48,6 +48,12 @@ server:
   ha:
     enabled: true
     replicas: 3
+    # api_addr must be a stable per-pod DNS name, not the ephemeral pod IP (the chart
+    # default of http://$(POD_IP):8200). $(BAO_K8S_POD_NAME) is defined before
+    # BAO_API_ADDR in the statefulset env, so it expands at runtime. Prevents stale
+    # leader-redirect addresses lingering in raft HA state after a pod restart (which
+    # broke ESO logins into OpenBao with "no route to host" to a dead pod IP).
+    apiAddr: "http://$(BAO_K8S_POD_NAME).openbao-internal.openbao.svc.cluster.local:8200"
     raft:
       enabled: true
       setNodeId: false
@@ -63,6 +69,11 @@ server:
           tls_disable = 1
           address = "[::]:8200"
           cluster_address = "[::]:8201"
+          telemetry {
+            # Allow Alloy to scrape /v1/sys/metrics without a token (returns 400/up==0
+            # otherwise). Restores OpenBao metrics + unlocks seal/error-rate alerting.
+            unauthenticated_metrics_access = true
+          }
         }
 
         seal "static" {

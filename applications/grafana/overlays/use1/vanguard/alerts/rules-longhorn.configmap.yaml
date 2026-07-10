@@ -86,7 +86,7 @@ data:
                 relativeTimeRange: { from: 600, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'longhorn_backup_state == 4'
+                  expr: 'count(longhorn_backup_state == 4) > 3'
                   instant: true
                   range: false
                   refId: A
@@ -96,4 +96,4 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Longhorn backup {{ $labels.backup }} for volume {{ $labels.volume }} failed"
+              summary: "More than 3 Longhorn backups are in Error state — check the backup target and recurring jobs"

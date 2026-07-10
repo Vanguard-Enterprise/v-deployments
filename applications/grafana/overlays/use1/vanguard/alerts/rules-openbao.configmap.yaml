@@ -20,7 +20,7 @@ data:
           - uid: openbao-not-ready
             title: OpenBaoNotReady
             condition: A
-            isPaused: false
+            isPaused: true
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }

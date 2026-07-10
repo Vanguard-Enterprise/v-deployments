@@ -86,7 +86,7 @@ data:
                 relativeTimeRange: { from: 600, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'longhorn_backup_state == 3'
+                  expr: 'longhorn_backup_state == 4'
                   instant: true
                   range: false
                   refId: A

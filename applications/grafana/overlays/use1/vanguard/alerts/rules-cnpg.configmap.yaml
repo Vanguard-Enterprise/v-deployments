@@ -17,7 +17,7 @@ data:
           - uid: cnpg-replication-lag
             title: CNPGReplicationLag
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: cnpg-not-ready-instances
             title: CNPGNoReadyInstances
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -55,7 +55,7 @@ data:
           - uid: cnpg-instance-down
             title: CNPGInstanceDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -74,7 +74,7 @@ data:
           - uid: cnpg-backup-failed
             title: CNPGBackupFailed
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }

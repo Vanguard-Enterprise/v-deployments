@@ -17,7 +17,7 @@ data:
           - uid: cupboard-gateway-down
             title: CupboardGatewayDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -37,7 +37,7 @@ data:
           - uid: cupboard-gateway-crashlooping
             title: CupboardGatewayCrashLooping
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }

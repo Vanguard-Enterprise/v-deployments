@@ -17,7 +17,7 @@ data:
           - uid: longhorn-volume-degraded
             title: LonghornVolumeDegraded
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: longhorn-volume-faulted
             title: LonghornVolumeFaulted
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -55,7 +55,7 @@ data:
           - uid: longhorn-node-down
             title: LonghornNodeDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -74,7 +74,7 @@ data:
           - uid: longhorn-backup-failed
             title: LonghornBackupFailed
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }

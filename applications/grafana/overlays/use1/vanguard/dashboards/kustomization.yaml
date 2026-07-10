@@ -8,93 +8,99 @@ generatorOptions:
   labels:
     grafana_dashboard: "1"
 configMapGenerator:
+  - name: grafana-dashboard-production-status
+    files:
+      - files/production-status.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Overview
   - name: grafana-dashboard-kubernetes-cluster
     files:
       - files/kubernetes-cluster.json
     options:
       annotations:
-        grafana_dashboard_folder: Kubernetes
+        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-kubernetes-pods
     files:
       - files/kubernetes-pods.json
     options:
       annotations:
-        grafana_dashboard_folder: Kubernetes
+        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-longhorn
     files:
       - files/longhorn.json
     options:
       annotations:
-        grafana_dashboard_folder: Longhorn
+        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-cnpg
     files:
       - files/cnpg.json
     options:
       annotations:
-        grafana_dashboard_folder: CNPG
+        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-traefik
     files:
       - files/traefik.json
     options:
       annotations:
-        grafana_dashboard_folder: Traefik
+        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-argocd
     files:
       - files/argocd.json
     options:
       annotations:
-        grafana_dashboard_folder: ArgoCD
+        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-mimir-overview
     files:
       - files/mimir-overview.json
     options:
       annotations:
-        grafana_dashboard_folder: Monitoring
+        grafana_dashboard_folder: Observability
   - name: grafana-dashboard-loki-overview
     files:
       - files/loki-overview.json
     options:
       annotations:
-        grafana_dashboard_folder: Monitoring
+        grafana_dashboard_folder: Observability
   - name: grafana-dashboard-tempo-overview
     files:
       - files/tempo-overview.json
     options:
       annotations:
-        grafana_dashboard_folder: Monitoring
+        grafana_dashboard_folder: Observability
   - name: grafana-dashboard-alloy
     files:
       - files/alloy.json
     options:
       annotations:
-        grafana_dashboard_folder: Monitoring
+        grafana_dashboard_folder: Observability
   - name: grafana-dashboard-rustlens-overview
     files:
       - files/rustlens/rustlens-overview.json
     options:
       annotations:
-        grafana_dashboard_folder: RustLens
+        grafana_dashboard_folder: Applications
   - name: grafana-dashboard-rustlens-backend
     files:
       - files/rustlens/rustlens-backend.json
     options:
       annotations:
-        grafana_dashboard_folder: RustLens
+        grafana_dashboard_folder: Applications
   - name: grafana-dashboard-rustlens-bot
     files:
       - files/rustlens/rustlens-bot.json
     options:
       annotations:
-        grafana_dashboard_folder: RustLens
+        grafana_dashboard_folder: Applications
   - name: grafana-dashboard-rustlens-frontend
     files:
       - files/rustlens/rustlens-frontend.json
     options:
       annotations:
-        grafana_dashboard_folder: RustLens
+        grafana_dashboard_folder: Applications
   - name: grafana-dashboard-rustlens-data-pipeline
     files:
       - files/rustlens/rustlens-data-pipeline.json
     options:
       annotations:
-        grafana_dashboard_folder: RustLens
+        grafana_dashboard_folder: Applications

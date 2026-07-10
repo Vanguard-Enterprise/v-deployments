@@ -6605,6 +6605,8 @@
   "refresh": "",
   "schemaVersion": 42,
   "tags": [
+    "observability",
+    "lgtm",
     "Prometheus",
     "Alloy",
     "Mimir",

@@ -4,4 +4,3 @@ resources:
   - metallb-native.yaml # MetalLB official manifest
   - metrics-service.yaml
   - servicemonitor.yaml
-  - prometheusrule.yaml

@@ -5346,9 +5346,9 @@
   "refresh": "1m",
   "schemaVersion": 40,
   "tags": [
-    "Traces",
-    "OpenTelemetry",
-    "Tempo"
+    "observability",
+    "lgtm",
+    "tempo"
   ],
   "templating": {
     "list": [

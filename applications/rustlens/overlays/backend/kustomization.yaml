@@ -7,7 +7,6 @@ resources:
 - external-secret.yaml
 - deployment.yaml
 - service.yaml
-- prometheusrule.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/rustlens-backend
   digest: sha256:327661a517854ddd9f4d3112c2c56642c61d979ade54356496df3f8526b66c54

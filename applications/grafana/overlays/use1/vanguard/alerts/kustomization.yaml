@@ -13,3 +13,8 @@ resources:
   - rules-traefik.configmap.yaml
   - rules-monitoring.configmap.yaml
   - rules-heartbeat.configmap.yaml
+  - rules-certmanager.configmap.yaml
+  - rules-metallb.configmap.yaml
+  - rules-openbao.configmap.yaml
+  - rules-cupboard.configmap.yaml
+  - rules-rustlens.configmap.yaml

@@ -3,4 +3,3 @@ kind: Kustomization
 resources:
   - podmonitor.yaml
   - servicemonitor.yaml
-  - prometheusrule.yaml

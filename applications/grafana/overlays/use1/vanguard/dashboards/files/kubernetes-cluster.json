@@ -3426,8 +3426,8 @@
   "refresh": "30s",
   "schemaVersion": 39,
   "tags": [
-    "Kubernetes",
-    "Prometheus"
+    "platform",
+    "kubernetes"
   ],
   "templating": {
     "list": [

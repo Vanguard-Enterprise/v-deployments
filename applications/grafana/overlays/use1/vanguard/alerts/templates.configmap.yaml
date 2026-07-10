@@ -10,41 +10,46 @@ data:
     apiVersion: 1
     templates:
       - orgId: 1
-        name: discord.title
+        name: slack.title
         template: |
-          {{ define "discord.title" -}}
+          {{ define "slack.title" -}}
           {{- $name := .CommonLabels.alertname -}}{{- if not $name -}}{{- $name = "alerts" -}}{{- end -}}
           {{- if .Alerts.Firing -}}
-          🔥 {{ len .Alerts.Firing }} firing{{ if .Alerts.Resolved }} · ✅ {{ len .Alerts.Resolved }} resolved{{ end }} — {{ $name }}
+          🔥 {{ len .Alerts.Firing }} FIRING{{ if .Alerts.Resolved }} · ✅ {{ len .Alerts.Resolved }} resolved{{ end }} — {{ $name }}
           {{- else -}}
-          ✅ {{ len .Alerts.Resolved }} resolved — {{ $name }}
+          ✅ {{ len .Alerts.Resolved }} RESOLVED — {{ $name }}
           {{- end -}}
           {{- end }}
 
       - orgId: 1
-        name: discord.alert
+        name: slack.color
         template: |
-          {{ define "discord.alert" -}}
-          {{ if eq .Status "firing" }}🔴{{ else }}🟢{{ end }} **{{ .Labels.alertname }}**
-          {{ if .Annotations.summary }}> {{ .Annotations.summary }}{{ end }}
-          {{- if .Annotations.description }}
-
-          {{ .Annotations.description }}{{ end }}
-
-          `{{ if eq .Labels.severity "critical" }}🚨 critical{{ else if eq .Labels.severity "warning" }}⚠️ warning{{ else if eq .Labels.severity "info" }}ℹ️ info{{ else if .Labels.severity }}⚪ {{ .Labels.severity }}{{ else }}⚪ —{{ end }}`{{ if .Labels.team }} `team:{{ .Labels.team }}`{{ end }}{{ if .Labels.namespace }} `ns:{{ .Labels.namespace }}`{{ end }}{{ if .Labels.node }} `node:{{ .Labels.node }}`{{ end }}{{ if .Labels.pod }} `pod:{{ .Labels.pod }}`{{ end }}{{ if .Labels.instance }} `instance:{{ .Labels.instance }}`{{ end }}
-          {{ if .GeneratorURL }}[Grafana]({{ .GeneratorURL }}){{ end }}{{ if .SilenceURL }} · [Silence]({{ .SilenceURL }}){{ end }}{{ if .Annotations.runbook_url }} · [Runbook]({{ .Annotations.runbook_url }}){{ end }}{{ if .Annotations.dashboard_url }} · [Dashboard]({{ .Annotations.dashboard_url }}){{ end }}
+          {{ define "slack.color" -}}
+          {{ if eq .Status "firing" }}{{ if eq .CommonLabels.severity "critical" }}#C4162A{{ else if eq .CommonLabels.severity "warning" }}#FF9830{{ else }}#5794F2{{ end }}{{ else }}#56A64B{{ end }}
           {{- end }}
 
       - orgId: 1
-        name: discord.message
+        name: slack.alert
         template: |
-          {{ define "discord.message" -}}
+          {{ define "slack.alert" -}}
+          {{ if eq .Status "firing" }}🔴{{ else }}🟢{{ end }} *{{ .Labels.alertname }}*  `{{ if eq .Labels.severity "critical" }}🚨 CRITICAL{{ else if eq .Labels.severity "warning" }}⚠️ WARNING{{ else if eq .Labels.severity "info" }}ℹ️ INFO{{ else if .Labels.severity }}⚪ {{ .Labels.severity }}{{ else }}⚪ —{{ end }}`
+          {{ if .Annotations.summary }}> {{ .Annotations.summary }}{{ end }}
+          {{- if .Annotations.description }}
+          {{ .Annotations.description }}{{ end }}
+          {{- if .ValueString }}
+          `value: {{ .ValueString }}`{{ end }}
+          {{ if .Labels.team }} `team:{{ .Labels.team }}`{{ end }}{{ if .Labels.namespace }} `ns:{{ .Labels.namespace }}`{{ end }}{{ if .Labels.pod }} `pod:{{ .Labels.pod }}`{{ end }}{{ if .Labels.node }} `node:{{ .Labels.node }}`{{ end }}{{ if .Labels.instance }} `instance:{{ .Labels.instance }}`{{ end }}
+          {{ if .GeneratorURL }}<{{ .GeneratorURL }}|Grafana>{{ end }}{{ if .SilenceURL }} · <{{ .SilenceURL }}|Silence>{{ end }}{{ if .Annotations.runbook_url }} · <{{ .Annotations.runbook_url }}|Runbook>{{ end }}{{ if .Annotations.dashboard_url }} · <{{ .Annotations.dashboard_url }}|Dashboard>{{ end }}
+          {{- end }}
+
+      - orgId: 1
+        name: slack.text
+        template: |
+          {{ define "slack.text" -}}
           {{ range $i, $a := .Alerts -}}
           {{ if $i }}
-
           ━━━━━━━━━━━━━━━━━━━
-
           {{ end -}}
-          {{ template "discord.alert" $a }}
+          {{ template "slack.alert" $a }}
           {{ end -}}
           {{- end }}

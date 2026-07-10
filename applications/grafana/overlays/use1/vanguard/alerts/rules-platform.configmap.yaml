@@ -24,6 +24,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_node_status_condition{condition="Ready",status="true"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -43,6 +45,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_node_status_condition{condition="MemoryPressure",status="true"} == 1'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -62,6 +66,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_node_status_condition{condition="DiskPressure",status="true"} == 1'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -81,6 +87,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: '(node_filesystem_size_bytes - node_filesystem_avail_bytes) / node_filesystem_size_bytes > 0.85'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 10m
@@ -100,6 +108,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'up{job="kubelet"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m

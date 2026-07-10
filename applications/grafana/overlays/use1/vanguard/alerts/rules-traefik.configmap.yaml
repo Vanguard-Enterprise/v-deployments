@@ -24,6 +24,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'sum(rate(traefik_service_requests_total{code=~"5.."}[5m])) / sum(rate(traefik_service_requests_total[5m])) > 0.01'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -43,6 +45,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: '(traefik_tls_certs_not_after - time()) / 86400 < 7'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 1h
@@ -62,6 +66,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'sum(rate(traefik_service_requests_total{code=~"4.."}[5m])) by (service) / sum(rate(traefik_service_requests_total[5m])) by (service) * 100 > 5'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m

@@ -24,6 +24,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'absent(up{job="cert-manager"})'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 10m
@@ -43,6 +45,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'avg by (exported_namespace, namespace, name) (certmanager_certificate_expiration_timestamp_seconds - time()) < (7 * 24 * 3600)'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 1h
@@ -62,6 +66,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'max by (name, exported_namespace, namespace, condition) (certmanager_certificate_ready_status{condition="False"}) == 1'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 10m

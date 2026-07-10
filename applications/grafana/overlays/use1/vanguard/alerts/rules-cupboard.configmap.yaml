@@ -24,6 +24,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'kube_deployment_status_replicas_available{namespace="cupboard-gateway",deployment="cupboard-gateway"} == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -44,6 +46,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'rate(kube_pod_container_status_restarts_total{namespace="cupboard-gateway"}[15m]) > 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 15m

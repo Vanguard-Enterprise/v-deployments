@@ -24,6 +24,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'cnpg_pg_replication_lag_seconds > 60'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 10m
@@ -43,6 +45,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'cnpg_collector_pg_replication_in_recovery == 1 unless on(cluster) (cnpg_collector_up == 1)'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -62,6 +66,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'cnpg_collector_up == 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 2m
@@ -81,6 +87,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'cnpg_collector_last_failed_backup_timestamp > cnpg_collector_last_available_backup_timestamp'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m

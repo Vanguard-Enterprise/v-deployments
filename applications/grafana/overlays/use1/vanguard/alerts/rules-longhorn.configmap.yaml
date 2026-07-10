@@ -24,6 +24,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'longhorn_volume_robustness == 2'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -43,6 +45,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'longhorn_volume_robustness == 3'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 2m
@@ -62,6 +66,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: '(avg(longhorn_node_count_total) or on() vector(0)) - (count(longhorn_node_status{condition="ready"} == 1) or on() vector(0)) > 0'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m
@@ -81,6 +87,8 @@ data:
                 datasourceUid: mimir
                 model:
                   expr: 'longhorn_backup_state == 3'
+                  instant: true
+                  range: false
                   refId: A
             noDataState: OK
             for: 5m

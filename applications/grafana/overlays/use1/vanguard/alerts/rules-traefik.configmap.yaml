@@ -17,7 +17,7 @@ data:
           - uid: traefik-5xx-rate
             title: Traefik5xxRate
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: traefik-cert-expiry
             title: TraefikCertExpiry
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 86400, to: 0 }
@@ -55,7 +55,7 @@ data:
           - uid: traefik-4xx-rate
             title: TraefikHigh4xxRate
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }

@@ -17,7 +17,7 @@ data:
           - uid: heartbeat-weekly
             title: WeeklyHeartbeat
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 60, to: 0 }

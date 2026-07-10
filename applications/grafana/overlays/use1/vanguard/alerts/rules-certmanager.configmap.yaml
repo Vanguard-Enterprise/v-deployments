@@ -17,7 +17,7 @@ data:
           - uid: certmanager-absent
             title: CertManagerAbsent
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: certmanager-cert-expiring-soon
             title: CertManagerCertExpiringSoon
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -55,7 +55,7 @@ data:
           - uid: certmanager-cert-not-ready
             title: CertManagerCertNotReady
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }

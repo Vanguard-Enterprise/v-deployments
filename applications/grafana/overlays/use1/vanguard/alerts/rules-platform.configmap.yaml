@@ -17,7 +17,7 @@ data:
           - uid: platform-node-not-ready
             title: NodeNotReady
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: platform-node-mem-pressure
             title: NodeMemoryPressure
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -55,7 +55,7 @@ data:
           - uid: platform-node-disk-pressure
             title: NodeDiskPressure
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -74,7 +74,7 @@ data:
           - uid: platform-fs-usage-high
             title: FilesystemUsageHigh
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -93,7 +93,7 @@ data:
           - uid: platform-kubelet-down
             title: KubeletDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }

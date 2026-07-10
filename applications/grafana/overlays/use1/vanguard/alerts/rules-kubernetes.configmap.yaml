@@ -17,7 +17,7 @@ data:
           - uid: kubernetes-pod-crashloop
             title: PodCrashLooping
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: kubernetes-pod-pending
             title: PodPending
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -55,7 +55,7 @@ data:
           - uid: kubernetes-ds-rollout-incomplete
             title: DaemonSetRolloutIncomplete
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }
@@ -74,7 +74,7 @@ data:
           - uid: kubernetes-deploy-replicas-mismatch
             title: DeploymentReplicasMismatch
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }
@@ -93,7 +93,7 @@ data:
           - uid: kubernetes-pvc-usage-high
             title: PVCUsageHigh
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }

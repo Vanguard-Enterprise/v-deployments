@@ -17,7 +17,7 @@ data:
           - uid: monitoring-mimir-down
             title: MimirDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: monitoring-loki-down
             title: LokiDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -55,7 +55,7 @@ data:
           - uid: monitoring-tempo-down
             title: TempoDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -74,7 +74,7 @@ data:
           - uid: monitoring-alloy-dropped-samples
             title: AlloyDroppedSamples
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }

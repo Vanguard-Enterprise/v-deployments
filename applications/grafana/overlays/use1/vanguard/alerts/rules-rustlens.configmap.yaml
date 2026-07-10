@@ -21,7 +21,7 @@ data:
           - uid: rustlens-backend-down
             title: RustLensBackendDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -41,7 +41,7 @@ data:
           - uid: rustlens-backend-degraded
             title: RustLensBackendDegraded
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }
@@ -61,7 +61,7 @@ data:
           - uid: rustlens-backend-crashlooping
             title: RustLensBackendCrashLooping
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }
@@ -81,7 +81,7 @@ data:
           - uid: rustlens-backend-db-pool-exhausted
             title: RustLensBackendDBPoolExhausted
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -101,7 +101,7 @@ data:
           - uid: rustlens-backend-battlemetrics-errors
             title: RustLensBackendBattleMetricsErrors
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -121,7 +121,7 @@ data:
           - uid: rustlens-backend-shard-stalled
             title: RustLensBackendShardAssignmentStalled
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -146,7 +146,7 @@ data:
           - uid: rustlens-bot-down
             title: RustLensBotDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -166,7 +166,7 @@ data:
           - uid: rustlens-bot-degraded
             title: RustLensBotDegraded
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }
@@ -186,7 +186,7 @@ data:
           - uid: rustlens-bot-crashlooping
             title: RustLensBotCrashLooping
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }
@@ -206,7 +206,7 @@ data:
           - uid: rustlens-bot-shard-disconnected
             title: RustLensBotShardDisconnected
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 300, to: 0 }
@@ -231,7 +231,7 @@ data:
           - uid: rustlens-frontend-down
             title: RustLensFrontendDown
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -251,7 +251,7 @@ data:
           - uid: rustlens-frontend-degraded
             title: RustLensFrontendDegraded
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }
@@ -271,7 +271,7 @@ data:
           - uid: rustlens-frontend-crashlooping
             title: RustLensFrontendCrashLooping
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 900, to: 0 }

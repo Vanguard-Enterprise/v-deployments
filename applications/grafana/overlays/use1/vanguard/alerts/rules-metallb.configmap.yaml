@@ -17,7 +17,7 @@ data:
           - uid: metallb-config-not-loaded
             title: MetalLBConfigNotLoaded
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -36,7 +36,7 @@ data:
           - uid: metallb-pool-exhausted
             title: MetalLBAddressPoolExhausted
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
@@ -55,7 +55,7 @@ data:
           - uid: metallb-pool-high
             title: MetalLBAddressPoolHigh
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }

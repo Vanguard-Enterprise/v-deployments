@@ -2,11 +2,17 @@
 # ({slug}.sites.vngenterprise.com). The existing *.vngenterprise.com wildcard only covers
 # single-level hosts, so the two-level sites tier needs its own cert. DNS-01 via the
 # existing Cloudflare issuer — no HTTP-01 required for the default-subdomain tier.
+#
+# Issued into the cupboard-web namespace so the storefront IngressRoute can reference it
+# via tls.secretName (same namespace). A named TLSStore's defaultCertificate is NOT fed
+# into Traefik's SNI resolver (Traefik v3 only serves the `default` store + per-route
+# tls.secretName certs for SNI), so the store approach served the fallback *.vngenterprise
+# cert instead of this one.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: cupboard-sites
-  namespace: traefik
+  namespace: cupboard-web
 spec:
   secretName: cupboard-sites-tls
   issuerRef:

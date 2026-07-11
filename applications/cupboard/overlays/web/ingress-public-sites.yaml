@@ -21,7 +21,8 @@ spec:
       services:
         - name: cupboard-web
           port: 3000
+  # Reference the *.sites cert by secretName (same namespace) so Traefik loads it into the
+  # SNI resolver for this route. A named TLSStore's cert is not used for SNI in Traefik v3,
+  # which is why the store approach served the fallback *.vngenterprise.com cert.
   tls:
-    store:
-      name: cupboard-sites
-      namespace: traefik
+    secretName: cupboard-sites-tls

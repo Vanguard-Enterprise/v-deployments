@@ -38,6 +38,11 @@ spec:
           envFrom:
             - secretRef:
                 name: mimir-global-env
+          env:
+            # Soft GC ceiling below the 3Gi hard limit so the Go runtime collects
+            # under pressure instead of getting OOMKilled at the cgroup cap.
+            - name: GOMEMLIMIT
+              value: "2700MiB"
           volumeMounts:
             - name: config
               mountPath: /etc/mimir

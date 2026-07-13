@@ -11,4 +11,4 @@ resources:
 # argocd-image-updater rewrites this to a pinned digest on each new :main build.
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-web
-  digest: sha256:a7f5907838cb2c4aa86b807366c2507e26a1da347505d5e6bdcd53342fa6aef9
+  digest: sha256:aab87288bb8d902d7ab12ead40b32ff6b91a11c274f436223ea0e92212baa02e

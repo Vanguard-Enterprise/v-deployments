@@ -5,11 +5,16 @@ replicaCount: 3
 extraArgs:
   - --dns01-recursive-nameservers=1.1.1.1:53,9.9.9.9:53
   - --dns01-recursive-nameservers-only
+# Primary resolver is CoreDNS (kube-dns) so the HTTP-01 self-check honors the
+# in-cluster split-horizon rewrites (custom domains whose public IP the cluster
+# cannot NAT-reflect on-subnet; see the coredns-config rewrite). DNS-01 self-checks
+# are unaffected: they use the explicit --dns01-recursive-nameservers flag above,
+# not the pod resolver. Public resolver kept as a fallback.
 podDnsPolicy: None
 podDnsConfig:
   nameservers:
+    - 10.96.0.10
     - 1.1.1.1
-    - 9.9.9.9
 
 prometheus:
   enabled: true

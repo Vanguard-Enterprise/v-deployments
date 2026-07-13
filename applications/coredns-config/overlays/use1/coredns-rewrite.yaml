@@ -23,6 +23,16 @@ data:
         # Resolve it to the in-cluster Traefik service instead; the Host header
         # is unchanged so the existing IngressRoute still routes mgmt/signal/relay.
         rewrite name netbird.vngenterprise.com traefik.traefik.svc.cluster.local
+        # Phase 5 custom-domain HTTP-01 dry-run (store.vng.bet). The k8s nodes and
+        # the external Traefik LB (10.1.50.175) share subnet 10.1.50.0/24 (VLAN 50),
+        # so the gateway cannot NAT-reflect a pod hitting the public WAN IP back to
+        # the LB on the same subnet (asymmetric return -> timeout). That breaks
+        # cert-manager's in-cluster HTTP-01 self-check even though internet:80 -> LB
+        # is forwarded and LE's external validation works. Resolve the domain to the
+        # in-cluster Traefik service so the self-check stays on-subnet; the Host header
+        # is unchanged so the acme-solver Ingress still routes. Remove after the dry
+        # run, or generalize (per-domain automation) for production custom domains.
+        rewrite name store.vng.bet traefik.traefik.svc.cluster.local
         log . {
             class error
         }

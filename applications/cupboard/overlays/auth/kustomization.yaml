@@ -12,4 +12,4 @@ resources:
 # (write-back-target: kustomization). Bootstraps from :main until the first build.
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-auth
-  digest: sha256:9a37f6efd3d6a6907f05012cdf844090cafcff65106930fcbdbe4c31639714fd
+  digest: sha256:874042e7687e6ecfeafdda7b9db322fb2174420dd6289460270e5af768fdcdfe

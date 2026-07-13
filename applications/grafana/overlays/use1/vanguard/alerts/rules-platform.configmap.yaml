@@ -118,3 +118,27 @@ data:
               team: platform
             annotations:
               summary: "Kubelet on {{ $labels.node }} is down"
+
+          # CPU steal on a node VM means the Proxmox host is starving the guest of CPU
+          # (host oversubscription / noisy neighbour). This is the guest-side proof metric
+          # behind the 2026-07-04 etcd incident, so alert before it degrades the control plane.
+          - uid: platform-node-cpu-steal
+            title: NodeCPUSteal
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'avg by (instance) (rate(node_cpu_seconds_total{mode="steal"}[5m])) > 0.05'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Node VM {{ $labels.instance }} is losing >5% CPU to steal (Proxmox host contention)"

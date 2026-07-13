@@ -42,6 +42,11 @@ spec:
           envFrom:
             - secretRef:
                 name: tempo-global-env
+          env:
+            # Soft GC ceiling below the 2Gi hard limit so the Go runtime collects
+            # under pressure instead of getting OOMKilled at the cgroup cap.
+            - name: GOMEMLIMIT
+              value: "1800MiB"
           volumeMounts:
             - name: config
               mountPath: /etc/tempo

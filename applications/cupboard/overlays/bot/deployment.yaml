@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cupboard-bot
+  namespace: cupboard-bot
+spec:
+  # Single replica in v1: Discord gateway events would duplicate across replicas.
+  # The Redis stream consumer group is the later scale-out seam.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cupboard-bot
+  template:
+    metadata:
+      labels:
+        app: cupboard-bot
+        app.kubernetes.io/name: cupboard-bot
+        app.kubernetes.io/part-of: cupboard
+        team: cupboard
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      # Restricted-PSS-compliant pod hardening (image already runs as uid 10001).
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bot
+          image: ghcr.io/vanguard-enterprise/cupboard-bot:main
+          imagePullPolicy: Always
+          # Headless worker: no ports, no HTTP probes. The Discord gateway connection
+          # and the Redis stream consumer are both outbound.
+          envFrom:
+            - configMapRef:
+                name: cupboard-bot-config
+            - secretRef:
+                name: cupboard-bot-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]

@@ -24,3 +24,9 @@ data:
   CERT_ISSUER: "letsencrypt-http01-staging"
   WEB_SERVICE_NAME: "cupboard-web"
   WEB_SERVICE_PORT: "3000"
+  # Phase 6 PR2: platform billing plan price IDs (Stripe test mode).
+  STRIPE_PRICE_TEAM: "price_1TsoVRQ8u2sG5NBcfNULAcK0"
+  STRIPE_PRICE_ENTERPRISE: "price_1TsoVbQ8u2sG5NBctEl6IPhi"
+  STRIPE_PRICE_CUSTOM_DESIGN: "price_1TsoXCQ8u2sG5NBcn8SGPh6i"
+  # Phase 6 PR2: in-cluster auth base URL (plan-change fanout back to auth).
+  AUTH_INTERNAL_URL: "http://cupboard-auth.cupboard-auth.svc.cluster.local:8080"

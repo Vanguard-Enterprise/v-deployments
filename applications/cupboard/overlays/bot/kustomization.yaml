@@ -8,3 +8,7 @@ resources:
 - deployment.yaml
 # argocd-image-updater writes back a pinned digest for
 # ghcr.io/vanguard-enterprise/cupboard-bot here on each new :main build.
+
+images:
+- name: ghcr.io/vanguard-enterprise/cupboard-bot
+  digest: sha256:d52e34c2184bb1a7dc7550ae2d329c3f95301b3922d750c8f008e9ef38270a71

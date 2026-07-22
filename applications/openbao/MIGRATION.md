@@ -169,3 +169,19 @@ kubectl get externalsecret -A
 - Phases 1–3: OpenBao is parallel; just don't cut over. Delete the `openbao` app to remove it.
 - Phase 4: revert the one ESO `server:` line.
 - Phase 5 is the point of no return — only after OpenBao has soaked.
+
+---
+
+## CLI / agent login (post-cutover)
+
+Human login without a localhost callback paste (OIDC direct mode — click Approve in Zitadel):
+```bash
+export BAO_ADDR=https://openbao.vngenterprise.com
+bao login -method=oidc role=global-admin callbackmode=direct skip_browser=true
+```
+Requires the `https://openbao.vngenterprise.com/v1/auth/oidc/oidc/callback` redirect URI on both the
+OIDC roles (`REDIRECTS` in `config/bootstrap.sh`) and the Zitadel `vault-ui` app. `callbackmode=device`
+is not implemented server-side in 2.5.5 — use `direct`.
+
+Unattended/admin: break-glass k8s auth (SA `openbao-break-glass` → `vault-global-admin`, 15m).
+Full details + role list in the `openbao` skill (`.claude/skills/openbao/SKILL.md`).

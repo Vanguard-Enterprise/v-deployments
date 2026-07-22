@@ -60,10 +60,14 @@ bao write auth/oidc/config \
   oidc_client_secret="$OIDC_CLIENT_SECRET" \
   default_role="default"
 
-# Redirect URIs: OpenBao UI + CLI loopback. The UI builds the callback from the
-# 'vault' module prefix (confirmed via server logs), so it is
-# /ui/vault/auth/<mount>/oidc/callback — NOT /ui/auth/... despite rootURL=/ui/.
-REDIRECTS="https://openbao.vngenterprise.com/ui/vault/auth/oidc/oidc/callback,http://localhost:8250/oidc/callback,http://127.0.0.1:8250/oidc/callback"
+# Redirect URIs for the browser (UI) OIDC login. The UI builds the callback from
+# the 'vault' module prefix (confirmed via server logs): /ui/vault/auth/<mount>/oidc/callback
+# (NOT /ui/auth/... despite rootURL=/ui/). localhost:8250 = CLI client-callback mode.
+# The /v1/auth/oidc/oidc/callback entry is vestigial: `bao login callbackmode=direct` is
+# broken in OpenBao 2.5.5 (CLI emits a malformed redirect_uri), so headless/agent login uses
+# the device-flow wrapper (openbao-login.sh, jwt role below) instead. See the openbao skill.
+# NOTE: these must also be registered as redirect URIs on the Zitadel vault-ui app (356671706259064302).
+REDIRECTS="https://openbao.vngenterprise.com/ui/vault/auth/oidc/oidc/callback,https://openbao.vngenterprise.com/v1/auth/oidc/oidc/callback,http://localhost:8250/oidc/callback,http://127.0.0.1:8250/oidc/callback"
 
 # Per-role bound_claims on `sub` (Zitadel user ID) — an ALLOWLIST so a user can
 # only assume a role they're entitled to (Zitadel's native roles claim is a
@@ -103,5 +107,21 @@ oidc_role default         default                ""
 oidc_role global-admin    vault-global-admin     "[\"$SUB_FRANK\"]"
 oidc_role rustlens-admin  vault-rustlens-admin   "[\"$SUB_FRANK\",\"$SUB_SEM\",\"$SUB_KAPPU\"]"
 oidc_role global-readonly vault-global-readonly  "[\"__no-grantees__\"]"
+
+# CLI/agent login roles (role_type=jwt): headless device-flow login via
+# openbao-login.sh. The wrapper drives the Zitadel Device Authorization Grant on
+# the dedicated PUBLIC app 'openbao-cli' (client 382833937707238909, native/PKCE,
+# device grant, no secret) and posts the id_token here. Audience = that client id.
+# (bao's native OIDC login helper is broken in 2.5.5, hence this path — see skill.)
+CLI_CLIENT_ID="382833937707238909"
+jwt_role() { # name  policy  sub
+  python3 - "$1" "$2" "$3" "$CLI_CLIENT_ID" <<'PY' | bao write "auth/oidc/role/$1" -
+import json,sys
+name,policy,sub,aud=sys.argv[1:5]
+print(json.dumps({"role_type":"jwt","user_claim":"sub","bound_audiences":[aud],
+ "bound_claims":{"sub":[sub]},"token_policies":[policy],"token_ttl":28800,"token_type":"service"}))
+PY
+}
+jwt_role cli-global-admin vault-global-admin "$SUB_FRANK"
 
 echo "==> Done. Verify: bao policy list ; bao auth list"

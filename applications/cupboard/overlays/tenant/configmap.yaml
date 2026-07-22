@@ -30,3 +30,7 @@ data:
   STRIPE_PRICE_CUSTOM_DESIGN: "price_1TsoXCQ8u2sG5NBcn8SGPh6i"
   # Phase 6 PR2: in-cluster auth base URL (plan-change fanout back to auth).
   AUTH_INTERNAL_URL: "http://cupboard-auth.cupboard-auth.svc.cluster.local:8080"
+  # Phase 7 PR1: in-cluster identity base URL for the ban-appeal lookups (Phase 6
+  # decision C). Missing since Phase 6 PR3, so the code fell back to its dev default
+  # (127.0.0.1:8083) and appeal validation could never resolve in-cluster.
+  IDENTITY_INTERNAL_URL: "http://cupboard-identity.cupboard-identity.svc.cluster.local:8080"

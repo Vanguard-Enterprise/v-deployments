@@ -56,3 +56,8 @@ path "sys/audit*" {
 path "sys/leases/*" {
   capabilities = ["create", "read", "update", "delete", "list"]
 }
+
+# Raft storage management (list/remove peers, autopilot) for break-glass cluster ops
+path "sys/storage/raft/*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}

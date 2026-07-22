@@ -26,3 +26,6 @@ data:
   # Phase 5 PR3: auth resolves a storefront host to its owning tenant here during the
   # Steam callback (authoritative host validation; INTERNAL_API_TOKEN in the secret).
   TENANT_INTERNAL_URL: "http://cupboard-tenant.cupboard-tenant.svc.cluster.local:8080"
+  # Phase 7 PR2: identity base URL for the privacy-walker fan-out. Set eagerly so the
+  # decision-O failure mode (silent 127.0.0.1 dev fallback) cannot repeat here.
+  IDENTITY_INTERNAL_URL: "http://cupboard-identity.cupboard-identity.svc.cluster.local:8080"

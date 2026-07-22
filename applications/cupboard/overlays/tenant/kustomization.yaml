@@ -11,4 +11,4 @@ resources:
 - rbac-domains.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-tenant
-  digest: sha256:e552a69bc3b976530d2933a6ccc5c5f1c0da44b6916e98f05b1e39244564c812
+  digest: sha256:6cdd86f9af859229ea07542878d7e61497b2659b0b38f18aadbc2c7f13e29383

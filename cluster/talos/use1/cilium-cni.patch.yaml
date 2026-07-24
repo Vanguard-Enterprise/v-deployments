@@ -1,0 +1,35 @@
+# Talos machine-config patch: hand the CNI to Cilium (Phase 7 PR5).
+#
+# NOTE: This is NOT applied by ArgoCD. Talos machine config is node-level and applied
+# out-of-band with `talosctl`. This file is version-controlled only as the source of
+# record. Execution happens ONLY inside an operator-approved maintenance window, per the
+# runbook in `cilium-migration-runbook.md` (read it first: this patch is one step of a
+# multi-step LIVE migration, not a standalone apply).
+#
+# This patch keeps kube-proxy for the migration (fewer simultaneous variables; the
+# MetalLB-L2 announcer keeps working, and Cilium L2 is intentionally left off). Dropping
+# kube-proxy (`cluster.proxy.disabled: true` + Cilium kubeProxyReplacement) is a SEPARATE
+# follow-up change window, not this one.
+#
+# Apply per node, one at a time, only after Cilium is installed and healthy in migration
+# mode and that node has been cordoned/drained (see the runbook):
+#
+#   talosctl -n 10.1.50.31 patch mc -p @cluster/talos/use1/cilium-cni.patch.yaml
+#   talosctl -n 10.1.50.31 reboot
+#   # wait for Ready + etcd quorum re-formed, verify Cilium owns the node, then next node.
+#
+# Rollback (per node, before finalize; flannel is still installed as the safety net):
+#   re-apply a patch that sets /cluster/network/cni/name back to "flannel" (op: replace),
+#   talosctl apply-config, reboot the node. Full revert also runs `helm uninstall cilium`.
+#
+# OPERATOR CONFIRM before executing (see the runbook's decision table):
+#   - all 3 nodes are control-plane/etcd members: never reboot two at once (quorum).
+#   - do the node holding the VIP + the CNPG primary LAST.
+#   - inspect `talosctl -n <ip> get machineconfig -o yaml` first: if `/cluster/network/cni`
+#     is already present, change this op to `replace`. Talos leaves it unset by default
+#     (implicit flannel), in which case adding the object below is correct.
+- op: add
+  path: /cluster/network/cni
+  value:
+    name: none
+

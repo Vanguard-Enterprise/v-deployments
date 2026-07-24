@@ -677,3 +677,63 @@ data:
             annotations:
               summary: "cupboard-tenant returned >3 5xx on /webhooks/stripe in 15m; entitlements may be missing"
               runbook_url: "https://github.com/Vanguard-Enterprise/Cupboard/blob/main/docs/runbooks/billing.md#cupboardstripewebhook5xx"
+
+      # Privacy coordinator + retention purge worker liveness (Phase 7 decision L). Each
+      # worker stamps an OTLP observable gauge with the unix seconds of its last
+      # successful tick; the alert fires when that timestamp falls too far behind now.
+      # The gauge carries zero extra labels (decision L cardinality budget); the OTLP
+      # service.name -> Mimir job label already distinguishes auth/identity/tenant, the
+      # same way gateway_ratelimit_fail_open is per-service. Both metrics are ABSENT
+      # until the first successful tick post-deploy (and the privacy gauge only ever
+      # appears when PRIVACY_TOKEN is set), so noData -> OK is expected and correct.
+      # Runbooks: docs/runbooks/workers.md.
+      - orgId: 1
+        name: cupboard-workers
+        folder: platform
+        interval: 1m
+        rules:
+          - uid: cupboard-retention-worker-stalled
+            title: CupboardRetentionWorkerStalled
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'time() - max by (job) (cupboard_retention_last_success_seconds{job=~"cupboard-(auth|identity|tenant)"}) > 7200'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            for: 10m
+            labels:
+              severity: warning
+              team: cupboard
+              service: cupboard
+            annotations:
+              summary: "{{ $labels.job }} retention purge loop has not completed a tick in >2h (hourly worker stalled)"
+              runbook_url: "https://github.com/Vanguard-Enterprise/Cupboard/blob/main/docs/runbooks/workers.md#cupboardretentionworkerstalled"
+
+          - uid: cupboard-privacy-worker-stalled
+            title: CupboardPrivacyWorkerStalled
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'time() - cupboard_privacy_worker_last_success_seconds{job="cupboard-auth"} > 900'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: warning
+              team: cupboard
+              service: cupboard-auth
+            annotations:
+              summary: "cupboard-auth privacy coordinator has not drained in >15m (60 missed 15s ticks); export/erase jobs stalling"
+              runbook_url: "https://github.com/Vanguard-Enterprise/Cupboard/blob/main/docs/runbooks/workers.md#cupboardprivacyworkerstalled"

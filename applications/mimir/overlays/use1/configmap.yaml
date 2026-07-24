@@ -100,3 +100,25 @@ data:
 
     tenant_federation:
       enabled: true
+
+    # Per-tenant overrides live in a second key of this same ConfigMap (mounted whole at
+    # /etc/mimir), reloaded live without a restart. See overrides.yaml below.
+    runtime_config:
+      file: /etc/mimir/overrides.yaml
+      period: 15s
+
+  # Cardinality backstop for the shared "metrics" tenant (cupboard OTLP + infra scrape).
+  # These sit at the global caps (not lowered), but make them explicit per-tenant and add
+  # max_label_value_length so that if a future id-labeled metric explodes, it trips the
+  # per-metric series cap and that ONE metric is rejected, rather than the tenant's whole
+  # series budget being consumed and starving unrelated infra metrics.
+  overrides.yaml: |
+    overrides:
+      metrics:
+        # Per-metric-name series cap: an offending metric degrades to rejection of itself.
+        max_global_series_per_metric: 100000
+        # Per-tenant total series cap (matches the global default; not lowered).
+        max_global_series_per_user: 1000000
+        # Reject pathologically long label values (an id smuggled into a value); well above
+        # legitimate values like service.instance.id UUIDs, so no valid series is dropped.
+        max_label_value_length: 2048

@@ -24,11 +24,27 @@ rules:
   - apiGroups: ["traefik.io"]
     resources: ["ingressroutes"]
     verbs: ["get", "list", "create", "delete"]
-  # cert-manager does not delete the backing Secret on Certificate delete; the tenant
-  # cleans it up on domain removal.
+  # cert-manager creates and owns the backing cert Secret (Certificate.spec.secretName),
+  # so the tenant needs no "create" here; and it never reads a cert Secret (readiness is
+  # taken from the Certificate's Ready condition, not the Secret), so no "get" either -
+  # dropping "get" removes the Secret read/exfiltration vector entirely (e.g. the
+  # github-pull-secret dockerconfig in this same namespace). cert-manager does NOT delete
+  # the Secret when the Certificate is deleted, so the tenant needs "delete" for cleanup
+  # on domain removal.
+  #
+  # Residual (accepted for this PR): "delete" stays namespace-wide. The per-domain cert
+  # Secret names are dynamic (services/tenant domains_loop::spec_for -> "cb-dom-<uuid[..12]>-tls"),
+  # not known at grant time, and k8s RBAC resourceNames supports neither prefixes nor
+  # wildcards, so delete cannot be name-restricted. A dedicated cert-Secret namespace is
+  # not viable either: the Secret must live in cupboard-web alongside the per-domain
+  # IngressRoute so its tls.secretName resolves locally (cert-manager writes the Secret
+  # into the Certificate's namespace, which is CERT_NAMESPACE=cupboard-web). A compromised
+  # tenant pod could therefore delete (not read) unrelated Secrets in cupboard-web - a
+  # destructive-only DoS, mitigated by removing "get". Follow-up: move per-domain
+  # Certificate + IngressRoute + Secret into their own namespace to scope delete.
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["get", "delete"]
+    verbs: ["delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

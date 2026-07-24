@@ -15,8 +15,36 @@ data:
       }
       output {
         traces  = [otelcol.processor.batch.traces.input]
-        metrics = [otelcol.processor.batch.metrics.input]
+        metrics = [otelcol.processor.drop_high_cardinality.metrics.input]
         logs    = [otelcol.processor.batch.logs.input]
+      }
+    }
+
+    // Cardinality backstop (decision L): drop known-dangerous per-identity attribute keys
+    // from metric datapoints before they reach Mimir, so a high-cardinality label can never
+    // blow up the shared "metrics" tenant. Operates on "datapoint" context only, i.e. metric
+    // labels - it does NOT touch resource attributes, so service.name / service.instance.id
+    // and other legitimate resource identity survive. Belt-and-braces: tenant_id is being
+    // removed from perf metrics by another change, denylisted here as well. error_mode
+    // "ignore" so a missing key is a no-op rather than a pipeline error.
+    otelcol.processor.transform "drop_high_cardinality" {
+      error_mode = "ignore"
+      metric_statements {
+        context = "datapoint"
+        statements = [
+          "delete_key(attributes, \"player_id\")",
+          "delete_key(attributes, \"steam_id\")",
+          "delete_key(attributes, \"discord_id\")",
+          "delete_key(attributes, \"session_id\")",
+          "delete_key(attributes, \"ticket_id\")",
+          "delete_key(attributes, \"api_key_id\")",
+          "delete_key(attributes, \"org_id\")",
+          "delete_key(attributes, \"user_id\")",
+          "delete_key(attributes, \"tenant_id\")",
+        ]
+      }
+      output {
+        metrics = [otelcol.processor.batch.metrics.input]
       }
     }
 

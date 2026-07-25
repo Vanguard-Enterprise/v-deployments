@@ -25,9 +25,9 @@
 # OPERATOR CONFIRM before executing (see the runbook's decision table):
 #   - all 3 nodes are control-plane/etcd members: never reboot two at once (quorum).
 #   - do the node holding the VIP + the CNPG primary LAST.
-#   - inspect `talosctl -n <ip> get machineconfig -o yaml` first: if `/cluster/network/cni`
-#     is already present, change this op to `replace`. Talos leaves it unset by default
-#     (implicit flannel), in which case adding the object below is correct.
+#   - VERIFIED 2026-07-24: `/cluster/network/cni` is unset on use1 (implicit flannel), so
+#     `op: add` below is correct. Re-check with `talosctl -n <ip> get machineconfig -o yaml`
+#     before the window; if the field has since appeared, switch this op to `replace`.
 - op: add
   path: /cluster/network/cni
   value:

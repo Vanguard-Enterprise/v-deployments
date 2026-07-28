@@ -7,6 +7,7 @@ resources:
 - external-secret.yaml
 - deployment.yaml
 - service.yaml
+- networkpolicy.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-collector
   digest: sha256:5b2791dcccf40ba67613577c46d5d59200981d3232e2328c0ab3e8bf59e1030b

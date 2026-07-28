@@ -1,0 +1,83 @@
+# Phase 7 PR6 - default-deny (ingress AND egress) for cupboard-web, plus every
+# allow that namespace needs. Decision I of docs/phase7-plan.md.
+#
+# ROLLOUT - READ BEFORE APPLYING:
+#   1. Apply ONE namespace at a time, never the whole tree at once:
+#        kubectl apply -f applications/cupboard/overlays/web/networkpolicy.yaml
+#   2. Watch for drops through a full traffic cycle (10+ minutes of real use):
+#        hubble observe --verdict DROPPED --namespace cupboard-web --follow
+#   3. Instant rollback, no side effects:
+#        kubectl delete -f applications/cupboard/overlays/web/networkpolicy.yaml
+#   The default-deny and ALL of its allows live in this ONE file so a single
+#   apply/delete flips the namespace atomically. Never split them across files.
+#   See applications/cupboard/NETWORKPOLICY-ROLLOUT.md for the ordered plan.
+#
+# WHAT THIS ALLOWS
+#   Ingress: kubelet probes on :3000 (the Next.js server port, NOT :8080 like the
+#     Rust services); traefik for the dashboard + storefront + custom-domain routes;
+#     traefik AND cert-manager to :8089 on the ACME HTTP-01 solver pods, which
+#     cert-manager creates IN THIS NAMESPACE (tenant's CERT_NAMESPACE=cupboard-web).
+#     Missing that last one silently breaks custom-domain certificate issuance.
+#   Egress:  the gateway only (GATEWAY_URL, the SSR BFF hop) plus cluster DNS.
+#   No OTLP: cupboard-web has no OTEL_EXPORTER_OTLP_ENDPOINT (it is the one cupboard
+#   deployable with no telemetry export). No internet egress: next.config.mjs sets no
+#   image remotePatterns, so the Node server never fetches remote origins.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cupboard-web-netpol
+  namespace: cupboard-web
+spec:
+  description: "Default-deny both directions for cupboard-web with the phase7 decision-I allow set."
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    # Kubelet liveness/readiness probes on the Next.js port.
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    # Edge: cupboard-app-staging (dashboard), *.sites (storefronts), and every
+    # per-tenant custom-domain IngressRoute the tenant service creates here.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    # Custom-domain TLS: cert-manager creates its HTTP-01 solver Pod/Service/Ingress
+    # in the Certificate's namespace, which is this one. Traefik routes the ACME
+    # challenge to the solver on :8089, and cert-manager itself self-checks it.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+        - matchLabels:
+            io.kubernetes.pod.namespace: cert-manager
+      toPorts:
+        - ports:
+            - port: "8089"
+              protocol: TCP
+  egress:
+    # Cluster DNS. Plain L4 (no L7 dns rules) because this namespace uses no toFQDNs.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    # The SSR BFF hop: every server-side data fetch goes through the gateway.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-gateway
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP

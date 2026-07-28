@@ -6,6 +6,7 @@ resources:
 - github-pull-secret.yaml
 - external-secret.yaml
 - deployment.yaml
+- networkpolicy.yaml
 # argocd-image-updater writes back a pinned digest for
 # ghcr.io/vanguard-enterprise/cupboard-bot here on each new :main build.
 

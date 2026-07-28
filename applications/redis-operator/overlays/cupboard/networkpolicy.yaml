@@ -1,0 +1,102 @@
+# Phase 7 PR6 - default-deny (ingress AND egress) for cupboard-redis, plus every
+# allow that namespace needs. Decision I of docs/phase7-plan.md.
+#
+# WHY THIS FILE LIVES HERE AND NOT UNDER applications/cupboard/overlays/: the
+# cupboard-redis namespace is owned by the cupboard-redis ArgoCD Application, which
+# syncs this overlay. The policy must land with the resources it protects.
+#
+# ROLLOUT - READ BEFORE APPLYING:
+#   1. Apply ONE namespace at a time, never the whole tree at once:
+#        kubectl apply -f applications/redis-operator/overlays/cupboard/networkpolicy.yaml
+#   2. Watch for drops, and confirm the operator still reports the replication
+#      healthy afterwards:
+#        hubble observe --verdict DROPPED --namespace cupboard-redis --follow
+#        kubectl -n cupboard-redis get redisreplication cupboard-redis
+#   3. Instant rollback, no side effects:
+#        kubectl delete -f applications/redis-operator/overlays/cupboard/networkpolicy.yaml
+#   The default-deny and ALL of its allows live in this ONE file so a single
+#   apply/delete flips the namespace atomically. Never split them across files.
+#   See applications/cupboard/NETWORKPOLICY-ROLLOUT.md for the ordered plan.
+#
+# WHAT THIS ALLOWS
+#   Ingress: the node (kubelet probes and exec-based health checks); the
+#     redis-operator (it dials :6379 to run REPLICAOF and to label master/replica);
+#     every pod in this namespace (replication when clusterSize grows past 1); and
+#     the six cupboard services that hold a REDIS_URL.
+#   Egress:  cluster DNS and intra-namespace replication. Redis talks to nothing
+#     else: no apiserver, no internet.
+#   DENIED BY DESIGN: cupboard-auth, cupboard-fleet and cupboard-web have no
+#     REDIS_URL and get no access (decision I).
+#
+# WHY THE OPERATOR RULE IS PORT-UNCONSTRAINED: the opstree operator's reconcile path
+# uses :6379 today, but it is trusted infrastructure and pinning its ports here buys
+# no isolation while adding a silent-breakage path on every operator upgrade.
+#
+# NOT INCLUDED: an alloy-metrics scrape of a redis exporter. redis-replication.yaml
+# configures no redisExporter, so there is no :9121 endpoint to scrape. If one is
+# ever enabled, add an alloy-metrics ingress rule for :9121 here in the same commit.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cupboard-redis-netpol
+  namespace: cupboard-redis
+spec:
+  description: "Default-deny both directions for cupboard-redis with the phase7 decision-I allow set."
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    # Kubelet probes and node-sourced control traffic.
+    - fromEntities:
+        - host
+        - remote-node
+    # The opstree redis-operator reconciles the replication topology.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: redis-operator
+    # Intra-namespace replication (clusterSize is 1 today; this is what lets it grow).
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+    # The six cupboard services with a REDIS_URL. auth, fleet and web are absent by
+    # design: they hold no Redis client.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-gateway
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-collector
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-identity
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-metrics
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-tenant
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-bot
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+  egress:
+    # Cluster DNS. Plain L4 (no L7 dns rules) because this namespace uses no toFQDNs.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    # Intra-namespace replication.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP

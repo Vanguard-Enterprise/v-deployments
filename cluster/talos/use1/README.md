@@ -15,6 +15,15 @@ git. Only targeted, reviewed patches are recorded here so changes are not lost.
   flannel to Cilium so NetworkPolicy becomes enforceable. DRAFT, execution-gated: a live
   datapath change run only inside an operator-approved maintenance window. Read the runbook
   first; the patch is one step of a multi-step per-node live migration, not a standalone apply.
+- `cilium-values-final.yaml`: the helm values that reproduce the live Cilium release.
+  Includes `cni.exclusive=false`, which is a hard prerequisite for linkerd-cni below.
+- `linkerd-cni-values.yaml` + `linkerd-control-plane-values.yaml`: Phase 7 PR7, the
+  Linkerd service mesh (installed with helm, out-of-band, like Cilium). Both files carry
+  the install command in their header. The identity certs are NOT in git; see below.
+- `linkerd-cert-rotation.md`: where the mesh's trust anchor and issuer live (OpenBao,
+  `kv/linkerd/use1/identity`) and how to rotate them. **The issuer expires 2027-07-28 and
+  nothing currently alerts on it**; that document explains why and what closing the gap
+  would take.
 
 ## Break-glass
 

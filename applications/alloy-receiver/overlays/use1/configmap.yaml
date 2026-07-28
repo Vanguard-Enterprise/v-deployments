@@ -15,7 +15,7 @@ data:
       }
       output {
         traces  = [otelcol.processor.batch.traces.input]
-        metrics = [otelcol.processor.drop_high_cardinality.metrics.input]
+        metrics = [otelcol.processor.transform.drop_high_cardinality.input]
         logs    = [otelcol.processor.batch.logs.input]
       }
     }

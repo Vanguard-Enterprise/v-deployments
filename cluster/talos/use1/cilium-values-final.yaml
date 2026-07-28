@@ -37,6 +37,17 @@ ipam:
     clusterPoolIPv4PodCIDRList:
       - 10.245.0.0/16
 
+# Hubble: the agent-embedded part is on by default; the RELAY is what makes
+# cluster-wide `hubble observe` work from a workstation, which is how the PR6
+# NetworkPolicy allow-list was built and how policy drops are diagnosed. Recorded
+# here because it was first enabled with a --set flag, and a later
+# `helm upgrade -f this-file` without it would silently turn observability back off.
+# Access: kubectl -n kube-system port-forward svc/hubble-relay 4245:80
+#         hubble observe --server localhost:4245 --verdict DROPPED --namespace <ns>
+hubble:
+  relay:
+    enabled: true
+
 # Default enforcement: no policy = allow all, until PR6 stages default-deny via
 # Cilium policy audit mode per namespace.
 policyEnforcementMode: default

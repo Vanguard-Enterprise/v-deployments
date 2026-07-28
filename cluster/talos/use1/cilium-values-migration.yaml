@@ -1,0 +1,74 @@
+# Cilium MIGRATION-mode values for use1 (Phase 7 PR5, Window B step 1).
+#
+# Installs Cilium ALONGSIDE flannel on a separate pod CIDR so nodes can be flipped one at
+# a time (Cilium "Migrating a cluster to Cilium" procedure). Cilium does NOT take over any
+# node with these values: cni.customConf keeps it from writing the CNI conf until a
+# per-node CiliumNodeConfig says so.
+#
+# Values verified against the live cluster 2026-07-28: flannel is on 10.244.0.0/16 with
+# VXLAN port 4789, so 10.245.0.0/16 and tunnel port 8472 are both free. KubePrism is
+# enabled on localhost:7445. kube-proxy stays (kubeProxyReplacement false) for this window.
+#
+# Swap to cilium-values-final.yaml at finalize (see the runbook).
+
+# Do not let the operator restart pods still managed by flannel during the migration.
+operator:
+  unmanagedPodWatcher:
+    restart: false
+
+# Separate overlay from flannel: distinct protocol port so the two VXLANs coexist.
+routingMode: tunnel
+tunnelProtocol: vxlan
+tunnelPort: 8472
+
+# Do not write the CNI conf yet; the per-node CiliumNodeConfig turns this on per node.
+cni:
+  customConf: true
+  uninstall: false
+
+# Separate IP range from flannel (10.244.0.0/16) so host routing bridges the two overlays.
+ipam:
+  mode: cluster-pool
+  operator:
+    clusterPoolIPv4PodCIDRList:
+      - 10.245.0.0/16
+
+# No policy enforcement during migration; NetworkPolicy work is PR6, after finalize.
+policyEnforcementMode: never
+
+# Required while flannel is still present.
+bpf:
+  hostLegacyRouting: true
+
+# Talos: reach the API via KubePrism (per-node local proxy), never the VIP, so draining
+# the VIP holder cannot blind Cilium on the other nodes.
+k8sServiceHost: localhost
+k8sServicePort: 7445
+
+# Keeping kube-proxy this window (decision table): fewer simultaneous variables, and
+# MetalLB L2 keeps working.
+kubeProxyReplacement: false
+
+# Talos-mandatory: Talos runs a locked-down profile and owns the cgroup layout.
+securityContext:
+  capabilities:
+    ciliumAgent:
+      - CHOWN
+      - KILL
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    cleanCiliumState:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+cgroup:
+  autoMount:
+    enabled: false
+  hostRoot: /sys/fs/cgroup

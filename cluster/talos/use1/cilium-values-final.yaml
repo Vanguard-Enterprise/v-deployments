@@ -1,0 +1,64 @@
+# Cilium FINAL (post-migration) values for use1 (Phase 7 PR5, Window B step 5).
+#
+# Applied after all 6 nodes are on Cilium and flannel is removed. Differences from
+# cilium-values-migration.yaml: Cilium now owns the CNI conf everywhere
+# (cni.customConf false), the operator may restart unmanaged pods, policy enforcement
+# returns to default (still no policies until PR6), and the flannel-coexistence
+# workaround (bpf.hostLegacyRouting) is off.
+#
+# Kept from migration: the cluster-pool CIDR (10.245.0.0/16 is now THE pod network),
+# tunnel port 8472, KubePrism endpoint, kube-proxy retained, and the Talos-mandatory
+# capability/cgroup settings.
+
+operator:
+  unmanagedPodWatcher:
+    restart: true
+
+routingMode: tunnel
+tunnelProtocol: vxlan
+tunnelPort: 8472
+
+cni:
+  customConf: false
+  uninstall: false
+
+ipam:
+  mode: cluster-pool
+  operator:
+    clusterPoolIPv4PodCIDRList:
+      - 10.245.0.0/16
+
+# Default enforcement: no policy = allow all, until PR6 stages default-deny via
+# Cilium policy audit mode per namespace.
+policyEnforcementMode: default
+
+bpf:
+  hostLegacyRouting: false
+
+k8sServiceHost: localhost
+k8sServicePort: 7445
+
+kubeProxyReplacement: false
+
+securityContext:
+  capabilities:
+    ciliumAgent:
+      - CHOWN
+      - KILL
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    cleanCiliumState:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+cgroup:
+  autoMount:
+    enabled: false
+  hostRoot: /sys/fs/cgroup

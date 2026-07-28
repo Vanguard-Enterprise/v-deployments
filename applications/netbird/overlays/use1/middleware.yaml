@@ -16,10 +16,16 @@ spec:
       # In-cluster + LAN sources. REQUIRED: the CoreDNS rewrite resolves
       # netbird.vngenterprise.com -> traefik.traefik.svc for in-cluster pods
       # (keeps the netbird-client routing peers off CF's 100s-capped path), so
-      # those peers reach this SAME IngressRoute from a pod IP (10.244.x), not a
-      # Cloudflare IP. Omitting these 403s the in-cluster routing peers, which
-      # drops the 10.1.50.0/24 mesh route. The lockdown still forces all EXTERNAL
+      # those peers reach this SAME IngressRoute from a pod IP, not a Cloudflare
+      # IP. Omitting these 403s the in-cluster routing peers, which drops the
+      # 10.1.50.0/24 mesh route. The lockdown still forces all EXTERNAL
       # (internet) traffic through Cloudflare.
+      # Phase 7 PR5: the pod CIDR moved 10.244.0.0/16 (flannel) ->
+      # 10.245.0.0/16 (Cilium cluster-pool) during the CNI migration, which
+      # 403'd every in-cluster netbird peer until this range was updated. The
+      # flannel range is kept listed only so a rollback to flannel does not
+      # reintroduce the same outage; drop it once flannel is definitively gone.
+      - 10.245.0.0/16
       - 10.244.0.0/16
       - 10.1.50.0/24
       # Cloudflare published edge ranges (https://www.cloudflare.com/ips-v4 + ips-v6)

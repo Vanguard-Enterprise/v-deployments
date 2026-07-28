@@ -1,0 +1,39 @@
+# linkerd2-cni values for use1 (Phase 7 PR7).
+#
+# Installed with:
+#   helm upgrade --install linkerd2-cni linkerd-edge/linkerd2-cni \
+#     --version 2026.7.2 -n linkerd-cni -f linkerd-cni-values.yaml
+#
+# Why the CNI plugin rather than the default init container: the cupboard app
+# namespaces enforce restricted PodSecurity, which rejects the NET_ADMIN /
+# NET_RAW capabilities that linkerd-init needs. The CNI plugin does the iptables
+# work out-of-band so meshed pods need no elevated capabilities at all.
+#
+# Talos notes:
+#  - destCNIBinDir/destCNINetDir match Talos's real paths (/opt/cni/bin,
+#    /etc/cni/net.d), which is also where cilium writes. Verified on 10.1.50.41.
+#  - The CNI plugin shells out to `nsenter`, absent from the Talos base image.
+#    We get it from the util-linux-tools extension already baked into schematic
+#    88d1f7a5... (see cilium-migration-runbook.md); /usr/local/bin is on Talos's
+#    host PATH, so no node rebuild is needed.
+#
+# Cilium interop: linkerd-cni appends itself to the existing 05-cilium.conflist
+# in place. Cilium only tolerates that with cni.exclusive=false (set in
+# cilium-values-final.yaml); with the default true, cilium-agent fsnotify-watches
+# /etc/cni/net.d and rewrites the conflist, producing a write-fight where pods
+# scheduled in the losing window get no proxy redirect.
+
+# Cilium still regenerates the conflist without linkerd's entry on every
+# cilium-agent restart, upgrade, or node reboot, until linkerd-cni re-injects it.
+# The repair controller deletes pods stranded by that race so they restart and
+# pick up a correct network config. Off by default; mandatory for us.
+repairController:
+  enabled: true
+  logLevel: info
+
+# Keep the CNI DaemonSet off the cluster's CPU books: worker-01 already sits at
+# ~79% of allocatable CPU requests.
+resources:
+  cpu:
+    request: ""
+    limit: ""

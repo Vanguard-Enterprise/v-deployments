@@ -1,0 +1,45 @@
+# linkerd-control-plane values for use1 (Phase 7 PR7).
+#
+# Installed with:
+#   helm upgrade --install linkerd-crds linkerd-edge/linkerd-crds \
+#     --version 2026.7.2 -n linkerd --set cniEnabled=true
+#   helm upgrade --install linkerd-control-plane linkerd-edge/linkerd-control-plane \
+#     --version 2026.7.2 -n linkerd -f linkerd-control-plane-values.yaml \
+#     --set-file identityTrustAnchorsPEM=ca.crt \
+#     --set-file identity.issuer.tls.crtPEM=issuer.crt \
+#     --set-file identity.issuer.tls.keyPEM=issuer.key
+#
+# Cert material is NOT in this file. It lives in OpenBao at
+# kv/linkerd/use1/identity (base64 fields). The trust anchor's private key is
+# deliberately never given to the cluster, so an in-cluster compromise cannot
+# mint new issuer certs. Cost of that choice: the issuer must be rotated by hand
+# before it expires. See linkerd-cert-rotation.md.
+#
+#  - trust anchor: CN=root.linkerd.cluster.local, ECDSA P-256, expires 2036-07-25
+#  - issuer:       CN=identity.linkerd.cluster.local, ECDSA P-256, expires 2027-07-28
+#
+# We deliberately do NOT use values-ha.yaml. It sets a 100m CPU request on every
+# meshed proxy; at ~18 meshed pods that is ~1.8 vCPU of new requests, and
+# worker-01 is already at ~79% of allocatable CPU requests. The default proxy
+# sets no CPU/memory requests at all, which is what we want here.
+
+# Use the linkerd2-cni plugin instead of the linkerd-init container. Required:
+# the 9 cupboard app namespaces enforce restricted PodSecurity, which rejects
+# the NET_ADMIN/NET_RAW capabilities linkerd-init needs. Must match the value
+# passed to the linkerd-crds chart.
+cniEnabled: true
+
+proxy:
+  # MANDATORY. The chart ships no default for proxy.capabilities, so the
+  # rendered proxy container has no capabilities.drop and restricted
+  # PodSecurity rejects the pod outright. Upstream linkerd2#10232 is wontfix,
+  # so this has to be supplied by every restricted-PSS operator.
+  capabilities:
+    drop:
+      - ALL
+
+  # Global default stays permissive; namespaces opt in to audit and then to
+  # enforcement one at a time via the config.linkerd.io/default-inbound-policy
+  # annotation. Flipping this global to "deny" would break every namespace at
+  # once, which is the opposite of how PR6 was rolled out.
+  defaultInboundPolicy: all-unauthenticated

@@ -60,6 +60,17 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
+    # PR7: kubelet probes for the linkerd-proxy sidecar itself, on its admin
+    # port. Without this the proxy never reports ready, so the POD never becomes
+    # ready and the rollout hangs. Easy to miss: the proxy has its own
+    # liveness/readiness/startup probes on :4191, separate from the app's port.
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "4191"
+              protocol: TCP
   egress:
     # Cluster DNS. Required first: every ClusterIP name below is resolved here.
     # Plain L4 (no L7 dns rules) because this namespace uses no toFQDNs.
@@ -112,4 +123,23 @@ spec:
       toPorts:
         - ports:
             - port: "4317"
+              protocol: TCP
+    # PR7: the linkerd-proxy sidecar's own calls to the control plane. Every
+    # meshed namespace needs this; under PR6's default-deny egress the proxy
+    # otherwise cannot fetch an identity and the pod never goes ready.
+    #   :8080 linkerd-identity    (CSR -> workload cert)
+    #   :8086 linkerd-destination (service discovery)
+    #   :8090 linkerd-policy      (inbound authz policy)
+    # These are HEADLESS services, so the proxy dials control-plane pod IPs
+    # directly. That is why this is a toEndpoints rule and not toServices.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: linkerd
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+            - port: "8086"
+              protocol: TCP
+            - port: "8090"
               protocol: TCP

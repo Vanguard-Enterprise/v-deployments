@@ -2,6 +2,16 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: cupboard-metrics
+  annotations:
+    # Phase 7 PR7: mesh this namespace. Injection happens at pod admission, so
+    # adding this annotation does nothing until the workload is restarted.
+    linkerd.io/inject: enabled
+    # Inbound policy is AUDIT: unauthorized requests are logged and still
+    # served. Promote to enforcement only once every client of this namespace
+    # is itself meshed, otherwise an unmeshed caller has no identity to present
+    # and gets rejected. Deliberately per-namespace rather than a global chart
+    # value, so namespaces can be enforced one at a time.
+    config.linkerd.io/default-inbound-policy: audit
   labels:
     # Enforce the restricted Pod Security Standard in this namespace.
     pod-security.kubernetes.io/enforce: restricted

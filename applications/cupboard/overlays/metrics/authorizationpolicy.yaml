@@ -1,0 +1,63 @@
+# Phase 7 PR7 - enforced mTLS for cupboard-metrics.
+#
+# PORT-level policy on purpose, and there is deliberately NO HTTPRoute here.
+# The moment any HTTPRoute selects a Server, Linkerd stops auto-authorizing
+# kubelet probes on that Server and you must hand-author a NetworkAuthentication
+# for /healthz and /readyz yourself. Keeping policy at the port keeps probes
+# working for free. Verified live: with this policy applied the pod stayed 2/2
+# Ready throughout.
+#
+# WHAT THIS ENFORCES
+#   Only the workload identities listed below may talk to :8080. Anything else
+#   meshed gets a 403 from the inbound proxy; anything unmeshed cannot complete
+#   the mTLS handshake at all. This is identity-based, not IP-based, so it holds
+#   even though PR6's L4 rules had to be widened to :4143 for meshed pairs.
+#
+# CAVEAT worth knowing: Linkerd auto-authorizes probe paths (/healthz, /ready,
+# /live) on a Server from any network, regardless of identity. Those endpoints
+# therefore stay reachable in-cluster under this policy. That was measured, not
+# assumed: a request to /healthz from an unauthorized identity returned 200
+# while the same client got 403 on /perf/summary.
+#
+# Enforcement is active even though the namespace still carries
+# default-inbound-policy=audit: audit governs ports with NO Server. A Server
+# plus AuthorizationPolicy takes precedence and denies for real.
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: cupboard-metrics-http
+  namespace: cupboard-metrics
+spec:
+  podSelector:
+    matchLabels:
+      app: cupboard-metrics
+  # Named port, matching the container's port name.
+  port: http
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: MeshTLSAuthentication
+metadata:
+  name: cupboard-metrics-clients
+  namespace: cupboard-metrics
+spec:
+  # Exactly the callers PR6 already allows at L3/L4, now pinned to workload
+  # identity rather than to a namespace's pod IPs.
+  identityRefs:
+    - kind: ServiceAccount
+      name: default
+      namespace: cupboard-gateway
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: cupboard-metrics-http
+  namespace: cupboard-metrics
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: cupboard-metrics-http
+  requiredAuthenticationRefs:
+    - group: policy.linkerd.io
+      kind: MeshTLSAuthentication
+      name: cupboard-metrics-clients

@@ -71,6 +71,20 @@ spec:
         - ports:
             - port: "4191"
               protocol: TCP
+    # PR7: meshed-to-meshed traffic does NOT arrive on the app's port. The
+    # outbound proxy dials the peer's inbound proxy on 4143 and carries the
+    # original port in Linkerd's transport header, so a rule scoped to :8080
+    # never matches and the SYN is dropped. Same peers as the app-port rules
+    # above, so this widens no namespace pair, only the port they meet on.
+    # Per-port and per-identity authorization is enforced by Linkerd's
+    # Server/AuthorizationPolicy on top of this, not by L4 any more.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-web
+      toPorts:
+        - ports:
+            - port: "4143"
+              protocol: TCP
   egress:
     # Cluster DNS. Required first: every ClusterIP name below is resolved here.
     # Plain L4 (no L7 dns rules) because this namespace uses no toFQDNs.
@@ -142,4 +156,28 @@ spec:
             - port: "8086"
               protocol: TCP
             - port: "8090"
+              protocol: TCP
+    # PR7: meshed-to-meshed traffic does NOT arrive on the app's port. The
+    # outbound proxy dials the peer's inbound proxy on 4143 and carries the
+    # original port in Linkerd's transport header, so a rule scoped to :8080
+    # never matches and the SYN is dropped. Same peers as the app-port rules
+    # above, so this widens no namespace pair, only the port they meet on.
+    # Per-port and per-identity authorization is enforced by Linkerd's
+    # Server/AuthorizationPolicy on top of this, not by L4 any more.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-auth
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-collector
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-fleet
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-identity
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-metrics
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-tenant
+      toPorts:
+        - ports:
+            - port: "4143"
               protocol: TCP

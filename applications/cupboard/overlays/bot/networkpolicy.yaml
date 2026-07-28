@@ -1,0 +1,102 @@
+# Phase 7 PR6 - default-deny (ingress AND egress) for cupboard-bot, plus every
+# allow that namespace needs. Decision I of docs/phase7-plan.md.
+#
+# ROLLOUT - READ BEFORE APPLYING:
+#   1. Apply ONE namespace at a time, never the whole tree at once:
+#        kubectl apply -f applications/cupboard/overlays/bot/networkpolicy.yaml
+#   2. Watch for drops through a full traffic cycle (10+ minutes; for the bot that
+#      means the Discord gateway websocket must stay connected and one /ticket
+#      command must round-trip):
+#        hubble observe --verdict DROPPED --namespace cupboard-bot --follow
+#   3. Instant rollback, no side effects:
+#        kubectl delete -f applications/cupboard/overlays/bot/networkpolicy.yaml
+#   The default-deny and ALL of its allows live in this ONE file so a single
+#   apply/delete flips the namespace atomically. Never split them across files.
+#   See applications/cupboard/NETWORKPOLICY-ROLLOUT.md for the ordered plan.
+#
+# WHAT THIS ALLOWS
+#   Ingress: NOTHING. The bot is a headless worker: no Service, no containerPort, no
+#     HTTP probes (see deployment.yaml). Both the Discord gateway connection and the
+#     Redis stream consumer are outbound, so ingress is default-denied with zero
+#     allows. That is why `enableDefaultDeny.ingress: true` is load-bearing here
+#     rather than decorative: with no ingress rules, nothing else would trigger it.
+#   Egress:  cupboard-tenant on :8080 and NOTHING ELSE in the cluster app tier. The
+#     bot holds BOT_API_TOKEN, and decision I mirrors that blast radius at the
+#     network layer: tenant is its only permitted cupboard destination. Plus Redis
+#     (ticket stream consumer), OTLP :4317 and Pyroscope :4040 on alloy-receiver,
+#     cluster DNS, and Discord on :443.
+#
+# FQDN FOOTGUN: toFQDNs only works if Cilium can SEE the DNS answers, so the DNS
+# rule below carries an L7 `rules: dns: matchPattern: "*"` block that sends this
+# namespace's lookups through the Cilium DNS proxy. Deleting that block does not
+# break DNS, it silently breaks every toFQDNs rule underneath it.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cupboard-bot-netpol
+  namespace: cupboard-bot
+spec:
+  description: "Default-deny both directions for cupboard-bot; no ingress at all, egress limited to tenant, redis, telemetry and Discord."
+  endpointSelector: {}
+  # ingress: true with no ingress rules below = deny all inbound. Intentional.
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  egress:
+    # Cluster DNS, WITH the L7 dns visibility rule that makes the toFQDNs rule
+    # below function. Do not downgrade this to a plain L4 allow.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    # bot -> tenant (TENANT_INTERNAL_URL, BOT_API_TOKEN). The ONLY cupboard app
+    # namespace the bot may reach. Do not add others without revisiting decision I.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-tenant
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Redis streams bus (ticket stream consumer group).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+    # OTLP export on :4317 and the Pyroscope profile endpoint on :4040
+    # (PYROSCOPE_SERVER_ADDRESS), both served by alloy-receiver.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: alloy-receiver
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+            - port: "4040"
+              protocol: TCP
+    # Discord: the REST API on discord.com and the persistent gateway websocket on
+    # gateway.discord.gg (discord.js resolves the gateway host from /gateway/bot at
+    # startup and reconnects to it, so both names are required).
+    - toFQDNs:
+        - matchName: "discord.com"
+        # Discord hands the bot a REGIONAL gateway host, not the bare
+        # gateway.discord.gg: the live cluster resolved
+        # gateway-us-east1-d.discord.gg here, and the region can change without
+        # notice. An exact matchName silently breaks the websocket, so match the
+        # whole zone. Verified via `cilium-dbg fqdn cache list` on the bot's node.
+        - matchPattern: "*.discord.gg"
+        - matchName: "discord.gg"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

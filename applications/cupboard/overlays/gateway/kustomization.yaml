@@ -8,6 +8,7 @@ resources:
 - deployment.yaml
 - service.yaml
 - ingress.yaml
+- networkpolicy.yaml
 # argocd-image-updater rewrites this entry to a pinned digest on each new :main
 # build (write-back-target: kustomization). Bootstraps from the :main tag until
 # the first image is built and detected.

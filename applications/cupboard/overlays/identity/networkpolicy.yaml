@@ -1,0 +1,114 @@
+# Phase 7 PR6 - default-deny (ingress AND egress) for cupboard-identity, plus every
+# allow that namespace needs. Decision I of docs/phase7-plan.md.
+#
+# ROLLOUT - READ BEFORE APPLYING:
+#   1. Apply ONE namespace at a time, never the whole tree at once:
+#        kubectl apply -f applications/cupboard/overlays/identity/networkpolicy.yaml
+#   2. Watch for drops through a full traffic cycle (10+ minutes of real use; for
+#      identity that includes one BattleMetrics import tick if one is scheduled):
+#        hubble observe --verdict DROPPED --namespace cupboard-identity --follow
+#   3. Instant rollback, no side effects:
+#        kubectl delete -f applications/cupboard/overlays/identity/networkpolicy.yaml
+#   The default-deny and ALL of its allows live in this ONE file so a single
+#   apply/delete flips the namespace atomically. Never split them across files.
+#   See applications/cupboard/NETWORKPOLICY-ROLLOUT.md for the ordered plan.
+#
+# WHAT THIS ALLOWS
+#   Ingress: kubelet probes on :8080; the gateway proxy (/players, /bans, /evasion);
+#     the collector (ingest -> ban checks); tenant (ban-appeal lookups); auth (the
+#     PRIVACY_TOKEN export/erase walkers, added in Phase 7 PR2).
+#   Egress:  fleet on :8080 (FLEET_INTERNAL_URL, the BM import's servers phase),
+#     Postgres, Redis, OTLP, cluster DNS, and BattleMetrics on :443.
+#
+# FQDN FOOTGUN: toFQDNs only works if Cilium can SEE the DNS answers, so the DNS
+# rule below carries an L7 `rules: dns: matchPattern: "*"` block that sends this
+# namespace's lookups through the Cilium DNS proxy. Deleting that block does not
+# break DNS, it silently breaks every toFQDNs rule underneath it.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cupboard-identity-netpol
+  namespace: cupboard-identity
+spec:
+  description: "Default-deny both directions for cupboard-identity with the phase7 decision-I allow set."
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    # Kubelet liveness/readiness probes.
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # gateway (proxy fan-out), collector (IDENTITY_INTERNAL_URL ban enforcement),
+    # tenant (ban-appeal lookups), auth (privacy walkers over PRIVACY_TOKEN).
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-gateway
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-collector
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-tenant
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-auth
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    # Cluster DNS, WITH the L7 dns visibility rule that makes the toFQDNs rule
+    # below function. Do not downgrade this to a plain L4 allow.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    # identity -> fleet (FLEET_INTERNAL_URL, BM import servers phase).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-fleet
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Postgres through the cupboard-pooled-rw pgbouncer.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Redis streams bus (ingest consumer group, retention XTRIM).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+    # OTLP export.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: alloy-receiver
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+    # BattleMetrics API (crates/bmapi DEFAULT_BASE, overridable via BM_API_BASE).
+    - toFQDNs:
+        - matchName: "api.battlemetrics.com"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

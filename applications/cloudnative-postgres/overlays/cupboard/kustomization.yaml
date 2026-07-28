@@ -6,3 +6,4 @@ resources:
   - poolers.yaml
   - external-secrets.yaml
   - podmonitor.yaml
+  - networkpolicy.yaml

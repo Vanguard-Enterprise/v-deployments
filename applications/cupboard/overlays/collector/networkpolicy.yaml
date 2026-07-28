@@ -1,0 +1,108 @@
+# Phase 7 PR6 - default-deny (ingress AND egress) for cupboard-collector, plus every
+# allow that namespace needs. Decision I of docs/phase7-plan.md.
+#
+# ROLLOUT - READ BEFORE APPLYING:
+#   1. Apply ONE namespace at a time, never the whole tree at once:
+#        kubectl apply -f applications/cupboard/overlays/collector/networkpolicy.yaml
+#   2. Watch for drops through a full traffic cycle (10+ minutes of real use; for
+#      the collector that means at least one poll and one reconcile tick,
+#      POLL_INTERVAL_SECS=30 / RECONCILE_INTERVAL_SECS=15):
+#        hubble observe --verdict DROPPED --namespace cupboard-collector --follow
+#   3. Instant rollback, no side effects:
+#        kubectl delete -f applications/cupboard/overlays/collector/networkpolicy.yaml
+#   The default-deny and ALL of its allows live in this ONE file so a single
+#   apply/delete flips the namespace atomically. Never split them across files.
+#   See applications/cupboard/NETWORKPOLICY-ROLLOUT.md for the ordered plan.
+#
+# WHAT THIS ALLOWS
+#   Ingress: kubelet probes on :8080; the gateway proxy (/ingest/*).
+#   Egress:  fleet + identity on :8080, Redis, OTLP, cluster DNS, and the broad
+#     internet carve-out described below.
+#   NO Postgres: the collector has no DATABASE_URL and decision I denies it Postgres
+#   outright. If Hubble ever shows collector -> cupboard-db, that is a finding, not a
+#   missing rule.
+#
+# THE ONE DELIBERATELY BROAD RULE
+#   The collector dials tenant-supplied game servers: RCON over a websocket on an
+#   arbitrary TCP port (commonly 28016) and A2S queries over an arbitrary UDP port.
+#   The destinations are customer IPs, unknowable at authoring time and unresolvable
+#   to any fixed FQDN set, so this is `toEntities: world` with no port constraint.
+#   That is intentional and is the only such rule in the cupboard fleet.
+#   `world` still excludes every in-cluster identity (pods, nodes, the apiserver), so
+#   a compromised collector cannot use this rule to reach a neighbouring namespace.
+#   The rest of the containment is at the app layer: crates/gameconn/src/guard.rs
+#   resolves every tenant-supplied host and refuses RFC1918, loopback, link-local,
+#   CGNAT (100.64/10), unspecified, broadcast and documentation ranges before a single
+#   packet is sent (the SSRF guard on both the RCON and A2S dial paths).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cupboard-collector-netpol
+  namespace: cupboard-collector
+spec:
+  description: "Default-deny both directions for cupboard-collector, with the deliberate world-egress carve-out for RCON/A2S."
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    # Kubelet liveness/readiness probes.
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # The gateway proxies /ingest/* here (token-authed at the collector).
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-gateway
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    # Cluster DNS. Plain L4 with no L7 dns rule: this namespace uses toEntities
+    # world rather than toFQDNs, so it needs no DNS-proxy visibility, and forcing
+    # every tenant-supplied hostname lookup through the L7 proxy would add a
+    # failure mode on the hot ingest path for no policy benefit.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    # collector -> fleet (FLEET_INTERNAL_URL) and -> identity (IDENTITY_INTERNAL_URL).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-fleet
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-identity
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Redis streams bus (ingest producer).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+    # OTLP export.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: alloy-receiver
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+    # THE BROAD CARVE-OUT. RCON (arbitrary TCP) and A2S (arbitrary UDP) to arbitrary
+    # customer game-server addresses. See the header block above for the rationale
+    # and for the app-layer SSRF guard that bounds it.
+    - toEntities:
+        - world

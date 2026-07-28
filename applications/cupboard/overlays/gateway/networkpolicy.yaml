@@ -1,0 +1,115 @@
+# Phase 7 PR6 - default-deny (ingress AND egress) for cupboard-gateway, plus every
+# allow that namespace needs. Decision I of docs/phase7-plan.md.
+#
+# ROLLOUT - READ BEFORE APPLYING:
+#   1. Apply ONE namespace at a time, never the whole tree at once:
+#        kubectl apply -f applications/cupboard/overlays/gateway/networkpolicy.yaml
+#   2. Watch for drops through a full traffic cycle (10+ minutes of real use):
+#        hubble observe --verdict DROPPED --namespace cupboard-gateway --follow
+#   3. Instant rollback, no side effects:
+#        kubectl delete -f applications/cupboard/overlays/gateway/networkpolicy.yaml
+#   The default-deny and ALL of its allows live in this ONE file so a single
+#   apply/delete flips the namespace atomically. Never split them across files:
+#   an allow-less default-deny landing on its own blackholes the namespace.
+#   See applications/cupboard/NETWORKPOLICY-ROLLOUT.md for the ordered plan.
+#
+# WHAT THIS ALLOWS
+#   Ingress: kubelet probes (/healthz, /readyz on :8080) from the node; traefik
+#     (cupboard-staging.vngenterprise.com IngressRoute); the web BFF's SSR calls.
+#   Egress:  the proxy fan-out to all six backends on :8080; Postgres via the
+#     cupboard-db pooler; Redis; OTLP traces/metrics to alloy-receiver; cluster DNS.
+#   The gateway needs NO internet egress: every upstream it talks to is in-cluster.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cupboard-gateway-netpol
+  namespace: cupboard-gateway
+spec:
+  description: "Default-deny both directions for cupboard-gateway with the phase7 decision-I allow set."
+  # Every endpoint in this namespace.
+  endpointSelector: {}
+  # Explicit so intent survives future edits: both directions are default-deny even
+  # if a rule list below is ever emptied.
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    # Kubelet liveness/readiness probes arrive from the node itself. remote-node is
+    # included because Cilium gives other cluster nodes a distinct identity and
+    # node-sourced (SNAT'd) health traffic would otherwise be dropped.
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Public/internal edge: the cupboard-gateway IngressRoute (traefik-internal).
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # The web BFF calls the gateway server-side over ClusterIP (GATEWAY_URL).
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-web
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    # Cluster DNS. Required first: every ClusterIP name below is resolved here.
+    # Plain L4 (no L7 dns rules) because this namespace uses no toFQDNs.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    # The proxy fan-out (AUTH/FLEET/IDENTITY/COLLECTOR/METRICS/TENANT_SERVICE_URL).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-auth
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-fleet
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-identity
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-collector
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-metrics
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-tenant
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Postgres through the cupboard-pooled-rw pgbouncer (and the primary behind it).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Redis streams bus.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+    # OTLP export (logs/traces/metrics) to the alloy receiver.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: alloy-receiver
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP

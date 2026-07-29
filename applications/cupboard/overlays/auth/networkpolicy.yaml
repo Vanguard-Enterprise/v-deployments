@@ -98,6 +98,19 @@ spec:
         - ports:
             - port: "4143"
               protocol: TCP
+    # PR7: traefik is meshed, so once it talks to a meshed pod in this
+    # namespace the connection lands on the inbound proxy's :4143, not on the
+    # app port allowed above. Same source (ns traefik), different port.
+    # NOTE the ACME HTTP-01 solver in cupboard-web is deliberately NOT meshed
+    # (linkerd.io/inject=disabled via the ClusterIssuer podTemplate), so solver
+    # traffic still arrives on :8089 and its existing rule is untouched.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "4143"
+              protocol: TCP
   egress:
     # Cluster DNS, WITH the L7 dns visibility rule that makes the toFQDNs rules
     # below function. Do not downgrade this to a plain L4 allow.

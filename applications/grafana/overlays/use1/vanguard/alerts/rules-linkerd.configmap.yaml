@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-linkerd
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules-linkerd.yaml: |
+    apiVersion: 1
+    groups:
+      # Phase 7 PR7. The Linkerd mesh carries all cupboard service-to-service
+      # traffic, and its identity issuer is a MANUALLY rotated certificate: the
+      # trust anchor's private key is deliberately kept in OpenBao and never
+      # given to the cluster, so nothing can renew the issuer automatically.
+      # When the issuer expires, proxies stop being able to obtain workload
+      # certificates and ALL meshed traffic fails. These alerts are the only
+      # automated guard against that.
+      # Runbook: cluster/talos/use1/linkerd-cert-rotation.md
+      #
+      # Metric name verified against the live identity controller on :9990;
+      # it is issuer_cert_ttl_seconds, NOT the
+      # identity_cert_expiration_timestamp_seconds that the docs elsewhere imply.
+      - orgId: 1
+        name: linkerd
+        folder: platform
+        interval: 1m
+        rules:
+          # 30 days: enough runway to schedule the rotation calmly.
+          - uid: linkerd-issuer-cert-expiring
+            title: LinkerdIssuerCertExpiring
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'issuer_cert_ttl_seconds < 2592000'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Linkerd identity issuer expires in under 30 days; rotate it (manual, the trust anchor key is in OpenBao only)"
+              runbook_url: "https://github.com/Vanguard-Enterprise/v-deployments/blob/main/cluster/talos/use1/linkerd-cert-rotation.md"
+
+          # 7 days: at this point the mesh is close to a full outage.
+          - uid: linkerd-issuer-cert-expiring-critical
+            title: LinkerdIssuerCertExpiringCritical
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'issuer_cert_ttl_seconds < 604800'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            for: 15m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Linkerd identity issuer expires in under 7 days; when it lapses ALL meshed traffic fails"
+              runbook_url: "https://github.com/Vanguard-Enterprise/v-deployments/blob/main/cluster/talos/use1/linkerd-cert-rotation.md"
+
+          # The identity controller itself. If this is down, no workload can get
+          # or renew a certificate, and existing certs age out within 24h.
+          - uid: linkerd-identity-down
+            title: LinkerdIdentityDown
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'kube_deployment_status_replicas_available{namespace="linkerd",deployment="linkerd-identity"} == 0'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "linkerd-identity has zero ready replicas; workloads cannot obtain or renew mesh certificates"
+              runbook_url: "https://github.com/Vanguard-Enterprise/v-deployments/blob/main/cluster/talos/use1/linkerd-cert-rotation.md"

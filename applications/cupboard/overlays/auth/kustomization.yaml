@@ -9,6 +9,7 @@ resources:
 - service.yaml
 - ingress-player-login.yaml
 - networkpolicy.yaml
+- authorizationpolicy.yaml
 # argocd-image-updater rewrites this to a pinned digest on each new :main build
 # (write-back-target: kustomization). Bootstraps from :main until the first build.
 images:

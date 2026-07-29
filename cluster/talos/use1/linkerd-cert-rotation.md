@@ -24,21 +24,30 @@ rest of this document is about.
 certificate and all meshed traffic stops.** Renew it well before then; a month of
 margin is sensible.
 
-There is currently **no alert** on this. `alloy-metrics` only scrapes kubelet,
-cAdvisor and kube-state-metrics; cupboard app metrics reach Mimir by OTLP push, and
-nothing scrapes the Linkerd control plane. So
-`identity_cert_expiration_timestamp_seconds`, which the identity controller does
-export on :9990, never reaches Mimir and cannot be alerted on today.
+This IS now alerted on, as of Phase 7 PR7:
 
-Closing that gap means adding a scrape job for the Linkerd control plane to the
-`alloy-metrics` config, then a rule in `rules-cupboard.configmap.yaml`. Treat that as
-its own change and **load-test the Alloy config**, do not merely `kustomize build` it:
-in PR3 an Alloy ConfigMap that passed both `kustomize build` and `yaml.safe_load`
-contained an invalid component reference, CrashLooped `alloy-receiver`, and silently
-killed cluster-wide OTLP ingestion. The scrape path is what keeps the existing alerts
-working, so breaking it is worse than the gap it closes.
+| Alert | Fires at | Severity |
+|---|---|---|
+| `LinkerdIssuerCertExpiring` | issuer TTL < 30 days | warning |
+| `LinkerdIssuerCertExpiringCritical` | issuer TTL < 7 days | critical |
+| `LinkerdIdentityDown` | linkerd-identity has 0 ready replicas | critical |
 
-Until then this is a diary entry: **renew the Linkerd issuer by 2027-06-28.**
+Defined in `applications/grafana/overlays/use1/vanguard/alerts/rules-linkerd.configmap.yaml`,
+fed by `applications/alloy-metrics/overlays/use1/podmonitor-linkerd.yaml`.
+
+The metric is **`issuer_cert_ttl_seconds`**, read from the identity controller's
+admin port :9990. It is NOT `identity_cert_expiration_timestamp_seconds`; an
+alert on that name would sit at noData forever.
+
+Note how it is wired: a PodMonitor, NOT a change to the alloy-metrics
+`config.alloy`. The collector already runs `prometheus.operator.podmonitors` with
+selector `instance=primary`, so a plain CRD is picked up with no collector edit.
+Keep it that way. In PR3 an Alloy ConfigMap that passed both `kustomize build`
+and `yaml.safe_load` carried an invalid component reference, CrashLooped
+alloy-receiver and silently killed cluster-wide OTLP ingestion. alloy-metrics is
+the scrape path every other alert depends on.
+
+`linkerd check` also fails inside the last 60 days, as a second line of defence.
 
 ## Check current expiry
 
@@ -50,8 +59,8 @@ kubectl -n linkerd get secret linkerd-identity-issuer \
   -o jsonpath='{.data.tls\.crt}' | base64 -d | openssl x509 -noout -subject -dates
 ```
 
-`linkerd check` fails loudly inside the last 60 days, so a periodic `linkerd check`
-is the cheap stand-in for the missing alert.
+`linkerd check` fails loudly inside the last 60 days, which is a useful manual
+cross-check on the alerts above.
 
 ## Rotate the issuer (routine, no data-plane restart)
 

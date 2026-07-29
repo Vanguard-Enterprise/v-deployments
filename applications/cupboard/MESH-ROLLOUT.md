@@ -10,39 +10,56 @@ All 9 cupboard app namespaces are meshed. `cupboard-db` and `cupboard-redis` are
 deliberately NOT meshed: they are operator-managed stateful workloads (CNPG,
 redis-operator) and mTLS on the internal APIs does not need them.
 
-| Namespace | Meshed | Inbound policy | Enforced mTLS on :8080 |
+| Namespace | Meshed | Inbound policy | Enforced mTLS |
 |---|---|---|---|
 | cupboard-identity | yes | audit | **yes**, 4 identities |
 | cupboard-fleet | yes | audit | **yes**, 3 identities |
 | cupboard-collector | yes | audit | **yes**, 1 identity |
 | cupboard-metrics | yes | audit | **yes**, 1 identity |
-| cupboard-gateway | yes | audit | no, see below |
-| cupboard-web | yes | audit | no, see below |
-| cupboard-auth | yes | audit | no, see below |
-| cupboard-tenant | yes | audit | no, see below |
+| cupboard-gateway | yes | audit | **yes**, 2 identities |
+| cupboard-web | yes | audit | **yes**, 2 identities |
+| cupboard-auth | yes | audit | **yes**, 3 identities |
+| cupboard-tenant | yes | audit | **yes**, 4 identities |
 | cupboard-bot | yes | audit | n/a, no inbound traffic |
 | cupboard-db, cupboard-redis | no | n/a | n/a |
 
-## Why only four services are enforced
+Traefik itself is meshed, both the external and internal deployments, which is
+what made the last four enforceable.
+
+## Traefik is meshed, with inbound SKIPPED
 
 `cupboard-gateway`, `web`, `auth` and `tenant` each terminate a Traefik
-IngressRoute, and **Traefik is not meshed**. A mesh-identity-only
-AuthorizationPolicy on their :8080 would reject real user traffic outright.
+IngressRoute. They could not enforce a mesh-identity policy while Traefik was
+unmeshed, because Traefik had no identity to present. Both Traefik deployments
+are therefore meshed, but with:
 
-Closing that gap needs a decision, not just more YAML. The options:
+```yaml
+config.linkerd.io/skip-inbound-ports: "8000,8443,8080,9100"
+```
 
-1. **Mesh Traefik.** Cleanest end state: every hop gets an identity and those
-   four services enforce exactly like the internal four. But Traefik is shared
-   cluster ingress, not a cupboard component, so this is a blast radius well
-   beyond Phase 7.
-2. **Add a NetworkAuthentication for Traefik** alongside the
-   MeshTLSAuthentication. Works today, but it authorizes by IP/CIDR, which is
-   materially weaker than workload identity and re-introduces the pinning
-   problem that broke netbird when the pod CIDR changed in PR5.
-3. **Leave them in audit.** What is shipped. Those services keep PR6's L4
-   controls plus mesh encryption, without identity-based inbound authorization.
+**That annotation is mandatory and must never be removed.** Only Traefik's
+OUTBOUND leg is meshed. If inbound external traffic were routed through the
+proxy, the source address Traefik observes would change, and every ipAllowList
+middleware keys on exactly that. It would break `netbird/cloudflare-only`, which
+allows only Cloudflare ranges, and it would INVERT
+`rustlens-frontend/rustlens-block-external`, whose sourceRange is `127.0.0.1/32`
+specifically to block external traffic, into allowing everything.
 
-Recommendation is (1), scheduled as its own change with its own window.
+Verified after meshing: `netbird.vngenterprise.com` returns 200 through
+Cloudflare but 403 when hit directly from an unlisted IP, which is only possible
+if the middleware is still seeing real client addresses.
+
+Authorized identities were confirmed by reading each service's inbound proxy
+`client_id` metrics while driving real traffic through the actual routes, not
+inferred from IngressRoute classes. That mattered: cupboard-web turned out to
+receive from BOTH Traefiks (internal for the staging app, external for public
+sites and custom domains), so authorizing only the internal one would have
+broken store.vng.bet.
+
+The ACME HTTP-01 solver pods are pinned OUT of the mesh via `podTemplate`
+annotations on both http01 ClusterIssuers, since cert-manager creates them
+inside cupboard-web where injection is enabled. They serve one public challenge
+and need no identity.
 
 ## Two things that will bite you
 

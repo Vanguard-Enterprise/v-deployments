@@ -21,9 +21,9 @@ git. Only targeted, reviewed patches are recorded here so changes are not lost.
   Linkerd service mesh (installed with helm, out-of-band, like Cilium). Both files carry
   the install command in their header. The identity certs are NOT in git; see below.
 - `linkerd-cert-rotation.md`: where the mesh's trust anchor and issuer live (OpenBao,
-  `kv/linkerd/use1/identity`) and how to rotate them. **The issuer expires 2027-07-28 and
-  nothing currently alerts on it**; that document explains why and what closing the gap
-  would take.
+  `kv/linkerd/use1/identity`) and how to rotate them. The issuer expires **2027-07-28**;
+  rotation is manual because the anchor's private key is deliberately never given to the
+  cluster. Alerted on at 30 and 7 days by the `linkerd` rule group.
 
 ## Break-glass
 

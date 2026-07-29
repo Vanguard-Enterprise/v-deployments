@@ -5,6 +5,7 @@ resources:
   - configmap.yaml
   - prometheusrule.yaml
   - monitoring.yaml
+  - podmonitor-linkerd.yaml
 helmCharts:
   - name: alloy
     version: 1.4.0

@@ -21,7 +21,22 @@ deployment:
   enabled: true
   replicas: 3
   annotations: {}
-  podAnnotations: {}
+  podAnnotations:
+    # Phase 7 PR7: mesh the EXTERNAL Traefik so its outbound calls to cupboard
+    # backends carry a workload identity, the prerequisite for enforcing mTLS on
+    # cupboard-auth (/auth/player/* callbacks), cupboard-tenant (provider
+    # webhooks) and the public cupboard-web routes.
+    linkerd.io/inject: enabled
+    # MANDATORY, do not remove. This is the PUBLIC edge, so routing inbound
+    # traffic through the linkerd proxy would change the source address Traefik
+    # observes and silently defeat every ipAllowList middleware. Concretely:
+    # netbird/cloudflare-only would stop matching real Cloudflare ranges, and
+    # rustlens-frontend/rustlens-block-external, whose sourceRange is
+    # 127.0.0.1/32 specifically to block external traffic, would INVERT into
+    # allowing it. Inbound stays on the plain datapath; only the outbound leg is
+    # meshed, which is the only leg that can carry mTLS anyway.
+    #   8000 web, 8443 websecure, 8080 api, 9100 metrics
+    config.linkerd.io/skip-inbound-ports: "8000,8443,8080,9100"
   additionalContainers: []
   initContainers: []
 

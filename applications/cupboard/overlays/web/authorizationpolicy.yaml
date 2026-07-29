@@ -1,0 +1,61 @@
+# Phase 7 PR7 - enforced mTLS for cupboard-web.
+#
+# Served by BOTH Traefiks: internal for cupboard-app-staging, external for the
+# public sites and per-tenant custom domains (e.g. store.vng.bet).
+#
+# The ACME HTTP-01 solver pods that cert-manager creates in this namespace are
+# NOT selected by this Server (different labels) and are not meshed, so custom
+# domain issuance is unaffected by this policy.
+#
+# Every identity below was CONFIRMED against the live cluster by reading the
+# inbound proxy's client_id metrics while driving real traffic through the
+# actual ingress routes, not inferred from the manifests.
+#
+# PORT-level policy, and deliberately NO HTTPRoute: the moment an HTTPRoute
+# selects a Server, Linkerd stops auto-authorizing kubelet probes on it and they
+# must be hand-authored as a NetworkAuthentication.
+#
+# This is only enforceable because Traefik is itself meshed (see
+# applications/traefik/overlays/*/values.yaml). Traefik skips its INBOUND ports,
+# so external traffic keeps its real source address and ipAllowList middlewares
+# still work; only Traefik's outbound leg is meshed, which is what gives it the
+# identity authorized here.
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: cupboard-web-http
+  namespace: cupboard-web
+spec:
+  podSelector:
+    matchLabels:
+      app: cupboard-web
+  port: http
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: MeshTLSAuthentication
+metadata:
+  name: cupboard-web-clients
+  namespace: cupboard-web
+spec:
+  identityRefs:
+    - kind: ServiceAccount
+      name: traefik
+      namespace: traefik
+    - kind: ServiceAccount
+      name: traefik-internal
+      namespace: traefik
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: cupboard-web-http
+  namespace: cupboard-web
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: cupboard-web-http
+  requiredAuthenticationRefs:
+    - group: policy.linkerd.io
+      kind: MeshTLSAuthentication
+      name: cupboard-web-clients

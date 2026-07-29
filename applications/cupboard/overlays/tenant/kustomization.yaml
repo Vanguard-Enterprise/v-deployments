@@ -10,6 +10,7 @@ resources:
 - ingress-webhooks.yaml
 - rbac-domains.yaml
 - networkpolicy.yaml
+- authorizationpolicy.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-tenant
   digest: sha256:0d7c291e2d08fb13fa33254cc7121e790eaca6e244f0aa90057a135d839f7058

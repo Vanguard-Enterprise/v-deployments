@@ -1,0 +1,63 @@
+# Phase 7 PR7 - enforced mTLS for cupboard-tenant.
+#
+# Served by traefik-EXTERNAL (provider webhooks, which deliberately bypass the
+# gateway so HMAC bodies stay byte-exact) plus gateway, bot and auth.
+#
+# Every identity below was CONFIRMED against the live cluster by reading the
+# inbound proxy's client_id metrics while driving real traffic through the
+# actual ingress routes, not inferred from the manifests.
+#
+# PORT-level policy, and deliberately NO HTTPRoute: the moment an HTTPRoute
+# selects a Server, Linkerd stops auto-authorizing kubelet probes on it and they
+# must be hand-authored as a NetworkAuthentication.
+#
+# This is only enforceable because Traefik is itself meshed (see
+# applications/traefik/overlays/*/values.yaml). Traefik skips its INBOUND ports,
+# so external traffic keeps its real source address and ipAllowList middlewares
+# still work; only Traefik's outbound leg is meshed, which is what gives it the
+# identity authorized here.
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: cupboard-tenant-http
+  namespace: cupboard-tenant
+spec:
+  podSelector:
+    matchLabels:
+      app: cupboard-tenant
+  port: http
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: MeshTLSAuthentication
+metadata:
+  name: cupboard-tenant-clients
+  namespace: cupboard-tenant
+spec:
+  identityRefs:
+    - kind: ServiceAccount
+      name: default
+      namespace: cupboard-auth
+    - kind: ServiceAccount
+      name: default
+      namespace: cupboard-bot
+    - kind: ServiceAccount
+      name: default
+      namespace: cupboard-gateway
+    - kind: ServiceAccount
+      name: traefik
+      namespace: traefik
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: cupboard-tenant-http
+  namespace: cupboard-tenant
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: cupboard-tenant-http
+  requiredAuthenticationRefs:
+    - group: policy.linkerd.io
+      kind: MeshTLSAuthentication
+      name: cupboard-tenant-clients

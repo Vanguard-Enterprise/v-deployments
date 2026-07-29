@@ -21,7 +21,23 @@ deployment:
   enabled: true
   replicas: 3
   annotations: {}
-  podAnnotations: {}
+  podAnnotations:
+    # Phase 7 PR7: mesh Traefik so its OUTBOUND calls to cupboard backends carry
+    # a workload identity. That is what lets cupboard-gateway/web/auth/tenant
+    # enforce mTLS on :8080; without it a mesh-identity-only policy would reject
+    # real user traffic, since an unmeshed Traefik has no identity to present.
+    linkerd.io/inject: enabled
+    # MANDATORY, do not remove. Inbound external traffic must NOT pass through
+    # the linkerd proxy: it would rewrite the observed source address and every
+    # Traefik ipAllowList middleware would start matching on the proxy instead
+    # of the real client. That is not just a breakage, it is a security
+    # inversion: netbird/cloudflare-only would reject legitimate Cloudflare IPs,
+    # and rustlens-frontend/rustlens-block-external, whose sourceRange is
+    # 127.0.0.1/32 to block everything external, would begin allowing traffic.
+    # Skipping the inbound ports keeps ingress on the plain datapath and meshes
+    # only the outbound leg, which is the only leg that can be mTLS anyway.
+    #   8000 web, 8443 websecure, 8080 dashboard/api, 9100 metrics
+    config.linkerd.io/skip-inbound-ports: "8000,8443,8080,9100"
   additionalContainers: []
   initContainers: []
 

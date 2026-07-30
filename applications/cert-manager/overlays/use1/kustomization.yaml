@@ -5,7 +5,6 @@ resources:
   - vngenterprise.com.yaml
   - external-secret.yaml
   - rustlens.com.yaml
-  - hyplex.gg.yaml
   - mancini.beer.yaml
   - cupboard-sites.yaml
   - clusterissuer-http01.yaml

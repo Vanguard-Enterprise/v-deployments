@@ -28,6 +28,38 @@ spec:
   storage:
     size: 5Gi
     storageClass: longhorn
+  # Phase 7 PR8 gate: barman object store on Wasabi, same provider, bucket naming
+  # (cnpg-<db>-use1) and credential layout as the grafana and rustlens databases.
+  #
+  # This is a HARD PREREQUISITE for running player erasure in production. Erasure
+  # is irreversible and this cluster is a SINGLE instance with no replica, so
+  # without WAL archiving there is no way back from a bad erase, a bad migration,
+  # or volume loss.
+  #
+  # DO NOT enable this before the cnpg-cupboard-backup Secret exists and is
+  # SecretSynced. A failing archive_command makes Postgres retain WAL in pg_wal
+  # rather than recycling it, and there is no separate walStorage here, so it
+  # accumulates on this same 5Gi volume until the database goes down.
+  #
+  # PRIVACY NOTE: an erased player's rows survive in these backups for the
+  # retention window below. That is normal and defensible for a DSAR regime, but
+  # it has to be stated in the privacy disclosure rather than left implicit.
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://cnpg-cupboard-use1
+      endpointURL: https://s3.us-east-1.wasabisys.com
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-cupboard-backup
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: cnpg-cupboard-backup
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"
   # Phase 1: a dedicated NON-OWNER application role. RLS only isolates tenants when the
   # request path connects as a non-owner (a table owner bypasses RLS), so the auth
   # service's "app" pool uses this role while migrations/system work use the `cupboard`

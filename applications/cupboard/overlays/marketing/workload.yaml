@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: cupboard-marketing, namespace: cupboard-marketing}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: cupboard-marketing}}
+  template:
+    metadata: {labels: {app: cupboard-marketing, app.kubernetes.io/name: cupboard-marketing, app.kubernetes.io/part-of: cupboard, team: cupboard}}
+    spec:
+      imagePullSecrets: [{name: github-pull-secret}]
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+      - name: marketing
+        image: ghcr.io/vanguard-enterprise/cupboard-marketing:main
+        ports: [{name: http, containerPort: 3000}]
+        readinessProbe: {httpGet: {path: /readyz, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
+        livenessProbe: {httpGet: {path: /healthz, port: http}, initialDelaySeconds: 3, periodSeconds: 20}
+        resources: {requests: {cpu: 20m, memory: 32Mi}, limits: {memory: 96Mi}}
+        securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: cupboard-marketing, namespace: cupboard-marketing}
+spec: {selector: {app: cupboard-marketing}, ports: [{name: http, port: 3000, targetPort: http}]}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata: {name: cupboard-marketing, namespace: cupboard-marketing, annotations: {kubernetes.io/ingress.class: traefik-internal}}
+spec:
+  entryPoints: [websecure]
+  routes:
+  - match: Host(`cupboard-staging.vngenterprise.com`)
+    kind: Rule
+    priority: 1
+    services: [{name: cupboard-marketing, port: 3000}]
+  tls: {store: {name: default, namespace: traefik}}

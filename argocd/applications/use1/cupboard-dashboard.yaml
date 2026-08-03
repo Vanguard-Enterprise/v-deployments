@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cupboard-dashboard
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: dashboard=ghcr.io/vanguard-enterprise/cupboard-dashboard:main
+    argocd-image-updater.argoproj.io/dashboard.update-strategy: digest
+    argocd-image-updater.argoproj.io/dashboard.pull-secret: pullsecret:argocd/ghcr-image-updater
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+    argocd-image-updater.argoproj.io/git-branch: main
+spec:
+  project: default
+  source: {repoURL: https://github.com/Vanguard-Enterprise/v-deployments, path: applications/cupboard/overlays/dashboard, targetRevision: main}
+  destination: {server: https://kubernetes.default.svc, namespace: cupboard-dashboard}
+  syncPolicy: {automated: {prune: true, selfHeal: true}, syncOptions: [CreateNamespace=true]}

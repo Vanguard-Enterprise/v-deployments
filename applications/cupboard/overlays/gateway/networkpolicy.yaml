@@ -56,6 +56,8 @@ spec:
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: cupboard-web
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-dashboard
       toPorts:
         - ports:
             - port: "8080"
@@ -81,6 +83,8 @@ spec:
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: cupboard-web
+        - matchLabels:
+            io.kubernetes.pod.namespace: cupboard-dashboard
       toPorts:
         - ports:
             - port: "4143"

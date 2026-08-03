@@ -6,7 +6,6 @@ resources:
 - github-pull-secret.yaml
 - deployment.yaml
 - service.yaml
-- ingress.yaml
 - ingress-public-sites.yaml
 - networkpolicy.yaml
 - authorizationpolicy.yaml

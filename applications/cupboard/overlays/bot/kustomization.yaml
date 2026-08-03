@@ -12,4 +12,4 @@ resources:
 
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-bot
-  digest: sha256:9bd315e3fae35660f365bfa7c977c11f9d1561f522ee7d4bebc643d7d2c83673
+  digest: sha256:bd4a965d0e679842200375436a5efcc08dd0b0baa865aef4c7e46705a8e1fa27

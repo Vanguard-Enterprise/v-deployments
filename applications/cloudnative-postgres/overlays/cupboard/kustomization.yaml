@@ -5,7 +5,5 @@ resources:
   - cluster.yaml
   - poolers.yaml
   - external-secrets.yaml
-  - external-secret-backup.yaml
-  - scheduledbackup.yaml
   - podmonitor.yaml
   - networkpolicy.yaml

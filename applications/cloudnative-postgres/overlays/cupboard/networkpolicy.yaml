@@ -27,16 +27,14 @@
 #     exporter on the instances, :9127 pgbouncer exporter on the poolers); every
 #     pod in this namespace (pooler -> primary, and future replica streaming);
 #     and exactly five cupboard services on :5432.
-#   Egress:  cluster DNS (now with L7 dns visibility), the Wasabi object store on
-#     :443, the kube-apiserver (the CNPG instance manager watches its own Cluster
-#     resource and reports status), and intra-namespace.
-#     The Wasabi rule was added in Phase 7 PR8, which is what the earlier revision
-#     of this header flagged as still needed once the cluster gained
-#     barmanObjectStore backups. It is load-bearing: if it is removed, WAL
-#     archiving fails silently and pg_wal fills the data volume.
+#   Egress:  cluster DNS, the kube-apiserver (the CNPG instance manager watches its
+#     own Cluster resource and reports status), and intra-namespace.
 #   DENIED BY DESIGN: cupboard-collector and cupboard-metrics have NO Postgres
 #     access (decision I). Neither service has a DATABASE_URL; if Hubble shows
 #     either of them dropping against :5432, that is a finding, not a missing rule.
+#     There is also no world egress: staging has no barmanObjectStore. When the
+#     production cluster gains S3 backups (decision M), this file needs an
+#     additional toFQDNs/world rule for the object store endpoint.
 #
 # WHY THE OPERATOR RULES ARE PORT-UNCONSTRAINED: the ports CNPG uses between the
 # operator, the instance manager (:8000), Postgres (:5432) and the metrics exporter
@@ -103,11 +101,7 @@ spec:
             - port: "5432"
               protocol: TCP
   egress:
-    # Cluster DNS, WITH the L7 dns visibility rule, which is now REQUIRED: the
-    # toFQDNs rule below only works if Cilium can see this namespace's DNS
-    # answers. Removing the `rules: dns:` block does not break DNS, it silently
-    # breaks the Wasabi egress rule and therefore WAL archiving. This was a plain
-    # L4 allow until barman was enabled.
+    # Cluster DNS. Plain L4 (no L7 dns rules) because this namespace uses no toFQDNs.
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: kube-system
@@ -116,26 +110,6 @@ spec:
         - ports:
             - port: "53"
               protocol: ANY
-          rules:
-            dns:
-              - matchPattern: "*"
-    # Barman object store egress (Wasabi). Without this, archive_command fails,
-    # Postgres stops recycling WAL, and pg_wal grows on the SAME 5Gi volume as the
-    # data until the database goes down. The PR6 header called this out as the rule
-    # to add "when the production cluster gains S3 backups".
-    #
-    # matchPattern rather than matchName on purpose: barman/boto3 may address the
-    # bucket virtual-hosted style (cnpg-cupboard-use1.s3.us-east-1.wasabisys.com)
-    # as well as path style (s3.us-east-1.wasabisys.com), and a rule pinned to just
-    # the bare endpoint would drop the former. Verify against the live FQDN cache
-    # after enabling: `cilium-dbg fqdn cache list` on the primary's node. PR6 hit
-    # exactly this with Discord's regional gateway hosts.
-    - toFQDNs:
-        - matchPattern: "*.wasabisys.com"
-      toPorts:
-        - ports:
-            - port: "443"
-              protocol: TCP
     # The CNPG instance manager watches its Cluster/Pooler resources and writes
     # status back. 443 is the kubernetes.default ClusterIP port, 6443 the real
     # apiserver port that kube-proxy DNATs to (kube-proxy is RETAINED here, so the

@@ -38,6 +38,9 @@ spec:
       name: default
       namespace: cupboard-web
     - kind: ServiceAccount
+      name: default
+      namespace: cupboard-dashboard
+    - kind: ServiceAccount
       name: traefik-internal
       namespace: traefik
 ---

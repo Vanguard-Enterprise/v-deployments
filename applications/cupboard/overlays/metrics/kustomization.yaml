@@ -14,4 +14,4 @@ resources:
 
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-metrics
-  digest: sha256:3cefb2c333a672a864a0e6b77269262987081c706d9979adfcd387fcb3c96a7a
+  digest: sha256:6a9274108d4a15fbe7759c90ec956cdecdc186f7b65a1d33046dc16e3e775547

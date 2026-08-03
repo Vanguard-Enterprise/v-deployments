@@ -124,14 +124,25 @@ spec:
     # data until the database goes down. The PR6 header called this out as the rule
     # to add "when the production cluster gains S3 backups".
     #
-    # matchPattern rather than matchName on purpose: barman/boto3 may address the
-    # bucket virtual-hosted style (cnpg-cupboard-use1.s3.us-east-1.wasabisys.com)
-    # as well as path style (s3.us-east-1.wasabisys.com), and a rule pinned to just
-    # the bare endpoint would drop the former. Verify against the live FQDN cache
-    # after enabling: `cilium-dbg fqdn cache list` on the primary's node. PR6 hit
-    # exactly this with Discord's regional gateway hosts.
+    # Keep both exact and wildcard names: barman/boto3 may address the bucket
+    # virtual-hosted style (cnpg-cupboard-use1.s3.us-east-1.wasabisys.com) as well
+    # as path style (s3.us-east-1.wasabisys.com). The apex covers the canonical
+    # name currently returned by Wasabi DNS.
     - toFQDNs:
+        - matchName: wasabisys.com
+        - matchName: s3.us-east-1.wasabisys.com
         - matchPattern: "*.wasabisys.com"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # Fallback for use1: the 2026-08-03 preflight showed that this namespace's DNS
+    # answers were not entering Cilium's FQDN cache. All returned Wasabi us-east-1
+    # endpoint addresses were inside this /24. Keep the FQDN rule above for when
+    # cache integration is repaired; revalidate this CIDR during Cilium/Wasabi
+    # changes rather than widening database egress to all of world:443.
+    - toCIDR:
+        - 38.27.106.0/24
       toPorts:
         - ports:
             - port: "443"

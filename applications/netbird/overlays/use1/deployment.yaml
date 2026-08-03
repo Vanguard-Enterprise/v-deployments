@@ -10,6 +10,8 @@ spec:
       app: netbird-dashboard
   template:
     metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-08-03T17:54:32Z"
       labels:
         app: netbird-dashboard
     spec:
@@ -44,6 +46,8 @@ spec:
       app: netbird-server
   template:
     metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-08-03T17:54:32Z"
       labels:
         app: netbird-server
     spec:

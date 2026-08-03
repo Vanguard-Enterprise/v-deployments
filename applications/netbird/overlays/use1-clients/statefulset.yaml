@@ -11,6 +11,8 @@ spec:
       app: netbird-client
   template:
     metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-08-03T17:54:32Z"
       labels:
         app: netbird-client
     spec:

@@ -54,11 +54,11 @@ spec:
             capabilities:
               drop: [ALL]
             readOnlyRootFilesystem: true
-            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
           resources:
             requests:
               cpu: 100m
               memory: 128Mi
             limits:
               memory: 512Mi
-

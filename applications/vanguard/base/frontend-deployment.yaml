@@ -49,10 +49,15 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 101
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
           resources:
             requests:
               cpu: 50m
               memory: 96Mi
             limits:
               memory: 256Mi
-
+      volumes:
+        - name: tmp
+          emptyDir: {}

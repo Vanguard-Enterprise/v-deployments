@@ -12,7 +12,6 @@ data:
   TRUST_FORWARDED_FOR: "true"
   TRUSTED_PROXY_HOPS: "1"
   ZITADEL_ISSUER: https://accounts.vngenterprise.com
-  ZITADEL_CLIENT_ID: 379433359216018494
+  ZITADEL_CLIENT_ID: "379433359216018494"
   ZITADEL_SCOPE: openid email profile offline_access urn:zitadel:iam:org:project:roles
   ZITADEL_STAFF_ROLE: staff
-

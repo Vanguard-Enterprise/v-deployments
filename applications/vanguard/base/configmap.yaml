@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vanguard-api-config
+  namespace: vanguard-portal
+data:
+  BIND_ADDR: 0.0.0.0:8080
+  APP_ENV: production
+  APP_BASE_URL: https://vngenterprise.com
+  COOKIE_SECURE: "true"
+  RUST_LOG: info
+  TRUST_FORWARDED_FOR: "true"
+  TRUSTED_PROXY_HOPS: "1"
+  ZITADEL_ISSUER: https://accounts.vngenterprise.com
+  ZITADEL_CLIENT_ID: 379433359216018494
+  ZITADEL_SCOPE: openid email profile offline_access urn:zitadel:iam:org:project:roles
+  ZITADEL_STAFF_ROLE: staff
+

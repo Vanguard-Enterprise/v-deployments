@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vanguard-portal
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: api=ghcr.io/vanguard-enterprise/vanguard-api:main,frontend=ghcr.io/vanguard-enterprise/vanguard-frontend:main
+    argocd-image-updater.argoproj.io/api.update-strategy: digest
+    argocd-image-updater.argoproj.io/frontend.update-strategy: digest
+    argocd-image-updater.argoproj.io/api.pull-secret: pullsecret:argocd/ghcr-image-updater
+    argocd-image-updater.argoproj.io/frontend.pull-secret: pullsecret:argocd/ghcr-image-updater
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+    argocd-image-updater.argoproj.io/git-branch: main
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/vanguard/overlays/use1
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vanguard-portal
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

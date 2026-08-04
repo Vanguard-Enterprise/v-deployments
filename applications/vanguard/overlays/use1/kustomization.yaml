@@ -4,6 +4,6 @@ resources:
 - ../../base
 images:
 - name: ghcr.io/vanguard-enterprise/vanguard-api
-  newTag: main
+  digest: sha256:e8cc13e47f3700ac0613326635106ac46841756317655b5808bbcfd876c7de94
 - name: ghcr.io/vanguard-enterprise/vanguard-frontend
   digest: sha256:b61ea929ffabfc268e286cde29b664c0a9d45f314c4b1baf3b57a094fd983cdb

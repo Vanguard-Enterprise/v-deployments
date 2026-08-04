@@ -1,0 +1,27 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: vanguard
+  namespace: vanguard-portal-db
+spec:
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
+  bootstrap:
+    initdb:
+      database: vanguard
+      owner: vanguard
+      secret:
+        name: vanguard-pg-bootstrap
+  storage:
+    size: 20Gi
+    storageClass: longhorn
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+

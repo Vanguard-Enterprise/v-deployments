@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vanguard-portal
+  labels:
+    linkerd.io/inject: enabled
+    config.linkerd.io/default-inbound-policy: audit
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+

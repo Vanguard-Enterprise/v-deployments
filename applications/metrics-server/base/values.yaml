@@ -1,0 +1,18 @@
+# Talos issues each node a kubelet serving certificate whose SAN contains the
+# node hostname, while Metrics Server reaches kubelets through InternalIP.
+# The hostnames are not cluster-resolvable, so certificate verification cannot
+# succeed without a wider Talos PKI/DNS change. Keep this exception scoped to
+# the kubelet connection; Kubernetes API authentication and RBAC still control
+# client access to the aggregated API.
+args:
+  - --kubelet-insecure-tls
+
+# Six nodes fit comfortably within the upstream baseline. A single replica
+# also avoids claiming HA until kube-apiserver aggregator routing is enabled.
+replicas: 1
+resources:
+  requests:
+    cpu: 100m
+    memory: 200Mi
+  limits:
+    memory: 256Mi

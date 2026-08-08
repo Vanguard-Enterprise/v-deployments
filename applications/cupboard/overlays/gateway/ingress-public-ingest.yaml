@@ -1,0 +1,27 @@
+# Public game-server ingest edge. Only the per-server-token-authenticated push routes
+# are exposed here; the dashboard API and unauthenticated health probes remain on the
+# internal cupboard-staging host. Reuse cupboard-hooks because it already has public
+# Cloudflare DNS and the wildcard vngenterprise.com certificate.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cupboard-ingest
+  namespace: cupboard-gateway
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`cupboard-hooks.vngenterprise.com`) && PathPrefix(`/api/ingest/`)
+      kind: Rule
+      priority: 300
+      middlewares:
+        - name: cupboard-api-strip
+      services:
+        - name: cupboard-gateway
+          port: 8080
+  tls:
+    store:
+      name: default
+      namespace: traefik

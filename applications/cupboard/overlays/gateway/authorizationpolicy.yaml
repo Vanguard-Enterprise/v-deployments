@@ -1,7 +1,7 @@
 # Phase 7 PR7 - enforced mTLS for cupboard-gateway.
 #
-# Served by traefik-INTERNAL (cupboard-staging.vngenterprise.com) plus the
-# web BFF's server-side calls.
+# Served by traefik-INTERNAL (cupboard-staging.vngenterprise.com), the narrowly
+# scoped public ingest route on external Traefik, plus the web BFF's server-side calls.
 #
 # Every identity below was CONFIRMED against the live cluster by reading the
 # inbound proxy's client_id metrics while driving real traffic through the
@@ -42,6 +42,9 @@ spec:
       namespace: cupboard-dashboard
     - kind: ServiceAccount
       name: traefik-internal
+      namespace: traefik
+    - kind: ServiceAccount
+      name: traefik
       namespace: traefik
 ---
 apiVersion: policy.linkerd.io/v1alpha1

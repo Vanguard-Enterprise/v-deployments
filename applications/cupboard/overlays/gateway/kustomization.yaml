@@ -8,6 +8,7 @@ resources:
 - deployment.yaml
 - service.yaml
 - ingress.yaml
+- ingress-public-ingest.yaml
 - networkpolicy.yaml
 - authorizationpolicy.yaml
 # argocd-image-updater rewrites this entry to a pinned digest on each new :main

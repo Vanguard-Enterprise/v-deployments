@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: route-guard
-  namespace: traefik
+  namespace: routeguard
 spec:
   secretName: route-guard-tls
   issuerRef:

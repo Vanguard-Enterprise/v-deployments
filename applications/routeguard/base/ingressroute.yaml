@@ -14,6 +14,4 @@ spec:
         - name: routeguard
           port: 80
   tls:
-    store:
-      name: route-guard
-      namespace: traefik
+    secretName: route-guard-tls

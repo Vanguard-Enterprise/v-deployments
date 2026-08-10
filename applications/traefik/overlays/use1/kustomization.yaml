@@ -5,6 +5,7 @@ resources:
   - default-store.yaml
   - rustlens-store.yaml
   - mancini-store.yaml
+  - route-guard-store.yaml
 helmCharts:
   - name: traefik
     version: "38.0.1"

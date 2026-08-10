@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: routeguard
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`route-guard.com`) || Host(`www.route-guard.com`)
+      kind: Rule
+      services:
+        - name: routeguard
+          port: 80
+  tls:
+    store:
+      name: route-guard
+      namespace: traefik

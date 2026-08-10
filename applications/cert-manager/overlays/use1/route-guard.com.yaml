@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: route-guard
+  namespace: traefik
+spec:
+  secretName: route-guard-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "*.route-guard.com"
+  dnsNames:
+    - "*.route-guard.com"
+    - route-guard.com

@@ -3,4 +3,4 @@ kind: Kustomization
 resources: [namespace.yaml, github-pull-secret.yaml, workload.yaml]
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-marketing
-  digest: sha256:7ba6914e9d618e9a27fdafbba6069220e10a334d2eff626fc5ba4423b693cad8
+  digest: sha256:6afde4a954a5b9aa2bf12886310eeaed114b32cbc2abd1857c3e6a6abc8e448c

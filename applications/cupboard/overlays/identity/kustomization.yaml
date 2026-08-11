@@ -11,4 +11,4 @@ resources:
 - authorizationpolicy.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-identity
-  digest: sha256:726f0471645926977ea8256f323b849b570a9a5630f99c22027133d227d32677
+  digest: sha256:da80a1d9132de420509955cafc703f37e530c9407c762e8d41e6f1bc9a1dd1d7

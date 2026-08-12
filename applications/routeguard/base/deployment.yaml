@@ -16,6 +16,14 @@ spec:
     spec:
       imagePullSecrets:
         - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+        runAsGroup: 101
+        fsGroup: 101
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: dashboard
           image: ghcr.io/vanguard-enterprise/routeguard-dashboard:main
@@ -37,12 +45,18 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
           securityContext:
+            runAsNonRoot: true
+            runAsUser: 100
+            runAsGroup: 101
             allowPrivilegeEscalation: false
             capabilities:
               drop: [ALL]
             readOnlyRootFilesystem: true
             seccompProfile:
               type: RuntimeDefault
+          volumeMounts:
+            - name: next-cache
+              mountPath: /app/.next/cache
           resources:
             requests:
               cpu: 50m
@@ -50,3 +64,7 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+      volumes:
+        - name: next-cache
+          emptyDir:
+            sizeLimit: 256Mi

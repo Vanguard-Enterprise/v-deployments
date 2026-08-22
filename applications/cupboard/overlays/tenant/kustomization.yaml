@@ -13,4 +13,4 @@ resources:
 - authorizationpolicy.yaml
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-tenant
-  digest: sha256:75afa919c022335e0e7761d3d999eb8f65fab8d8381baa374a544ba7b53346be
+  digest: sha256:1016674153bbba6855d35230075f322efe8a259167089629c8da1caa8441eab5

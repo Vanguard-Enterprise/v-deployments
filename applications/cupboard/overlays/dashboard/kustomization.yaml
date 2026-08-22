@@ -3,4 +3,4 @@ kind: Kustomization
 resources: [namespace.yaml, github-pull-secret.yaml, workload.yaml, security.yaml]
 images:
 - name: ghcr.io/vanguard-enterprise/cupboard-dashboard
-  digest: sha256:c1164063c63d99c1847c176858ea6b6da831c7ed4e36c37bac2a513b50be7f62
+  digest: sha256:061600acc61c5d2a4613256263c72905f0a92f068cd20ebb2205425d52da7875

@@ -9,6 +9,8 @@ spec:
   enableDefaultDeny:
     ingress: true
     egress: true
+  ingress: []
+  egress: []
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

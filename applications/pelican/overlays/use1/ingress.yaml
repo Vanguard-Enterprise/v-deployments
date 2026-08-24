@@ -4,19 +4,18 @@ metadata:
   name: pelican
   namespace: pelican
   annotations:
-    kubernetes.io/ingress.class: traefik-internal
+    kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`gdev.vngenterprise.com`)
+    - match: Host(`gpanel.vngenterprise.com`)
       kind: Rule
       services:
         - name: panel
           port: 80
           scheme: http
   tls:
-    secretName: pelican-tls
     store:
       name: default
       namespace: traefik

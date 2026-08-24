@@ -1,0 +1,143 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pelican-default-deny
+  namespace: pelican
+spec:
+  description: Default-deny ingress and egress for every Pelican workload.
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pelican-panel
+  namespace: pelican
+spec:
+  description: Allow the public edge into the panel and only its required outbound services.
+  endpointSelector:
+    matchLabels:
+      app: pelican-panel
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: pelican
+            app: pelican-cache
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: pelican
+            cnpg.io/cluster: pelican-db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "443"
+              protocol: TCP
+            - port: "8080"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pelican-cache
+  namespace: pelican
+spec:
+  description: Allow Redis connections only from the Pelican panel.
+  endpointSelector:
+    matchLabels:
+      app: pelican-cache
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: pelican
+            app: pelican-panel
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pelican-database
+  namespace: pelican
+spec:
+  description: Allow CNPG management traffic and PostgreSQL only from the panel.
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: pelican-db
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cnpg-operator
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: pelican
+            cnpg.io/cluster: pelican-db
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: pelican
+            app: pelican-panel
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: pelican
+            cnpg.io/cluster: pelican-db

@@ -11,3 +11,4 @@ resources:
   - panel.yaml
   - ingress.yaml
   - service.yaml
+  - networkpolicy.yaml

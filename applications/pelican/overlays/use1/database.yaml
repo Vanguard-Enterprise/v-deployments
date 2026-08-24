@@ -1,73 +1,25 @@
-apiVersion: v1
-kind: Service
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
 metadata:
-  name: database
+  name: pelican-db
   namespace: pelican
 spec:
-  ports:
-    - name: mysql
-      port: 3306
-      targetPort: 3306
-  selector:
-    app: pelican-database
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: database
-  namespace: pelican
-spec:
-  serviceName: database
-  replicas: 1
-  selector:
-    matchLabels:
-      app: pelican-database
-  template:
-    metadata:
-      labels:
-        app: pelican-database
-    spec:
-      containers:
-        - name: mariadb
-          image: mariadb:10.11
-          args:
-            - "--default-authentication-plugin=mysql_native_password"
-          envFrom:
-            - secretRef:
-                name: pelican-database
-          ports:
-            - containerPort: 3306
-              name: mysql
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - /bin/sh
-                  - -c
-                  - |
-                    # wait for server socket
-                    for i in $(seq 1 30); do
-                      mysqladmin ping -h 127.0.0.1 -uroot -p"${MYSQL_ROOT_PASSWORD}" --silent && break
-                      sleep 1
-                    done
-                    DB_NAME="${MYSQL_DATABASE:-pelican}"
-                    DB_USER="${MYSQL_USER:-pelican}"
-                    DB_PASS="${MYSQL_PASSWORD}"
-                    mysql -h 127.0.0.1 -uroot -p"${MYSQL_ROOT_PASSWORD}" <<EOSQL
-                    CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;
-                    CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}';
-                    GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%';
-                    FLUSH PRIVILEGES;
-                    EOSQL
-          volumeMounts:
-            - name: data
-              mountPath: /var/lib/mysql
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 20Gi
+  # Deliberately non-HA for now. Backups will be added separately before this
+  # database is treated as durable production storage.
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  bootstrap:
+    initdb:
+      database: pelican
+      owner: pelican
+      secret:
+        name: pelican-database
+  storage:
+    size: 5Gi
+    storageClass: longhorn

@@ -4,8 +4,8 @@ metadata:
   name: pelican-config
   namespace: pelican
 data:
-  APP_NAME: "Hyplex - Gdev"
-  APP_URL: "https://gdev.vngenterprise.com"
+  APP_NAME: "Hyplex - GPanel"
+  APP_URL: "https://gpanel.vngenterprise.com"
   APP_DEBUG: "false"
   APP_ENV: "production"
   LE_EMAIL: "infra@vngenterprise.com"
@@ -13,12 +13,11 @@ data:
   SESSION_DRIVER: "redis"
   QUEUE_CONNECTION: "redis"
   REDIS_HOST: "cache.pelican.svc.cluster.local"
-  DB_CONNECTION: "mariadb"
-  DB_HOST: "database.pelican.svc.cluster.local"
-  DB_PORT: "3306"
+  DB_CONNECTION: "pgsql"
+  DB_HOST: "pelican-db-rw.pelican.svc.cluster.local"
+  DB_PORT: "5432"
   XDG_DATA_HOME: "/pelican-data"
   MAIL_DRIVER: "log"
   BEHIND_PROXY: "true"
   SKIP_CADDY: "false"
   SUPERVISORD_CADDY: "true"
-  APP_INSTALLED: "true"

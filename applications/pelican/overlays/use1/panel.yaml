@@ -15,11 +15,15 @@ spec:
       labels:
         app: pelican-panel
     spec:
+      automountServiceAccountToken: false
       securityContext:
-        runAsUser: 0
-        runAsGroup: 0
-        fsGroup: 33
+        runAsNonRoot: true
+        runAsUser: 82
+        runAsGroup: 82
+        fsGroup: 82
         fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
         - name: init-perms
           image: busybox:1.37.0
@@ -28,30 +32,39 @@ spec:
             - -c
             - |
               mkdir -p /pelican-data/plugins /var/www/html/storage/logs/supervisord
-              chown -R 33:33 /pelican-data /var/www/html/storage/logs
           securityContext:
-            runAsUser: 0
-            runAsGroup: 0
             allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 5m
+              memory: 8Mi
+            limits:
+              memory: 32Mi
           volumeMounts:
             - name: pelican-data
               mountPath: /pelican-data
-            - name: pelican-data
-              mountPath: /var/www/html/plugins
-              subPath: plugins
             - name: pelican-logs
               mountPath: /var/www/html/storage/logs
       containers:
         - name: panel
           image: ghcr.io/pelican-dev/panel:latest
-          workingDir: /var/www/html
-          command:
-            - /bin/sh
-            - -c
-            - |
-              mkdir -p /var/www/html/storage/logs/supervisord
-              chmod +x /entrypoint.sh
-              exec /entrypoint.sh /usr/bin/supervisord -c /etc/supervisord.conf
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
           ports:
             - containerPort: 80
               name: http
@@ -62,24 +75,32 @@ spec:
                 name: pelican-config
             - secretRef:
                 name: pelican-app
-            - secretRef:
-                name: pelican-database
           env:
             - name: DB_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: pelican-database
-                  key: MYSQL_DATABASE
+              value: pelican
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: pelican-database
-                  key: MYSQL_USER
+                  key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: pelican-database
-                  key: MYSQL_PASSWORD
+                  key: password
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: 60
+            periodSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 30
           volumeMounts:
             - name: pelican-data
               mountPath: /pelican-data

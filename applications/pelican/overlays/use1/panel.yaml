@@ -51,7 +51,7 @@ spec:
               mountPath: /var/www/html/storage/logs
       containers:
         - name: panel
-          image: ghcr.io/pelican-dev/panel:latest
+          image: ghcr.io/pelican/panel:latest
           resources:
             requests:
               cpu: 50m
@@ -73,20 +73,18 @@ spec:
           envFrom:
             - configMapRef:
                 name: pelican-config
-            - secretRef:
-                name: pelican-app
           env:
             - name: DB_DATABASE
               value: pelican
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: pelican-database
+                  name: pelican-db-app
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pelican-database
+                  name: pelican-db-app
                   key: password
           startupProbe:
             tcpSocket:

@@ -18,8 +18,6 @@ spec:
     initdb:
       database: pelican
       owner: pelican
-      secret:
-        name: pelican-database
   storage:
     size: 5Gi
     storageClass: longhorn

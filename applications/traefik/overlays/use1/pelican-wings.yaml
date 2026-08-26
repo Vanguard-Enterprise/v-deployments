@@ -10,21 +10,18 @@ spec:
       protocol: TCP
       targetPort: 8080
 ---
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
+apiVersion: v1
+kind: Endpoints
 metadata:
   name: pelican-wings
   namespace: traefik
-  labels:
-    kubernetes.io/service-name: pelican-wings
-addressType: IPv4
-endpoints:
+subsets:
   - addresses:
-      - 10.1.70.10
-ports:
-  - name: http
-    port: 8080
-    protocol: TCP
+      - ip: 10.1.70.10
+    ports:
+      - name: http
+        port: 8080
+        protocol: TCP
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute

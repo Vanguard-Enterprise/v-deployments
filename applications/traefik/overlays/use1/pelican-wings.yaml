@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pelican-wings
+  namespace: traefik
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: pelican-wings
+  namespace: traefik
+  labels:
+    kubernetes.io/service-name: pelican-wings
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 10.1.70.10
+ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pelican-wings
+  namespace: traefik
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`wings-use1.vngenterprise.com`)
+      services:
+        - name: pelican-wings
+          port: 8080
+          scheme: http
+  tls:
+    store:
+      name: default
+      namespace: traefik

@@ -24,10 +24,12 @@ redis-ha:
         memory: 64Mi
       limits:
         memory: 256Mi
-  # Workaround for the sentinel container pinning 100% CPU after a rolling
-  # restart (argoproj/argo-cd#16360, fix PR #20645). The sentinel event loop
-  # wedges on stale sentinel/replica state; a `sentinel reset` shortly after
-  # startup clears it. master group name is "argocd".
+  # Workaround for the sentinel container pinning 100% CPU after a restart
+  # (argoproj/argo-cd#16360, fix PR #20645). A single member restart can wedge
+  # the two long-running peers, so reset the monitored group on every stable
+  # Sentinel endpoint, not only the container that just started. Remote resets
+  # are best-effort so an unavailable peer cannot put this container in a
+  # postStart restart loop. The master group name is "argocd".
   sentinel:
     lifecycle:
       postStart:
@@ -35,12 +37,30 @@ redis-ha:
           command:
             - /bin/sh
             - -c
-            - sleep 30; redis-cli -p 26379 sentinel reset argocd
+            - |
+              set -e
+              sleep 30
+              redis-cli -p 26379 sentinel reset argocd
+              for sentinel_endpoint in \
+                argocd-redis-ha-announce-0 \
+                argocd-redis-ha-announce-1 \
+                argocd-redis-ha-announce-2; do
+                reset_attempt=1
+                until redis-cli -h "$sentinel_endpoint" -p 26379 sentinel reset argocd; do
+                  if [ "$reset_attempt" -ge 3 ]; then
+                    echo "Unable to reset $sentinel_endpoint after $reset_attempt attempts" >&2
+                    break
+                  fi
+                  reset_attempt=$((reset_attempt + 1))
+                  sleep 2
+                done
+              done
     resources:
       requests:
         cpu: 25m
         memory: 32Mi
       limits:
+        cpu: 250m
         memory: 128Mi
 
 controller:

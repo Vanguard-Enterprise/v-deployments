@@ -55,3 +55,24 @@ data:
               team: platform
             annotations:
               summary: "ArgoCD app {{ $labels.name }} Degraded"
+
+          - uid: argocd-redis-sentinel-high-cpu
+            title: ArgoCDRedisSentinelHighCPU
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'sum by (cluster, namespace, pod) (rate(container_cpu_usage_seconds_total{namespace="argocd",container="sentinel"}[5m])) * on (cluster, namespace, pod) group_left(node) max by (cluster, namespace, pod, node) (kube_pod_info{namespace="argocd"}) > 0.2'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "ArgoCD Redis Sentinel {{ $labels.pod }} on {{ $labels.node }} is using >0.2 CPU cores for 10m"

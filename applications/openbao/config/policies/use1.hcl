@@ -17,9 +17,6 @@ path "kv/data/dockerconfig/aliencord-github" {
 path "kv/data/monitoring/*" {
   capabilities = ["read"]
 }
-path "kv/data/rustlens/*" {
-  capabilities = ["read"]
-}
 path "kv/data/argocd-image-updater/*" {
   capabilities = ["read"]
 }

@@ -26,20 +26,7 @@ data:
             repeat_interval: 24h
             continue: false
 
-          # 2) team=rustlens: warning here, critical to its own channel.
-          - receiver: slack-rustlens-warning
-            object_matchers:
-              - [team, "=", rustlens]
-            continue: false
-            routes:
-              - receiver: slack-rustlens-critical
-                object_matchers:
-                  - [severity, "=", critical]
-                group_wait: 15s
-                repeat_interval: 4h
-                continue: false
-
-          # 3) team=vanguard: warning here, critical to its own channel.
+          # 2) team=vanguard: warning here, critical to its own channel.
           - receiver: slack-vanguard-warning
             object_matchers:
               - [team, "=", vanguard]
@@ -52,7 +39,7 @@ data:
                 repeat_interval: 4h
                 continue: false
 
-          # 4) Everything else that is critical (team=platform or unlabeled) -> platform critical.
+          # 3) Everything else that is critical (team=platform or unlabeled) -> platform critical.
           - receiver: slack-platform-critical
             object_matchers:
               - [severity, "=", critical]

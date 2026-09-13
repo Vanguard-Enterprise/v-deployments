@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - ../../base
   - default-store.yaml
-  - rustlens-store.yaml
   - mancini-store.yaml
   - pelican-wings.yaml
 helmCharts:

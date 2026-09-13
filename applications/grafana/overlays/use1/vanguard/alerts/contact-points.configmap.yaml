@@ -41,34 +41,6 @@ data:
               text: '{{ template "slack.text" . }}'
               color: '{{ template "slack.color" . }}'
 
-      # ---- rustlens ----
-      - orgId: 1
-        name: slack-rustlens-critical
-        receivers:
-          - uid: slack-rustlens-critical
-            type: slack
-            settings:
-              token: $SLACK_BOT_TOKEN
-              recipient: "#alerts-rustlens-critical"
-              username: Grafana
-              mentionChannel: here
-              title: '{{ template "slack.title" . }}'
-              text: '{{ template "slack.text" . }}'
-              color: '{{ template "slack.color" . }}'
-
-      - orgId: 1
-        name: slack-rustlens-warning
-        receivers:
-          - uid: slack-rustlens-warning
-            type: slack
-            settings:
-              token: $SLACK_BOT_TOKEN
-              recipient: "#alerts-rustlens-warning"
-              username: Grafana
-              title: '{{ template "slack.title" . }}'
-              text: '{{ template "slack.text" . }}'
-              color: '{{ template "slack.color" . }}'
-
       # ---- vanguard ----
       - orgId: 1
         name: slack-vanguard-critical

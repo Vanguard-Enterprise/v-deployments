@@ -16,5 +16,4 @@ resources:
   - rules-certmanager.configmap.yaml
   - rules-metallb.configmap.yaml
   - rules-openbao.configmap.yaml
-  - rules-cupboard.configmap.yaml
   - rules-linkerd.configmap.yaml

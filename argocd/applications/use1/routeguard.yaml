@@ -12,6 +12,19 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: routeguard
+  ignoreDifferences:
+    - group: external-secrets.io
+      kind: ExternalSecret
+      name: github-pull-secret
+      namespace: routeguard
+      jsonPointers:
+        - /spec/data/0/remoteRef/conversionStrategy
+        - /spec/data/0/remoteRef/decodingStrategy
+        - /spec/data/0/remoteRef/metadataPolicy
+        - /spec/target/deletionPolicy
+        - /spec/target/template/engineVersion
+        - /spec/target/template/mergePolicy
+        - /spec/target/template/metadata
   syncPolicy:
     automated:
       prune: true

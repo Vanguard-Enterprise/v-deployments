@@ -18,4 +18,3 @@ resources:
   - rules-openbao.configmap.yaml
   - rules-cupboard.configmap.yaml
   - rules-linkerd.configmap.yaml
-  - rules-rustlens.configmap.yaml

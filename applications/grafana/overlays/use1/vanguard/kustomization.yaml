@@ -9,7 +9,7 @@ resources:
   - ./dashboards
 helmCharts:
   - name: grafana
-    version: "10.1.4"
+    version: "10.5.15"
     repo: https://grafana.github.io/helm-charts
     releaseName: grafana
     namespace: grafana

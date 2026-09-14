@@ -4,3 +4,4 @@ resources:
   - ../../base
   - external-secret-ghcr.yaml
   - external-secret-git.yaml
+  - image-updater.yaml

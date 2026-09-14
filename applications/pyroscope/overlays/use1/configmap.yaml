@@ -7,6 +7,11 @@ data:
   pyroscope.yaml: |
     multitenancy_enabled: true
 
+    # Newer Pyroscope releases self-profile in single-binary mode. Route those
+    # profiles through the same tenant used by Alloy and Grafana.
+    self_profiling:
+      tenant_id: profiles
+
     server:
       http_listen_port: 4040
       grpc_listen_port: 9095

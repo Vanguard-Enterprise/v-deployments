@@ -1,13 +1,13 @@
-globalArguments:
+additionalArguments:
   - "--global.sendanonymoususage=false"
   - "--global.checknewversion=false"
-additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
 
 metrics:
   prometheus:
     enabled: true
+    disableAPICheck: true
     entryPoint: metrics
     addEntryPointsLabels: true
     addRoutersLabels: true
@@ -66,8 +66,9 @@ affinity:
 
 ports:
   websecure:
-    tls:
-      enabled: true
+    http:
+      tls:
+        enabled: true
     # Trust X-Forwarded-For / X-Real-Ip ONLY when the request comes directly
     # from a Cloudflare edge IP. Combined with externalTrafficPolicy=Local
     # (which preserves the real L4 source up to Traefik), this lets the real

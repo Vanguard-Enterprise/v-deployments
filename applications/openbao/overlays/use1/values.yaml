@@ -25,7 +25,7 @@ server:
   image:
     registry: "quay.io"
     repository: "openbao/openbao"
-    tag: "2.5.5"
+    tag: "2.6.2"
   readinessProbe:
     enabled: false
     path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"

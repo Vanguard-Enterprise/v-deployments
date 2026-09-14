@@ -1,13 +1,13 @@
-globalArguments:
+additionalArguments:
   - "--global.sendanonymoususage=false"
   - "--global.checknewversion=false"
-additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
 
 metrics:
   prometheus:
     enabled: true
+    disableAPICheck: true
     entryPoint: metrics
     addEntryPointsLabels: true
     addRoutersLabels: true
@@ -52,8 +52,9 @@ resources:
 
 ports:
   websecure:
-    tls:
-      enabled: true
+    http:
+      tls:
+        enabled: true
   metrics:
     port: 9100
     expose:

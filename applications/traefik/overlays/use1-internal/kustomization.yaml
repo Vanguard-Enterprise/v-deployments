@@ -4,7 +4,7 @@ resources:
   - pve1a.vngenterprise.com.yaml
 helmCharts:
   - name: traefik
-    version: "38.0.1"
+    version: "41.5.0"
     repo: https://helm.traefik.io/traefik
     releaseName: traefik-internal
     valuesFile: values.yaml

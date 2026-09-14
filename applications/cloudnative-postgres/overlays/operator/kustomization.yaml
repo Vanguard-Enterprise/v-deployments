@@ -5,11 +5,21 @@ resources:
   - podmonitor.yaml
   - clusterimagecatalog.yaml
   - imagecatalog.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_backups.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_clusterimagecatalogs.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_databaseroles.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_databases.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_failoverquorums.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_imagecatalogs.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_publications.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_subscriptions.yaml
 helmCharts:
   - name: cloudnative-pg
     version: "0.29.0"
     repo: https://cloudnative-pg.io/charts/
     releaseName: cloudnative-pg
     namespace: cnpg-operator
-    includeCRDs: true
     valuesFile: values.yaml

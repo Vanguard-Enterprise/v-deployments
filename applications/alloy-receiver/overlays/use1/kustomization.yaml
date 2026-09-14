@@ -6,7 +6,7 @@ resources:
   - monitoring.yaml
 helmCharts:
   - name: alloy
-    version: 1.4.0
+    version: 1.12.1
     repo: https://grafana.github.io/helm-charts
     releaseName: alloy-receiver
     namespace: alloy-receiver

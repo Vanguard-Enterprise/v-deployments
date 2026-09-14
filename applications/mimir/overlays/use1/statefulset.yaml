@@ -24,7 +24,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: mimir
-          image: grafana/mimir:2.13.0
+          image: grafana/mimir:2.17.11
           args:
             - -config.file=/etc/mimir/mimir.yaml
             - -config.expand-env=true

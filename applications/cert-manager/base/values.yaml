@@ -25,7 +25,6 @@ prometheus:
       instance: primary
     interval: 60s
     scrapeTimeout: 30s
-    path: /metrics
 
 # Memory bounds (use1 is memory-bound). limit ~1.5x observed 7d peak working
 # set; cpu request only (no cpu limit, avoids throttling). Peaks: controller

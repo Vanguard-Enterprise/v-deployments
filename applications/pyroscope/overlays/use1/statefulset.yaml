@@ -24,7 +24,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: pyroscope
-          image: grafana/pyroscope:1.7.0
+          image: grafana/pyroscope:1.21.1
           args:
             - -config.file=/etc/pyroscope/pyroscope.yaml
             - -config.expand-env=true

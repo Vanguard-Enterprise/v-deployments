@@ -2,11 +2,17 @@ testFramework:
   enabled: false
 persistence:
   enabled: false
+plugins:
+  - grafana-oncall-app
 admin:
   existingSecret: grafana-admin
   userKey: admin-user
   passwordKey: admin-password
 grafana.ini:
+  auth:
+    managed_service_accounts_enabled: true
+  feature_toggles:
+    enable: externalServiceAccounts
   database:
     type: postgres
     host: grafana-db-rw.grafana.svc.cluster.local:5432
@@ -34,6 +40,12 @@ grafana.ini:
     auto_login: true
     use_pkce: true
     use_refresh_token: true
+extraConfigmapMounts:
+  - name: grafana-oncall-plugin-provisioning
+    mountPath: /etc/grafana/provisioning/plugins/grafana-oncall-app-provisioning.yaml
+    subPath: grafana-oncall-app-provisioning.yaml
+    configMap: grafana-oncall-plugin-provisioning
+    readOnly: true
 envValueFrom:
   GF_DATABASE_PASSWORD:
     secretKeyRef:

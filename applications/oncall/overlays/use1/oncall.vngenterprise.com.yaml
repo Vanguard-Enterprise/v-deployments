@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: oncall
+  namespace: oncall
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`oncall.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: oncall-engine
+          port: 8080
+  tls:
+    store:
+      name: default
+      namespace: traefik

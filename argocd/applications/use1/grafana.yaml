@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     path: applications/grafana/overlays/use1/vanguard/
-    targetRevision: main
+    targetRevision: feat/self-hosted-irm
   destination:
     server: https://kubernetes.default.svc
     namespace: grafana

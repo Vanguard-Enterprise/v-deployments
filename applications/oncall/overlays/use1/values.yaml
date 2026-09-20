@@ -28,6 +28,8 @@ database:
   type: mysql
 mariadb:
   enabled: true
+  image:
+    repository: bitnamilegacy/mariadb
   auth:
     database: oncall
     existingSecret: oncall-secrets
@@ -41,6 +43,8 @@ mariadb:
 
 rabbitmq:
   enabled: true
+  image:
+    repository: bitnamilegacy/rabbitmq
   auth:
     existingPasswordSecret: oncall-secrets
     existingErlangSecret: oncall-secrets
@@ -53,6 +57,8 @@ rabbitmq:
 
 redis:
   enabled: true
+  image:
+    repository: bitnamilegacy/redis
   auth:
     existingSecret: oncall-secrets
     existingSecretPasswordKey: redis-password

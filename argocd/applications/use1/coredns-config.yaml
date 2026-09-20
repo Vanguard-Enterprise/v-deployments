@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/Vanguard-Enterprise/v-deployments
     path: applications/coredns-config/overlays/use1
-    targetRevision: main
+    targetRevision: feat/self-hosted-irm
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system

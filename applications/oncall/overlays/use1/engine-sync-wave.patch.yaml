@@ -1,6 +1,0 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: oncall-engine
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"

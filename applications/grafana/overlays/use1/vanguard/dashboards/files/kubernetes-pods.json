@@ -85,24 +85,6 @@
           ],
           "type": "tags"
         }
-      },
-      {
-        "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
-        },
-        "enable": true,
-        "hide": false,
-        "iconColor": "red",
-        "name": "oncall",
-        "target": {
-          "limit": 100,
-          "matchAny": false,
-          "tags": [
-            "oncall"
-          ],
-          "type": "tags"
-        }
       }
     ]
   },

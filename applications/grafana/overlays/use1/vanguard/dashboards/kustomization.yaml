@@ -62,12 +62,6 @@ configMapGenerator:
     options:
       annotations:
         grafana_dashboard_folder: Observability
-  - name: grafana-dashboard-tempo-overview
-    files:
-      - files/tempo-overview.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Observability
   - name: grafana-dashboard-alloy
     files:
       - files/alloy.json

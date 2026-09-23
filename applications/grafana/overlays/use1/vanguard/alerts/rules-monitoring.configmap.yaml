@@ -56,27 +56,6 @@ data:
             annotations:
               summary: "Loki appears down"
 
-          - uid: monitoring-tempo-down
-            title: TempoDown
-            condition: A
-            isPaused: false
-            data:
-              - refId: A
-                relativeTimeRange: { from: 300, to: 0 }
-                datasourceUid: mimir
-                model:
-                  expr: 'up{namespace="tempo"} == 0'
-                  instant: true
-                  range: false
-                  refId: A
-            noDataState: OK
-            for: 5m
-            labels:
-              severity: critical
-              team: platform
-            annotations:
-              summary: "Tempo appears down"
-
           - uid: monitoring-alloy-dropped-samples
             title: AlloyDroppedSamples
             condition: A

@@ -80,11 +80,11 @@
       "type": "stat",
       "id": 4,
       "title": "Backends Down",
-      "description": "LGTM backend targets (Mimir/Loki/Tempo/Pyroscope/Grafana) that are down.",
+      "description": "LGTM backend targets (Mimir/Loki/Pyroscope/Grafana) that are down.",
       "datasource": { "type": "prometheus", "uid": "mimir" },
       "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
       "targets": [
-        { "refId": "A", "expr": "count(up{namespace=~\"mimir|loki|tempo|pyroscope|grafana\"} == 0) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
+        { "refId": "A", "expr": "count(up{namespace=~\"mimir|loki|pyroscope|grafana\"} == 0) or vector(0)", "instant": true, "datasource": { "type": "prometheus", "uid": "mimir" } }
       ],
       "options": { "colorMode": "background", "graphMode": "none", "textMode": "value", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
       "fieldConfig": {

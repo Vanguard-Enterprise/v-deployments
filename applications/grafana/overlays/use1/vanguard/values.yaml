@@ -96,9 +96,8 @@ sidecar:
     label: grafana_dashboard
     labelValue: "1"
     searchNamespace: ALL
-    folderAnnotation: grafana_dashboard_folder
     provider:
-      foldersFromFilesStructure: true
+      foldersFromFilesStructure: false
   datasources:
     enabled: false
   alerts:

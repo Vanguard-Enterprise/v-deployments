@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: kubernetes
-        folder: platform
+        folder: General
         interval: 1m
         rules:
           - uid: kubernetes-pod-crashloop

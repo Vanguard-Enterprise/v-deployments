@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: argocd
-        folder: platform
+        folder: General
         interval: 1m
         rules:
           - uid: argocd-app-out-of-sync

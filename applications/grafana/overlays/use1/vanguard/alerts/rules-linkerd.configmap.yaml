@@ -23,7 +23,7 @@ data:
       # identity_cert_expiration_timestamp_seconds that the docs elsewhere imply.
       - orgId: 1
         name: linkerd
-        folder: General
+        folder: Alerts
         interval: 1m
         rules:
           # 30 days: enough runway to schedule the rotation calmly.

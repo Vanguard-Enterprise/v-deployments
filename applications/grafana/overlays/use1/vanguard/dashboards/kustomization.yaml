@@ -68,3 +68,9 @@ configMapGenerator:
     options:
       annotations:
         grafana_dashboard_folder: Observability
+  - name: grafana-dashboard-hubble-overview
+    files:
+      - files/hubble-overview.json
+    options:
+      annotations:
+        grafana_dashboard_folder: Observability

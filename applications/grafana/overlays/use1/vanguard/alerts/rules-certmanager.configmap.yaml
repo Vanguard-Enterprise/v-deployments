@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: cert-manager
-        folder: platform
+        folder: General
         interval: 1m
         rules:
           - uid: certmanager-absent

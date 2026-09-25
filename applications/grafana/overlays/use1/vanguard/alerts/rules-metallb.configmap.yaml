@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: metallb
-        folder: platform
+        folder: General
         interval: 1m
         rules:
           - uid: metallb-config-not-loaded

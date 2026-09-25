@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: traefik
-        folder: General
+        folder: Alerts
         interval: 1m
         rules:
           - uid: traefik-5xx-rate

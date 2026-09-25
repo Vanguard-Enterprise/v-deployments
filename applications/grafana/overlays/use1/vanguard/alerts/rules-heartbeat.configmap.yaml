@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: heartbeat
-        folder: General
+        folder: Alerts
         interval: 1m
         rules:
           - uid: heartbeat-weekly

@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: monitoring
-        folder: General
+        folder: Alerts
         interval: 1m
         rules:
           - uid: monitoring-mimir-down

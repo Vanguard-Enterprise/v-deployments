@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: openbao
-        folder: General
+        folder: Alerts
         interval: 1m
         rules:
           # Note: OpenBao does not currently export core/seal telemetry to Mimir, so the

@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: longhorn
-        folder: General
+        folder: Alerts
         interval: 1m
         rules:
           - uid: longhorn-volume-degraded

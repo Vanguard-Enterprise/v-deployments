@@ -7,7 +7,7 @@ images:
   digest: sha256:c950de67b424b585db24bb89347da4e8bcd57a4a6553e4e253472faa207153bd
   newTag: main
 - name: ghcr.io/vanguard-enterprise/vanguard-frontend
-  digest: sha256:33ab6449030ebd8fe99fcdd5c2fb9a83e3769958150d5be849ea66b5180adc80
+  digest: sha256:b926b065e14b94d8d78c3c1ac884f2da918cdcd24264e463fa7064ef1f78ac32
   newTag: main
 patches:
 - path: api-rollout.yaml

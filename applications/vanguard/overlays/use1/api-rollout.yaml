@@ -9,3 +9,10 @@ spec:
     rollingUpdate:
       maxSurge: 0
       maxUnavailable: 1
+  template:
+    spec:
+      containers:
+      - name: api
+        resources:
+          requests:
+            cpu: 75m

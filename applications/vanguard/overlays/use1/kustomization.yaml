@@ -9,3 +9,5 @@ images:
 - name: ghcr.io/vanguard-enterprise/vanguard-frontend
   digest: sha256:33ab6449030ebd8fe99fcdd5c2fb9a83e3769958150d5be849ea66b5180adc80
   newTag: main
+patches:
+- path: api-rollout.yaml

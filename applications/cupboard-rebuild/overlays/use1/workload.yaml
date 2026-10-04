@@ -4,6 +4,8 @@ metadata:
   name: cupboard-api
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: cupboard-api
@@ -85,6 +87,8 @@ metadata:
   name: cupboard-web
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: cupboard-web

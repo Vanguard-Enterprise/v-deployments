@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cupboard-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cupboard-api
+  template:
+    metadata:
+      labels:
+        app: cupboard-api
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: ghcr.io/vanguard-enterprise/cupboard-api:sha-676643c2f38150496000425ddcb3cae80bcd57e1
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cupboard-app
+                  key: uri
+            - name: CUPBOARD_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cupboard-encryption
+                  key: CUPBOARD_SECRET_KEY
+            - name: CUPBOARD_WEB_ORIGINS
+              value: https://cupboard-staging.vngenterprise.com
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cupboard-api
+spec:
+  selector:
+    app: cupboard-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cupboard-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cupboard-web
+  template:
+    metadata:
+      labels:
+        app: cupboard-web
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: web
+          image: ghcr.io/vanguard-enterprise/cupboard-web:sha-676643c2f38150496000425ddcb3cae80bcd57e1
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: CUPBOARD_API_URL
+              value: http://cupboard-api:8080
+          startupProbe:
+            httpGet:
+              path: /login
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /login
+              port: http
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: http
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cupboard-web
+spec:
+  selector:
+    app: cupboard-web
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http

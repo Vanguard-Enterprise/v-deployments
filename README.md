@@ -15,6 +15,9 @@ i used to do this by myself no clanker, but claude is in a point where i trust i
 is `applications/cupboard-rebuild/overlays/use1`. The `cupboard-rebuild` namespace
 holds one Next.js runtime, one Rust API runtime, and a fresh CloudNativePG cluster.
 The inactive legacy Cupboard overlays are not used.
+Both single-replica Deployments use Recreate because USE1 has no spare requested
+CPU for surge pods. Releases and restarts briefly interrupt the web/API while
+replacing their pods; PostgreSQL and saved configuration remain in place.
 
 Promote both images together from a successful Cupboard main-branch `Check` run.
 Set their `sha-<commit>` tags in `workload.yaml`, render with

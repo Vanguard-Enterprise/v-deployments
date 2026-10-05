@@ -7,3 +7,8 @@ resources:
   - secrets.yaml
   - workload.yaml
   - ingress.yaml
+images:
+  - name: ghcr.io/vanguard-enterprise/cupboard-api
+    newTag: sha-2ac615c89e2a4b35d1e93bcac4a29b3181c9e77e
+  - name: ghcr.io/vanguard-enterprise/cupboard-web
+    newTag: sha-2ac615c89e2a4b35d1e93bcac4a29b3181c9e77e

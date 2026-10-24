@@ -32,7 +32,7 @@ spec:
             - netbird.vngenterprise.com
       containers:
         - name: client
-          image: netbirdio/netbird:0.80.0
+          image: netbirdio/netbird:0.81.4
           imagePullPolicy: IfNotPresent
           # Memory bound (use1 is memory-bound). Measured working set ~40MiB
           # (cgroup memory.current), so 160Mi is ~4x headroom. NB: the Jun 28

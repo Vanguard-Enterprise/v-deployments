@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: netbirdio/dashboard:v2.94.0
+          image: netbirdio/dashboard:v2.95.0
           envFrom:
             - configMapRef:
                 name: netbird-dashboard-env
@@ -53,7 +53,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: netbirdio/netbird-server:0.80.0
+          image: netbirdio/netbird-server:0.81.4
           # Memory bound (use1 is memory-bound). limit ~1.5x 7d peak (~84Mi).
           resources:
             requests:

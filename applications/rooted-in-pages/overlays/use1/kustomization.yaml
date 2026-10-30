@@ -5,5 +5,7 @@ resources:
 images:
 - name: ghcr.io/vanguard-enterprise/rooted-in-pages-api
   newTag: main
+  digest: sha256:5aa357ae637b27aaa089499f20247f98e264e1ae5ae2e5486cdbb4b56aabb209
 - name: ghcr.io/vanguard-enterprise/rooted-in-pages-web
   newTag: main
+  digest: sha256:f4476b305258d9d6f44e2499d94b823023ea8c9a788a4a24a925bf8c230d1ea0

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rooted-in-pages-api-config
+  namespace: rooted-in-pages
+data:
+  BIND_ADDR: 0.0.0.0:8080
+  PUBLIC_URL: https://rooted-in-pages.vngenterprise.com
+  SHOPIFY_STORE_DOMAIN: d8yym6-wk.myshopify.com

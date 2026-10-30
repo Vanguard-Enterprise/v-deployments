@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rooted-in-pages-web
+  namespace: rooted-in-pages
+  labels:
+    app.kubernetes.io/name: rooted-in-pages-web
+    app.kubernetes.io/part-of: rooted-in-pages
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rooted-in-pages-web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rooted-in-pages-web
+        app.kubernetes.io/part-of: rooted-in-pages
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        fsGroup: 1000
+      containers:
+        - name: web
+          image: ghcr.io/vanguard-enterprise/rooted-in-pages-web:main
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: API_URL
+              value: http://rooted-in-pages-api:8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+          volumeMounts:
+            - name: next-cache
+              mountPath: /app/.next/cache
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+      volumes:
+        - name: next-cache
+          emptyDir: {}

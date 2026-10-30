@@ -29,3 +29,6 @@ path "kv/data/cnpg/*" {
 path "kv/data/cupboard/*" {
   capabilities = ["read"]
 }
+path "kv/data/rooted-in-pages/*" {
+  capabilities = ["read"]
+}

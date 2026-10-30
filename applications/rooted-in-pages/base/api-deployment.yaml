@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rooted-in-pages-api
+  namespace: rooted-in-pages
+  labels:
+    app.kubernetes.io/name: rooted-in-pages-api
+    app.kubernetes.io/part-of: rooted-in-pages
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rooted-in-pages-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rooted-in-pages-api
+        app.kubernetes.io/part-of: rooted-in-pages
+    spec:
+      imagePullSecrets:
+        - name: github-pull-secret
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: ghcr.io/vanguard-enterprise/rooted-in-pages-api:main
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: rooted-in-pages-api-config
+            - secretRef:
+                name: rooted-in-pages-api-secrets
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 20
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              memory: 128Mi

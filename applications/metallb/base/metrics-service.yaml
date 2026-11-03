@@ -8,9 +8,9 @@ metadata:
     component: controller
 spec:
   ports:
-    - name: monitoring
-      port: 7472
-      targetPort: 7472
+    - name: metricshttps
+      port: 9120
+      targetPort: 9120
   selector:
     app: metallb
     component: controller
@@ -26,12 +26,9 @@ metadata:
     component: speaker
 spec:
   ports:
-    - name: monitoring
-      port: 7472
-      targetPort: 7472
-    - name: frr-metrics
-      port: 7473
-      targetPort: 7473
+    - name: metricshttps
+      port: 9120
+      targetPort: 9120
   selector:
     app: metallb
     component: speaker

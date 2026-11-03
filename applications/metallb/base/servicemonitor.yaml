@@ -14,14 +14,13 @@ spec:
     matchNames:
       - metallb-system
   endpoints:
-    - port: monitoring
-      interval: 30s
-      path: /metrics
-      relabelings:
-        - sourceLabels: [__meta_kubernetes_pod_node_name]
-          targetLabel: instance
-          action: replace
-    - port: frr-metrics
+    # Since v0.16.0 MetalLB serves metrics over HTTPS (self-signed) and checks the
+    # scraper's bearer token via TokenReview/SubjectAccessReview (see metrics-auth-rbac.yaml).
+    - port: metricshttps
+      scheme: https
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        insecureSkipVerify: true
       interval: 30s
       path: /metrics
       relabelings:

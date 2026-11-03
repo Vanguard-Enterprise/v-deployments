@@ -1,0 +1,30 @@
+# Lets the MetalLB controller and speakers authenticate and authorize metrics scrapers
+# (TokenReview + SubjectAccessReview). Upstream ships this only in the
+# metallb-native-prometheus.yaml variant; we vendor the plain native manifest.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: metallb-system:metrics-auth
+rules:
+  - apiGroups: [authentication.k8s.io]
+    resources: [tokenreviews]
+    verbs: [create]
+  - apiGroups: [authorization.k8s.io]
+    resources: [subjectaccessreviews]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metallb-system:metrics-auth
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: metallb-system:metrics-auth
+subjects:
+  - kind: ServiceAccount
+    name: controller
+    namespace: metallb-system
+  - kind: ServiceAccount
+    name: speaker
+    namespace: metallb-system

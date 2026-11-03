@@ -18,7 +18,7 @@ resources:
   - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/config/crd/bases/postgresql.cnpg.io_subscriptions.yaml
 helmCharts:
   - name: cloudnative-pg
-    version: "0.29.0"
+    version: "0.29.1"
     repo: https://cloudnative-pg.io/charts/
     releaseName: cloudnative-pg
     namespace: cnpg-operator

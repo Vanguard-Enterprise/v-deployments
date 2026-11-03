@@ -28,3 +28,41 @@ subjects:
   - kind: ServiceAccount
     name: speaker
     namespace: metallb-system
+---
+# Scraper identity. Alloy refuses ServiceMonitor bearerTokenFile (arbitrary file
+# access), so the ServiceMonitor references this long-lived token Secret instead.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: metrics-scraper
+  namespace: metallb-system
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: metrics-scraper-token
+  namespace: metallb-system
+  annotations:
+    kubernetes.io/service-account.name: metrics-scraper
+type: kubernetes.io/service-account-token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: metallb-system:metrics-reader
+rules:
+  - nonResourceURLs: [/metrics]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metallb-system:metrics-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: metallb-system:metrics-reader
+subjects:
+  - kind: ServiceAccount
+    name: metrics-scraper
+    namespace: metallb-system

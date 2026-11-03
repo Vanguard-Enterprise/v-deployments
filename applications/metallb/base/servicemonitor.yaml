@@ -18,7 +18,11 @@ spec:
     # scraper's bearer token via TokenReview/SubjectAccessReview (see metrics-auth-rbac.yaml).
     - port: metricshttps
       scheme: https
-      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      authorization:
+        type: Bearer
+        credentials:
+          name: metrics-scraper-token
+          key: token
       tlsConfig:
         insecureSkipVerify: true
       interval: 30s

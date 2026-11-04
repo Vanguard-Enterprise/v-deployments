@@ -10,6 +10,9 @@ spec:
   # the recovery path. Replica volumes (Retain reclaim policy) are cleaned up
   # manually post-migration.
   instances: 1
+  # Single instance: the operator PDB (minAvailable 1 on the primary) can never be
+  # satisfied, so it blocks every node drain forever. Drains restart the DB once.
+  enablePDB: false
   primaryUpdateStrategy: unsupervised
   # Memory bound. Postgres real (anon) usage is tiny (~80Mi); the multi-GB cgroup
   # figure is reclaimable OS page cache. request covers shared_buffers (CNPG

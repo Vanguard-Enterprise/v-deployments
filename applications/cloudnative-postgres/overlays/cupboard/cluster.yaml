@@ -9,6 +9,9 @@ spec:
   # for staging (the baseline DB is throwaway); add barmanObjectStore +
   # ScheduledBackup when a prod cluster lands (mirror the rustlens overlay).
   instances: 1
+  # Single instance: the operator PDB (minAvailable 1 on the primary) can never be
+  # satisfied, so it blocks every node drain forever. Drains restart the DB once.
+  enablePDB: false
   primaryUpdateStrategy: unsupervised
   # Postgres real (anon) usage is tiny; the multi-GB cgroup figure is reclaimable
   # OS page cache. request covers shared_buffers (CNPG auto-tunes to ~25% of the

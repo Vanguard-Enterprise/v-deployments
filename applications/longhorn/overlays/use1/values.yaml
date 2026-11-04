@@ -15,6 +15,9 @@ defaultBackupStore:
 defaultSettings:
   storageOverProvisioningPercentage: "300"
   replicaAutoBalance: best-effort
+  # Evict the last replica off a draining node instead of blocking the drain
+  # forever (longhorn-single volumes like pyroscope have only one replica).
+  nodeDrainPolicy: block-for-eviction-if-contains-last-replica
 persistence:
   defaultClass: true
   defaultFsType: ext4

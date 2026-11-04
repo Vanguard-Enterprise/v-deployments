@@ -7,6 +7,9 @@ spec:
   # Deliberately non-HA for now. Backups will be added separately before this
   # database is treated as durable production storage.
   instances: 1
+  # Single instance: the operator PDB (minAvailable 1 on the primary) can never be
+  # satisfied, so it blocks every node drain forever. Drains restart the DB once.
+  enablePDB: false
   primaryUpdateStrategy: unsupervised
   resources:
     requests:

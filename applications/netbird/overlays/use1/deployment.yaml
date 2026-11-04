@@ -53,7 +53,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: netbirdio/netbird-server:0.81.4
+          image: netbirdio/netbird-server:0.82.0
           # Memory bound (use1 is memory-bound). limit ~1.5x 7d peak (~84Mi).
           resources:
             requests:

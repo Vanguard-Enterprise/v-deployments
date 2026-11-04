@@ -7,7 +7,7 @@ resources:
   - pelican-wings.yaml
 helmCharts:
   - name: traefik
-    version: "41.5.0"
+    version: "42.3.0"
     repo: https://helm.traefik.io/traefik
     releaseName: traefik
     valuesFile: values.yaml

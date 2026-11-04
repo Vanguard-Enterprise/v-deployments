@@ -69,7 +69,7 @@ controller:
   # peak. limit ~1.5x peak; GOMEMLIMIT (~90% of limit) GCs before the hard cap.
   resources:
     requests:
-      cpu: 250m
+      cpu: 100m
       memory: 768Mi
     limits:
       memory: 1536Mi
@@ -98,7 +98,7 @@ repoServer:
   # 7d peak ~455Mi (manifest rendering / kustomize+helm). cpu request only.
   resources:
     requests:
-      cpu: 100m
+      cpu: 50m
       memory: 256Mi
     limits:
       memory: 768Mi

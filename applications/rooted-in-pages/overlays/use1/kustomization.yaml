@@ -8,4 +8,4 @@ images:
   digest: sha256:0b9e67b1dfd3a8edd84003a62adf383c87665a157f49f5cf04dfd08b7bf31425
 - name: ghcr.io/vanguard-enterprise/rooted-in-pages-web
   newTag: main
-  digest: sha256:0b7b80ed4130a16f830a8ffae4bc977e6c083fd70ed8d7b3b28395b048a6ff1c
+  digest: sha256:fa34ad929814a25d0b28166973dedb1c11ab88eaf0066f98b071ae1b42d090a1

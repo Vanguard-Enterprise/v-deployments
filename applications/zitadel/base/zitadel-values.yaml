@@ -49,7 +49,7 @@ env:
     value: "345MiB"
 resources:
   requests:
-    cpu: 100m
+    cpu: 50m
     memory: 160Mi
   limits:
     memory: 384Mi

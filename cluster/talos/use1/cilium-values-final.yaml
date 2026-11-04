@@ -1,3 +1,5 @@
+# Live release: chart cilium/cilium 1.20.4 (upgraded 1.19.6 -> 1.19.10 -> 1.20.4 on 2026-11-04).
+# Apply: helm upgrade cilium cilium/cilium -n kube-system --version <v> -f this-file
 # Cilium FINAL (post-migration) values for use1 (Phase 7 PR5, Window B step 5).
 #
 # Applied after all 6 nodes are on Cilium and flannel is removed. Differences from

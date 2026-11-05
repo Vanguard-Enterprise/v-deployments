@@ -18,7 +18,7 @@ defaultSettings:
   # Live-upgrade volume engines after a Longhorn upgrade, one volume per node at a time.
   concurrentAutomaticEngineUpgradePerNodeLimit: "1"
   # Evict the last replica off a draining node instead of blocking the drain
-  # forever (longhorn-single volumes like pyroscope have only one replica).
+  # forever (longhorn-single volumes have only one replica).
   nodeDrainPolicy: block-for-eviction-if-contains-last-replica
 persistence:
   defaultClass: true

@@ -72,18 +72,10 @@ datasources:
           httpHeaderName1: "X-Scope-OrgID"
         secureJsonData:
           httpHeaderValue1: "logs"
-      - name: Pyroscope
-        uid: pyroscope
-        type: grafana-pyroscope-datasource
-        access: proxy
-        url: http://pyroscope.pyroscope.svc.cluster.local:4040
-        editable: false
-        jsonData:
-          httpHeaderName1: "X-Scope-OrgID"
-        secureJsonData:
-          httpHeaderValue1: "profiles"
     deleteDatasources:
       - name: Tempo
+        orgId: 1
+      - name: Pyroscope
         orgId: 1
 sidecar:
   # Memory bound for the sc-dashboard / sc-alerts sidecars (use1 is

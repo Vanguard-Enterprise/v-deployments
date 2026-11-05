@@ -5,5 +5,5 @@ metadata:
   namespace: rooted-in-pages
 data:
   BIND_ADDR: 0.0.0.0:8080
-  PUBLIC_URL: https://rooted-in-pages.vngenterprise.com
+  PUBLIC_URL: https://rooted-in-pages.com
   SHOPIFY_STORE_DOMAIN: d8yym6-wk.myshopify.com

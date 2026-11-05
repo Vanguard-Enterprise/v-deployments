@@ -4,6 +4,7 @@ resources:
   - ../../base
   - vngenterprise.com.yaml
   - route-guard.com.yaml
+  - rooted-in-pages.com.yaml
   - external-secret.yaml
   - mancini.beer.yaml
   - clusterissuer-http01.yaml

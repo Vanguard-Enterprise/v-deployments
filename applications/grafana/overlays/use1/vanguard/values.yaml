@@ -73,6 +73,8 @@ datasources:
         secureJsonData:
           httpHeaderValue1: "logs"
     deleteDatasources:
+      - name: Mimir-Traces
+        orgId: 1
       - name: Tempo
         orgId: 1
       - name: Pyroscope

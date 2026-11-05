@@ -1,5 +1,5 @@
 replicaCount: 3
-# Chart 10.4.0 defaults to v4.19.2, which predates the v4.19.5 security fixes.
+# Chart 10.5.0 defaults to v4.19.2, which predates the v4.19.5 security fixes.
 # Remove this override once a chart release ships a newer appVersion.
 image:
   tag: v4.20.1

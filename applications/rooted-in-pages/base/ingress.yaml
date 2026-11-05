@@ -9,15 +9,70 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`rooted-in-pages.vngenterprise.com`) && (PathPrefix(`/api`) || PathPrefix(`/auth`))
+    - match: Host(`rooted-in-pages.com`) && (PathPrefix(`/api`) || PathPrefix(`/auth`))
       kind: Rule
       priority: 100
       services:
         - name: rooted-in-pages-api
           port: 8080
-    - match: Host(`rooted-in-pages.vngenterprise.com`)
+    - match: Host(`rooted-in-pages.com`)
       kind: Rule
       priority: 1
+      services:
+        - name: rooted-in-pages-web
+          port: 3000
+  tls:
+    secretName: rooted-in-pages-tls
+---
+# www and the old test address send visitors to rooted-in-pages.com, so sign-in
+# cookies and the Shopify callback only ever see one host.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: to-rooted-in-pages-com
+  namespace: rooted-in-pages
+spec:
+  redirectRegex:
+    regex: ^https?://[^/]+/?(.*)
+    replacement: https://rooted-in-pages.com/${1}
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rooted-in-pages-www
+  namespace: rooted-in-pages
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`www.rooted-in-pages.com`)
+      kind: Rule
+      middlewares:
+        - name: to-rooted-in-pages-com
+      services:
+        - name: rooted-in-pages-web
+          port: 3000
+  tls:
+    secretName: rooted-in-pages-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rooted-in-pages-old-host
+  namespace: rooted-in-pages
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`rooted-in-pages.vngenterprise.com`)
+      kind: Rule
+      middlewares:
+        - name: to-rooted-in-pages-com
       services:
         - name: rooted-in-pages-web
           port: 3000

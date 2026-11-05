@@ -82,6 +82,9 @@ datasources:
           httpHeaderName1: "X-Scope-OrgID"
         secureJsonData:
           httpHeaderValue1: "profiles"
+    deleteDatasources:
+      - name: Tempo
+        orgId: 1
 sidecar:
   # Memory bound for the sc-dashboard / sc-alerts sidecars (use1 is
   # memory-bound). limit ~1.5x observed 7d peak (~99Mi each); cpu request only.
@@ -108,7 +111,7 @@ sidecar:
   notifiers:
     enabled: false
 resources:
-  requests: { cpu: 100m, memory: 256Mi }
-  limits:   { cpu: 500m, memory: 1Gi }
+  requests: {cpu: 100m, memory: 256Mi}
+  limits: {cpu: 500m, memory: 1Gi}
 deploymentStrategy:
   type: Recreate

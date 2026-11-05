@@ -25,6 +25,10 @@ extraArgs:
   - 0.0.0.0:8000
   - --endpoint-path
   - /mcp
+  # mcp-grafana 2.x rejects any Host header not on this list ("host not
+  # allowed"). Allow the ingress hostname and the in-cluster Service names.
+  - --allowed-hosts
+  - mcp-grafana.vngenterprise.com,mcp-grafana,mcp-grafana:8000,mcp-grafana.mcp-grafana,mcp-grafana.mcp-grafana:8000,mcp-grafana.mcp-grafana.svc,mcp-grafana.mcp-grafana.svc:8000,mcp-grafana.mcp-grafana.svc.cluster.local,mcp-grafana.mcp-grafana.svc.cluster.local:8000
 
 # Memory bound (use1 is memory-bound). limit ~1.5x observed 7d peak (~20Mi);
 # cpu request only.

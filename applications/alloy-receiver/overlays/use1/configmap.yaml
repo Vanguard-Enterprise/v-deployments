@@ -5,7 +5,7 @@ metadata:
   namespace: alloy-receiver
 data:
   config.alloy: |
-    // OTLP receiver for traces, metrics, and logs.
+    // OTLP receiver for metrics and logs.
     otelcol.receiver.otlp "default" {
       grpc {
         endpoint = "0.0.0.0:4317"
@@ -14,7 +14,6 @@ data:
         endpoint = "0.0.0.0:4318"
       }
       output {
-        traces  = [otelcol.processor.batch.traces.input]
         metrics = [otelcol.processor.transform.drop_high_cardinality.input]
         logs    = [otelcol.processor.batch.logs.input]
       }
@@ -45,22 +44,6 @@ data:
       }
       output {
         metrics = [otelcol.processor.batch.metrics.input]
-      }
-    }
-
-    otelcol.processor.batch "traces" {
-      output {
-        traces = [otelcol.exporter.otlp.tempo.input]
-      }
-    }
-
-    otelcol.exporter.otlp "tempo" {
-      client {
-        endpoint = "tempo.tempo.svc.cluster.local:4317"
-        headers  = { "X-Scope-OrgID" = "traces" }
-        tls {
-          insecure = true
-        }
       }
     }
 

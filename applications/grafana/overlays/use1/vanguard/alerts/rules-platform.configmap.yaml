@@ -11,7 +11,7 @@ data:
     groups:
       - orgId: 1
         name: platform
-        folder: platform
+        folder: Alerts
         interval: 1m
         rules:
           - uid: platform-node-not-ready

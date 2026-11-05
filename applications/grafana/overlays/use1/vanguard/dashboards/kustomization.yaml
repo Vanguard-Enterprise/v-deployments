@@ -11,66 +11,33 @@ configMapGenerator:
   - name: grafana-dashboard-production-status
     files:
       - files/production-status.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Overview
   - name: grafana-dashboard-kubernetes-cluster
     files:
       - files/kubernetes-cluster.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-kubernetes-pods
     files:
       - files/kubernetes-pods.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-longhorn
     files:
       - files/longhorn.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-cnpg
     files:
       - files/cnpg.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-traefik
     files:
       - files/traefik.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-argocd
     files:
       - files/argocd.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Platform
   - name: grafana-dashboard-mimir-overview
     files:
       - files/mimir-overview.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Observability
   - name: grafana-dashboard-loki-overview
     files:
       - files/loki-overview.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Observability
-  - name: grafana-dashboard-tempo-overview
-    files:
-      - files/tempo-overview.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Observability
   - name: grafana-dashboard-alloy
     files:
       - files/alloy.json
-    options:
-      annotations:
-        grafana_dashboard_folder: Observability
+  - name: grafana-dashboard-hubble-overview
+    files:
+      - files/hubble-overview.json

@@ -33,6 +33,12 @@ data:
         # is unchanged so the acme-solver Ingress still routes. Remove after the dry
         # run, or generalize (per-domain automation) for production custom domains.
         rewrite name store.vng.bet traefik.traefik.svc.cluster.local
+        # Keep Grafana's server-side requests on the internal Traefik path.
+        # The public record may be internal-only or may resolve to a WAN address
+        # that the cluster cannot NAT-reflect to itself.
+        # Preserve the original Host header so TLS and IngressRoute matching
+        # continues to use the public name.
+        rewrite name grafana.vngenterprise.com traefik-internal.traefik.svc.cluster.local
         log . {
             class error
         }

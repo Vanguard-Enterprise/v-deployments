@@ -8,9 +8,10 @@ resources:
   - ./alerts
   - ./dashboards
 helmCharts:
+  # The chart moved to grafana-community; the old grafana repo stopped at 10.5.15.
   - name: grafana
-    version: "10.5.15"
-    repo: https://grafana.github.io/helm-charts
+    version: "14.4.0"
+    repo: https://grafana-community.github.io/helm-charts
     releaseName: grafana
     namespace: grafana
     valuesFile: values.yaml

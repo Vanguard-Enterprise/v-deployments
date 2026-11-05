@@ -34,3 +34,9 @@ resources:
     memory: 32Mi
   limits:
     memory: 64Mi
+
+# Chart >= 0.30 generates a random bearer token on every render when this is
+# empty, which never settles under Argo and rotates on each sync. Auth is
+# already enforced by the Traefik basicAuth middleware, so disable it here.
+serverAuth:
+  token: null

@@ -24,10 +24,14 @@ spec:
           type: RuntimeDefault
       containers:
         - name: pyroscope
-          image: grafana/pyroscope:1.21.1
+          image: grafana/pyroscope:2.4.3
           args:
             - -config.file=/etc/pyroscope/pyroscope.yaml
             - -config.expand-env=true
+            # Pyroscope 2.x defaults to the v1-v2-dual storage layer. Stay on the
+            # v1 (ingester) layer we already run; migrating to v2 is a separate step.
+            - -architecture.storage=v1
+            - -write-path=ingester
           ports:
             - name: http
               containerPort: 4040

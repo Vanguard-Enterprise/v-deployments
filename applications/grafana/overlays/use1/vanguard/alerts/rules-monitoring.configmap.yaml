@@ -76,3 +76,52 @@ data:
               team: platform
             annotations:
               summary: "Alloy is dropping samples on remote_write"
+
+          # Mimir watching itself is blind: on 2026-11-07 its disk filled, it
+          # stopped storing samples, every rule above went NoData -> OK, and
+          # PVCUsageHigh auto-resolved at the moment things broke. These two
+          # rules fail loud instead.
+          - uid: monitoring-mimir-no-fresh-data
+            title: MimirNoFreshData
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  # node_load1 comes from every node; if none arrived in the
+                  # last 10m, Mimir is not ingesting.
+                  expr: 'absent_over_time(node_load1[10m])'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            execErrState: Alerting
+            for: 10m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Mimir has stored no new samples for 10m (or cannot be queried). Metrics-based alerts are blind."
+
+          - uid: monitoring-mimir-errors-in-logs
+            title: MimirErrorsInLogs
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: loki
+                model:
+                  # Evaluated from Loki so it still works when Mimir is broken.
+                  expr: 'sum(count_over_time({namespace="mimir"} |~ "no space left on device|unable to open TSDB|module failed|corruption in segment|WAL truncation" [10m])) > 0'
+                  queryType: instant
+                  refId: A
+            noDataState: OK
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Mimir is logging storage errors (disk full, WAL corruption, or TSDB failing to open)"

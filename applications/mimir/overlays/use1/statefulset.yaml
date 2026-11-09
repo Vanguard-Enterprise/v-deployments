@@ -55,6 +55,13 @@ spec:
             httpGet: { path: /ready, port: 8080 }
             initialDelaySeconds: 30
             periodSeconds: 10
+          # WAL replay after an unclean shutdown can take several minutes. The
+          # startup probe holds off liveness until /ready first succeeds, so a
+          # long replay is not killed and restarted from scratch in a loop.
+          startupProbe:
+            httpGet: { path: /ready, port: 8080 }
+            periodSeconds: 10
+            failureThreshold: 90
           livenessProbe:
             httpGet: { path: /ready, port: 8080 }
             initialDelaySeconds: 60

@@ -42,6 +42,15 @@ spec:
                   key: CUPBOARD_SECRET_KEY
             - name: CUPBOARD_WEB_ORIGINS
               value: https://cupboard-staging.vngenterprise.com
+            # Wasabi bucket cupboard-staging-use1 (us-east-2). Wasabi user svc-cupboard holds
+            # only the managed policy cupboard-staging-use1-rw.
+            - name: CUPBOARD_S3_ENDPOINT
+              value: https://s3.us-east-2.wasabisys.com
+            - name: AWS_REGION
+              value: us-east-2
+          envFrom:
+            - secretRef:
+                name: cupboard-storage
           startupProbe:
             httpGet:
               path: /health/ready

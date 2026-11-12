@@ -33,12 +33,18 @@ data:
         bucket_name: ${TSDB_BUCKET_NAME}
       bucket_store:
         sync_dir: /data/tsdb-sync
+        # Load blocks before queries begin reading them from object storage.
+        ignore_blocks_within: 3h
       tsdb:
         dir: /data/tsdb
         block_ranges_period: ["1h"]
         retention_period: 6h
         head_compaction_interval: 15m
         head_compaction_idle_timeout: 1h
+
+    querier:
+      # Read uploaded blocks before the ingester's 6h local retention expires.
+      query_store_after: 4h
 
     ruler_storage:
       backend: s3

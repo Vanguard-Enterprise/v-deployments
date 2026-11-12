@@ -32,6 +32,14 @@ API. External Secrets reads `secret_key` from OpenBao
 backups; changing it without re-encryption makes saved RCON passwords unreadable.
 The web runtime receives no database or encryption credentials.
 
+File and logo uploads use the private Wasabi bucket `cupboard-staging-use1` in
+`us-east-2`. External Secrets reads `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`,
+and `BUCKET_NAME` from OpenBao `kv/cupboard/rebuild/staging-s3` into the API's
+`cupboard-storage` Secret. The key belongs to Wasabi user `svc-cupboard`, whose
+only permission is the managed policy `cupboard-staging-use1-rw`: get, put, and
+delete on `organizations/*/files/*` and `organizations/*/logos/*`. Back up the
+bucket together with the database, because file metadata lives in PostgreSQL.
+
 Inspect the deployment with:
 
 ```bash

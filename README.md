@@ -53,3 +53,35 @@ The namespace and database opt out of Argo pruning. PostgreSQL uses retained
 Longhorn storage. Restarts and image promotion must preserve the database and
 OpenBao key. Staging has one database instance and no off-cluster backup schedule;
 configure and test backups before treating it as production storage.
+
+## Pocket ID
+
+`argocd/applications/use1/pocket-id.yaml` deploys [Pocket ID](https://github.com/pocket-id/pocket-id),
+the passkey-only OIDC provider replacing Zitadel, at `https://id.vngenterprise.com`.
+Its overlay is `applications/pocket-id/overlays/use1`. Zitadel keeps serving
+`accounts.vngenterprise.com` until every app has moved over.
+
+The route is public through external Traefik, limited by the `cloudflare-only`
+middleware to Cloudflare edges, the pod CIDR, and the LAN. `cloudflare-ddns`
+manages the proxied `id.vngenterprise.com` record.
+
+Pocket ID runs one replica with Recreate, because multi-instance support is not
+released yet (pocket-id/pocket-id#1549). Uploaded logos and profile pictures are
+stored in Postgres (`FILE_BACKEND=database`), so the pod keeps no state on disk.
+
+CloudNativePG cluster `pocket-id-db` (one instance, Longhorn) generates
+`pocket-id-db-app`, whose `uri` is the database connection string. External
+Secrets reads `encryption_key` from OpenBao `kv/pocket-id/use1` into the
+`pocket-id` Secret. Keep that key with any database backup: Pocket ID encrypts
+stored secrets with it. There is no off-cluster backup yet; add a
+`barmanObjectStore` and `ScheduledBackup` like `cnpg-grafana` before moving real
+logins off Zitadel.
+
+The first person to open `https://id.vngenterprise.com/setup` becomes the admin,
+so finish setup right after the first deploy.
+
+```bash
+kubectl --context use1-oidc -n argocd get application pocket-id
+kubectl --context use1-oidc -n pocket-id get pods,clusters,externalsecrets
+kubectl --context use1-oidc -n pocket-id logs deploy/pocket-id
+```

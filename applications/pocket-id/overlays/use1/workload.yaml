@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pocket-id
+spec:
+  # One replica until Pocket ID ships multi-instance support
+  # (https://github.com/pocket-id/pocket-id/issues/1549). Recreate so a rollout
+  # never runs two copies against the same database.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: pocket-id
+  template:
+    metadata:
+      labels:
+        app: pocket-id
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: pocket-id
+          image: ghcr.io/pocket-id/pocket-id:v2.19.2-distroless
+          ports:
+            - name: http
+              containerPort: 1411
+          env:
+            - name: APP_URL
+              value: https://id.vngenterprise.com
+            - name: DB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: pocket-id-db-app
+                  key: uri
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pocket-id
+                  key: ENCRYPTION_KEY
+            # Logos and profile pictures live in Postgres, so the pod keeps no
+            # state on disk and a future second replica needs no shared volume.
+            - name: FILE_BACKEND
+              value: database
+            # Only Traefik (a pod) may set X-Forwarded-For. External Traefik
+            # already resolves the real client IP from Cloudflare, so rate
+            # limiting and audit logs see the visitor, not the proxy.
+            - name: TRUST_PROXY
+              value: 10.245.0.0/16
+            - name: ANALYTICS_DISABLED
+              value: "true"
+            - name: LOG_JSON
+              value: "true"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        # Scratch only (temp files, optional GeoLite cache). Real data is in Postgres.
+        - name: data
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pocket-id
+spec:
+  selector:
+    app: pocket-id
+  ports:
+    - name: http
+      port: 1411
+      targetPort: http

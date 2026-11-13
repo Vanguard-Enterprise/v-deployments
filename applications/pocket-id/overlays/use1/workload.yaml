@@ -48,11 +48,16 @@ spec:
             # state on disk and a future second replica needs no shared volume.
             - name: FILE_BACKEND
               value: database
-            # Only Traefik (a pod) may set X-Forwarded-For. External Traefik
-            # already resolves the real client IP from Cloudflare, so rate
-            # limiting and audit logs see the visitor, not the proxy.
+            # Proxies allowed to report the client IP: Traefik pods (pod CIDR) and
+            # Cloudflare edges. Traefik keeps Cloudflare's X-Forwarded-For and
+            # appends the edge address, so Pocket ID must trust both hops to reach
+            # the visitor; trusting only the pod CIDR resolves every request to a
+            # Cloudflare edge. Spoofed entries stay to the left of the real client
+            # and are never reached. The cloudflare-only middleware means no other
+            # source can reach this pod through Traefik. Cloudflare ranges match
+            # middleware.yaml (https://www.cloudflare.com/ips-v4 + ips-v6).
             - name: TRUST_PROXY
-              value: 10.245.0.0/16
+              value: 10.245.0.0/16,173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32
             - name: ANALYTICS_DISABLED
               value: "true"
             - name: LOG_JSON

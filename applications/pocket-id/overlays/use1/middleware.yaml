@@ -10,10 +10,13 @@ spec:
   # applications/netbird/overlays/use1/middleware.yaml.
   ipAllowList:
     sourceRange:
-      # In-cluster pods (Cilium pod CIDR) and the LAN, for apps that call the
-      # issuer from inside the cluster.
+      # Internal clients. NetBird DNS resolves *.vngenterprise.com to this
+      # Traefik's LAN address (10.1.50.175), so people on the LAN or the mesh
+      # arrive with their own private source address, not through Cloudflare:
+      # in-cluster pods (Cilium pod CIDR), every LAN VLAN, and NetBird peers.
       - 10.245.0.0/16
-      - 10.1.50.0/24
+      - 10.1.0.0/16
+      - 100.64.0.0/10
       # Cloudflare published edge ranges (https://www.cloudflare.com/ips-v4 + ips-v6)
       - 173.245.48.0/20
       - 103.21.244.0/22

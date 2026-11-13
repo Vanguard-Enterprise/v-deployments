@@ -20,6 +20,9 @@ path "kv/data/monitoring/*" {
 path "kv/data/argocd-image-updater/*" {
   capabilities = ["read"]
 }
+path "kv/data/argocd/github-app" {
+  capabilities = ["read"]
+}
 path "kv/data/longhorn/backup-storage" {
   capabilities = ["read"]
 }
@@ -27,6 +30,9 @@ path "kv/data/cnpg/*" {
   capabilities = ["read"]
 }
 path "kv/data/cupboard/*" {
+  capabilities = ["read"]
+}
+path "kv/data/pocket-id/*" {
   capabilities = ["read"]
 }
 path "kv/data/rooted-in-pages/*" {

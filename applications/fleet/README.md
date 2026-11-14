@@ -38,4 +38,6 @@ https://fleet.vngenterprise.com.
 - Apple: Settings > Integrations > MDM > Apple. Upload the APNs certificate
   (renew it yearly with the same Apple ID), and optionally connect Apple Business
   Manager for automatic enrollment.
-- Windows: Settings > Integrations > MDM > Windows, then turn on Windows MDM.
+- Windows: on. The WSTEP certificate and key Fleet needs for it are in
+  `kv/fleet/use1` (`windows_wstep_cert`, `windows_wstep_key`, valid to 2036). Fleet
+  encrypts escrowed BitLocker recovery keys with that pair, so never replace it.

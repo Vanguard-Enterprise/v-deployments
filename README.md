@@ -59,7 +59,7 @@ configure and test backups before treating it as production storage.
 `argocd/applications/use1/pocket-id.yaml` deploys [Pocket ID](https://github.com/pocket-id/pocket-id),
 the passkey-only OIDC provider for every app login (Grafana, Argo CD, OpenBao,
 kubectl, NetBird, Wasabi), at `https://id.vngenterprise.com`. Its overlay is
-`applications/pocket-id/overlays/use1`. Zitadel has been removed.
+`applications/pocket-id/overlays/use1`.
 
 The route is public through external Traefik, limited by the `cloudflare-only`
 middleware to Cloudflare edges, the pod CIDR, and the LAN. `cloudflare-ddns`

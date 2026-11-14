@@ -1,0 +1,171 @@
+# Default-deny (ingress and egress) for the fleet namespace, then one allow set per
+# component. Cilium policies are additive: the first one turns on default-deny for
+# every pod and allows DNS; the others open exactly what each pod needs.
+#   Watch:    hubble observe --verdict DROPPED --namespace fleet --follow
+#   Rollback: kubectl -n fleet delete ciliumnetworkpolicy --all
+#             (disable Argo self-heal first, or they come straight back)
+#
+# Fleet's own pods (server, migration job, vulnerability cron; label app=fleet) get
+# HTTPS to the public internet but not to private ranges: Apple APNs and ABM,
+# Microsoft, vulnerability feeds (NVD, GitHub, OSV), Fleet-maintained app
+# downloads and Wasabi all live on the internet, and the list is too long and
+# changes too often for toFQDNs.
+#
+# FQDN FOOTGUN: toFQDNs only works because the DNS rule below has the L7
+# `rules: dns` block. Deleting it silently breaks every toFQDNs rule.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: fleet-default-deny
+spec:
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    # Kubelet probes.
+    - fromEntities:
+        - host
+        - remote-node
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: fleet-server
+spec:
+  endpointSelector:
+    matchLabels:
+      app: fleet
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: fleet-mysql
+      toPorts:
+        - ports:
+            - port: "3306"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            app: fleet-redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 100.64.0.0/10
+            - 169.254.0.0/16
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: fleet-mysql
+spec:
+  endpointSelector:
+    matchLabels:
+      app: fleet-mysql
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: fleet
+        - matchLabels:
+            app: fleet-mysql-backup
+      toPorts:
+        - ports:
+            - port: "3306"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: fleet-redis
+spec:
+  endpointSelector:
+    matchLabels:
+      app: fleet-redis
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: fleet
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: fleet-oauth2-proxy
+spec:
+  endpointSelector:
+    matchLabels:
+      app: fleet-oauth2-proxy
+  ingress:
+    # forwardAuth calls and the /oauth2/ route, both from Traefik.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "4180"
+              protocol: TCP
+  egress:
+    # Pocket ID discovery, JWKS and token exchange.
+    - toFQDNs:
+        - matchName: "id.vngenterprise.com"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: fleet-mysql-backup
+spec:
+  endpointSelector:
+    matchLabels:
+      app: fleet-mysql-backup
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: fleet-mysql
+      toPorts:
+        - ports:
+            - port: "3306"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: "s3.us-east-2.wasabisys.com"
+        - matchPattern: "*.s3.us-east-2.wasabisys.com"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

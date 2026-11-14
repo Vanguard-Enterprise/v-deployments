@@ -29,6 +29,9 @@ path "kv/data/cnpg/*" {
 path "kv/data/cupboard/*" {
   capabilities = ["read"]
 }
+path "kv/data/fleet/*" {
+  capabilities = ["read"]
+}
 path "kv/data/pocket-id/*" {
   capabilities = ["read"]
 }

@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: pocket-id
 resources:
   - namespace.yaml
+  - networkpolicy.yaml
   - database.yaml
   - backup.yaml
   - podmonitor.yaml

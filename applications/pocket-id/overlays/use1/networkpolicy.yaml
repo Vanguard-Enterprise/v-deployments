@@ -1,0 +1,124 @@
+# Default-deny (ingress AND egress) for the pocket-id namespace, plus every allow
+# Pocket ID and its database need. Same shape as the cupboard policies; see
+# applications/cupboard/NETWORKPOLICY-ROLLOUT.md for the authoring notes.
+#
+# The default-deny and ALL of its allows live in this ONE file so a single
+# apply/delete flips the namespace atomically. Never split them across files.
+#   Watch:    hubble observe --verdict DROPPED --namespace pocket-id --follow
+#   Rollback: kubectl -n pocket-id delete ciliumnetworkpolicy pocket-id-netpol
+#             (and disable Argo self-heal first, or it comes straight back)
+#
+# WHAT THIS ALLOWS
+#   Ingress: the node (kubelet probes on both pods, CNPG instance-manager checks);
+#     the cnpg-operator; alloy-metrics for the PodMonitor scrape (:9187); Traefik on
+#     :1411; and intra-namespace (pocket-id -> pocket-id-db on :5432).
+#   Egress: cluster DNS; the kube-apiserver (the CNPG instance manager watches its
+#     Cluster and writes status); intra-namespace; Wasabi us-east-2 for the barman
+#     WAL archive and base backups; and two Pocket ID outbound features (below).
+#
+# EVERY APP CLIENT GOES THROUGH TRAEFIK: Grafana, Argo CD, OpenBao, NetBird and the
+# kube-apiserver all fetch discovery/JWKS from https://id.vngenterprise.com, which
+# lands on Traefik, so nothing else needs to reach the pod directly. Something
+# that starts calling pocket-id.pocket-id.svc will show up as a drop here.
+#
+# POCKET ID INTERNET EGRESS is limited to:
+#   api.github.com   the admin "update available" check (VERSION_CHECK_DISABLED)
+#   cdn.jsdelivr.net the client-logo icon library (ICON_LIBRARY_URL default)
+# Everything else is denied on purpose: no SMTP, LDAP, SCIM, GeoLite, back-channel
+# logout or client metadata documents are configured today. Turning one of those on
+# needs a rule here, and so does "logo from URL" for any host but jsDelivr. Keeping
+# the identity provider off the rest of the internet and the LAN closes off SSRF
+# through those URL-taking admin features.
+#
+# FQDN FOOTGUN: toFQDNs only works if Cilium can SEE the DNS answers, so the DNS
+# rule carries an L7 `rules: dns: matchPattern: "*"` block that sends this
+# namespace's lookups through the Cilium DNS proxy. Deleting that block does not
+# break DNS, it silently breaks every toFQDNs rule underneath it.
+#
+# TALOS NOTE: the apiserver runs hostNetwork on the control planes. If Hubble shows
+# apiserver drops, add `remote-node` to the kube-apiserver rule, nothing wider.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pocket-id-netpol
+spec:
+  description: "Default-deny both directions for pocket-id with the Pocket ID and CNPG allow set."
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    # Kubelet probes (:1411 /healthz on the app, :8000 on the CNPG instance manager).
+    - fromEntities:
+        - host
+        - remote-node
+    # The CNPG operator manages the instance. Port-unconstrained: its ports are an
+    # operator implementation detail, not a contract.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cnpg-operator
+    # pocket-id -> pocket-id-db on :5432, plus replication if instances are added.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: pocket-id
+    # PodMonitor scrape of the CNPG postgres exporter.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: alloy-metrics
+      toPorts:
+        - ports:
+            - port: "9187"
+              protocol: TCP
+    # The id.vngenterprise.com IngressRoute.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "1411"
+              protocol: TCP
+  egress:
+    # Cluster DNS, WITH the L7 dns visibility rule that the toFQDNs rules need.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    # CNPG instance manager -> apiserver. 443 is the kubernetes.default ClusterIP
+    # port, 6443 the real port kube-proxy DNATs to.
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "6443"
+              protocol: TCP
+    # Intra-namespace: the app to its database.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: pocket-id
+    # Barman WAL archive and base backups (database.yaml endpointURL). Both path-style
+    # and virtual-hosted bucket addressing are allowed.
+    - toFQDNs:
+        - matchName: "s3.us-east-2.wasabisys.com"
+        - matchPattern: "*.s3.us-east-2.wasabisys.com"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # Pocket ID's version check and icon library (see the header).
+    - toFQDNs:
+        - matchName: "api.github.com"
+        - matchName: "cdn.jsdelivr.net"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

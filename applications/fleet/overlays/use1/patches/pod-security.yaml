@@ -1,0 +1,12 @@
+- op: add
+  path: /metadata/annotations
+  value:
+    argocd.argoproj.io/sync-wave: "2"
+- op: add
+  path: /spec/template/spec/securityContext
+  value:
+    runAsNonRoot: true
+    runAsUser: 3333
+    runAsGroup: 3333
+    seccompProfile:
+      type: RuntimeDefault

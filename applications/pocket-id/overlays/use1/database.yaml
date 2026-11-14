@@ -1,5 +1,6 @@
-# Pocket ID's database. Same shape as grafana-db (cnpg-grafana), minus backups:
-# there is no off-cluster backup yet. Add a barmanObjectStore + ScheduledBackup.
+# Pocket ID's database. Same shape as grafana-db (cnpg-grafana): WAL archiving
+# plus twice-daily base backups to the Wasabi bucket cnpg-pocket-id-use1.
+# A restore also needs ENCRYPTION_KEY (OpenBao kv/pocket-id/use1).
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -17,6 +18,22 @@ spec:
     initdb:
       database: pocketid
       owner: pocketid
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://cnpg-pocket-id-use1
+      endpointURL: https://s3.us-east-2.wasabisys.com
+      s3Credentials:
+        accessKeyId:
+          name: pocket-id-db-backup
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: pocket-id-db-backup
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "30d"
   storage:
     size: 2Gi
     storageClass: longhorn

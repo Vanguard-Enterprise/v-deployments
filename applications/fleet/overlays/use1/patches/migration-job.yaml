@@ -1,0 +1,40 @@
+- op: remove
+  path: /metadata/annotations/helm.sh~1hook
+- op: remove
+  path: /metadata/annotations/helm.sh~1hook-weight
+- op: remove
+  path: /metadata/annotations/helm.sh~1hook-delete-policy
+- op: add
+  path: /metadata/annotations/argocd.argoproj.io~1hook
+  value: Sync
+- op: add
+  path: /metadata/annotations/argocd.argoproj.io~1hook-delete-policy
+  value: BeforeHookCreation
+- op: add
+  path: /metadata/annotations/argocd.argoproj.io~1sync-wave
+  value: "1"
+- op: add
+  path: /spec/template/spec/securityContext
+  value:
+    runAsNonRoot: true
+    runAsUser: 3333
+    runAsGroup: 3333
+    seccompProfile:
+      type: RuntimeDefault
+- op: add
+  path: /spec/template/spec/containers/0/securityContext
+  value:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: [ALL]
+- op: add
+  path: /spec/template/spec/volumes
+  value:
+    - name: tmp
+      emptyDir: {}
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts
+  value:
+    - name: tmp
+      mountPath: /tmp

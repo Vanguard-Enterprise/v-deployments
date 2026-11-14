@@ -1,0 +1,143 @@
+# fleet.vngenterprise.com on the external Traefik. Public DNS goes through
+# Cloudflare (cloudflare-ddns); NetBird DNS points the name at Traefik's LAN
+# address (10.1.50.175), so people on the LAN or the mesh arrive with a private
+# source address.
+#
+#   fleet-agent    PUBLIC (Cloudflare, LAN, NetBird): only the paths fleetd, Fleet
+#                  Desktop and Apple/Windows MDM enrollment need, per
+#                  https://fleetdm.com/guides/what-api-endpoints-to-expose-to-the-public-internet
+#                  Each is authenticated by Fleet itself (node keys, device tokens,
+#                  MDM signatures).
+#   fleet-gate     /oauth2/* for the Pocket ID gate, LAN/NetBird only.
+#   fleet-api      API calls carrying a Fleet token (fleetctl, and the console's own
+#                  XHR calls), LAN/NetBird only, no gate: Fleet checks the token.
+#   fleet-console  everything else, LAN/NetBird only, behind the Pocket ID gate.
+# Explicit priorities keep the specific routers ahead of the console catch-all.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: cloudflare-only
+spec:
+  # Same list as applications/pocket-id/overlays/use1/middleware.yaml: in-cluster,
+  # LAN, NetBird, and Cloudflare's published edge ranges. Traefik runs with
+  # externalTrafficPolicy=Local, so the source is the real L4 peer.
+  ipAllowList:
+    sourceRange:
+      - 10.245.0.0/16
+      - 10.1.0.0/16
+      - 100.64.0.0/10
+      - 173.245.48.0/20
+      - 103.21.244.0/22
+      - 103.22.200.0/22
+      - 103.31.4.0/22
+      - 141.101.64.0/18
+      - 108.162.192.0/18
+      - 190.93.240.0/20
+      - 188.114.96.0/20
+      - 197.234.240.0/22
+      - 198.41.128.0/17
+      - 162.158.0.0/15
+      - 104.16.0.0/13
+      - 104.24.0.0/14
+      - 172.64.0.0/13
+      - 131.0.72.0/22
+      - 2400:cb00::/32
+      - 2606:4700::/32
+      - 2803:f800::/32
+      - 2405:b500::/32
+      - 2405:8100::/32
+      - 2a06:98c0::/29
+      - 2c0f:f248::/32
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: internal-only
+spec:
+  # In-cluster, LAN and NetBird only. Anything arriving through Cloudflare is
+  # rejected with 403.
+  ipAllowList:
+    sourceRange:
+      - 10.245.0.0/16
+      - 10.1.0.0/16
+      - 100.64.0.0/10
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: pocket-id-gate
+spec:
+  forwardAuth:
+    address: http://fleet-oauth2-proxy.fleet.svc.cluster.local:4180/
+    trustForwardHeader: true
+    authResponseHeaders:
+      - X-Auth-Request-Email
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: fleet
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints: [websecure]
+  routes:
+    # fleet-agent: public agent, Fleet Desktop and MDM paths.
+    - kind: Rule
+      priority: 300
+      match: >-
+        Host(`fleet.vngenterprise.com`) && (
+          PathPrefix(`/api/osquery/`) || PathPrefix(`/api/v1/osquery/`) ||
+          PathPrefix(`/api/fleet/orbit/`) || Path(`/api/fleet/device/ping`) ||
+          PathRegexp(`^/api/[^/]+/fleet/device/`) ||
+          PathPrefix(`/device/`) || PathPrefix(`/assets/`) ||
+          Path(`/mdm/apple/scep`) || Path(`/mdm/apple/mdm`) ||
+          PathPrefix(`/api/mdm/acme/`) || Path(`/api/mdm/apple/enroll`) ||
+          PathPrefix(`/api/mdm/apple/psso/`) || Path(`/.well-known/apple-app-site-association`) ||
+          PathPrefix(`/mdm/sso`) ||
+          PathRegexp(`^/api/[^/]+/fleet/mdm/(sso|setup/eula|bootstrap)(/|$)`) ||
+          Path(`/enroll`) ||
+          PathRegexp(`^/api/[^/]+/fleet/(enrollment_profiles/ota|ota_enrollment)(/|$)`) ||
+          PathRegexp(`^/api/[^/]+/fleet/software/titles/[^/]+/in_house_app`) ||
+          PathPrefix(`/api/mdm/apple/account_driven_enroll`) ||
+          PathPrefix(`/mdm/apple/account_driven_enroll/sso`) ||
+          PathPrefix(`/mdm/apple/service_discovery`) ||
+          PathPrefix(`/api/mdm/microsoft/`)
+        )
+      middlewares:
+        - name: cloudflare-only
+      services:
+        - name: fleet-service
+          port: 8080
+    # fleet-gate: the Pocket ID sign-in flow.
+    - kind: Rule
+      priority: 250
+      match: Host(`fleet.vngenterprise.com`) && PathPrefix(`/oauth2/`)
+      middlewares:
+        - name: internal-only
+      services:
+        - name: fleet-oauth2-proxy
+          port: 4180
+    # fleet-api: token-authenticated API calls (fleetctl, console XHR).
+    - kind: Rule
+      priority: 200
+      match: Host(`fleet.vngenterprise.com`) && PathPrefix(`/api/`) && HeaderRegexp(`Authorization`, `^Bearer .+`)
+      middlewares:
+        - name: internal-only
+      services:
+        - name: fleet-service
+          port: 8080
+    # fleet-console: everything else.
+    - kind: Rule
+      priority: 100
+      match: Host(`fleet.vngenterprise.com`)
+      middlewares:
+        - name: internal-only
+        - name: pocket-id-gate
+      services:
+        - name: fleet-service
+          port: 8080
+  tls:
+    store:
+      name: default
+      namespace: traefik

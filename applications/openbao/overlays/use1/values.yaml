@@ -39,7 +39,7 @@ server:
   standalone:
     enabled: false
   # Static-seal key material. Injected from the manually-created `openbao-seal`
-  # Secret (see MIGRATION.md, Phase 2). NOT managed by ESO — ESO depends on this
+  # Secret (see applications/openbao/README.md). NOT managed by ESO — ESO depends on this
   # instance being unsealed, so the seal key must exist before OpenBao starts.
   extraSecretEnvironmentVars:
     - envName: OPENBAO_STATIC_SEAL_KEY

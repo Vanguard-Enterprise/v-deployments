@@ -8,9 +8,8 @@ git. Only targeted, reviewed patches are recorded here so changes are not lost.
 
 ## Files
 
-- `oidc-apiserver.patch.yaml` — adds kube-apiserver OIDC flags so humans authenticate via
-  the in-cluster Zitadel IdP. See the header in that file for the canary apply procedure.
-  Replace `<KUBECTL_CLIENT_ID>` with the Zitadel `kubectl` OIDC app Client ID before applying.
+- `oidc-apiserver.patch.yaml`: adds kube-apiserver OIDC flags so humans authenticate via
+  the in-cluster Pocket ID IdP. See the header in that file for the canary apply procedure.
 - `cilium-cni.patch.yaml` + `cilium-migration-runbook.md`: Phase 7 PR5, hand the CNI from
   flannel to Cilium so NetworkPolicy becomes enforceable. DRAFT, execution-gated: a live
   datapath change run only inside an operator-approved maintenance window. Read the runbook

@@ -4,6 +4,7 @@ namespace: pocket-id
 resources:
   - namespace.yaml
   - database.yaml
+  - backup.yaml
   - podmonitor.yaml
   - secrets.yaml
   - workload.yaml

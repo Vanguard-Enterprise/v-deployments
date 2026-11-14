@@ -75,7 +75,7 @@ Secrets reads `encryption_key` from OpenBao `kv/pocket-id/use1` into the
 `pocket-id` Secret. Keep that key with any database backup: Pocket ID encrypts
 stored secrets with it. The database archives WAL and takes base backups at
 03:00 and 15:00 UTC to the Wasabi bucket `cnpg-pocket-id-use1` (30 day
-retention), using the `svc-pocket-id` key from OpenBao `kv/cnpg/pocket-id/backup`.
+retention, Wasabi us-east-2), using the `svc-pocket-id` key from OpenBao `kv/pocket-id/backup`.
 
 The first person to open `https://id.vngenterprise.com/setup` becomes the admin,
 so finish setup right after the first deploy.

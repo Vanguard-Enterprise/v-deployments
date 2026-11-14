@@ -1,5 +1,5 @@
 # Wasabi credentials for pocket-id-db backups: user svc-pocket-id, limited to
-# the cnpg-pocket-id-use1 bucket. Stored in OpenBao kv/cnpg/pocket-id/backup.
+# the cnpg-pocket-id-use1 bucket (us-east-2). Stored in OpenBao kv/pocket-id/backup.
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
@@ -15,12 +15,12 @@ spec:
   data:
     - secretKey: ACCESS_KEY_ID
       remoteRef:
-        key: cnpg/pocket-id/backup
+        key: pocket-id/backup
         property: AWS_ACCESS_KEY_ID
     - secretKey: ACCESS_SECRET_KEY
       remoteRef:
-        key: cnpg/pocket-id/backup
-        property: AWS_SECRET_ACCESS_KEY
+        key: pocket-id/backup
+        property: AWS_ACCESS_SECRET_ID
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup

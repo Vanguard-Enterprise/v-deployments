@@ -21,7 +21,7 @@ spec:
   backup:
     barmanObjectStore:
       destinationPath: s3://cnpg-pocket-id-use1
-      endpointURL: https://s3.us-east-1.wasabisys.com
+      endpointURL: https://s3.us-east-2.wasabisys.com
       s3Credentials:
         accessKeyId:
           name: pocket-id-db-backup

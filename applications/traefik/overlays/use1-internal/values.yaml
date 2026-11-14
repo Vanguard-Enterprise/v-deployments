@@ -73,6 +73,36 @@ providers:
     allowExternalNameServices: true
     publishedService:
       enabled: false
+  # Static backends that need more than one address behind a health check (see
+  # pve1.vngenterprise.com.yaml). IngressRoutes reference these as <name>@file.
+  file:
+    enabled: true
+    content:
+      http:
+        services:
+          # PVE1 cluster UI/API on all three nodes. Every node serves the whole
+          # cluster, so any healthy one will do; a failed node drops out within
+          # about 10s. Sticky because Proxmox keeps OpenID login state on the node
+          # that started the login (/var/lib/pve-manager/proxmox-openid-auth-state-*),
+          # so the callback must return there. Proxmox tickets are cluster-wide,
+          # so a session survives moving to another node when its node fails.
+          # The UniFi policy "Allow K8s to PVE Proxmox UI" must list every node.
+          pve1:
+            loadBalancer:
+              servers:
+                - url: https://10.1.40.15:8006
+                - url: https://10.1.40.16:8006
+                - url: https://10.1.40.17:8006
+              healthCheck:
+                path: /
+                interval: 10s
+                timeout: 3s
+              sticky:
+                cookie:
+                  name: pve1_lb
+                  secure: true
+                  httpOnly: true
+                  sameSite: lax
 rbac:
   enabled: true
 service:

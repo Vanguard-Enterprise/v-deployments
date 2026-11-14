@@ -3,9 +3,6 @@
 # the cupboard-web namespace (same as the cupboard-web Service the IngressRoute targets,
 # so no cross-namespace service ref and tls.secretName resolves locally), so the Role +
 # binding live there too, granting a ServiceAccount that runs in cupboard-tenant.
-#
-# Template precedent: applications/zitadel/base/cert-job.yaml (SA + Role + RoleBinding for
-# a workload that writes to the API server at runtime).
 apiVersion: v1
 kind: ServiceAccount
 metadata:

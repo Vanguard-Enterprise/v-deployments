@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Configure a fresh OpenBao to match the source Vault: KV-v2 engine, policies,
-# Kubernetes auth (ESO), and OIDC auth (Zitadel). Idempotent — safe to re-run.
+# Kubernetes auth (ESO), and OIDC auth (Pocket ID). Idempotent, safe to re-run.
 #
 # Requires:
 #   BAO_ADDR              e.g. https://openbao.vngenterprise.com
 #   BAO_TOKEN             an OpenBao token with admin (root for bootstrap)
-#   OIDC_CLIENT_SECRET    Zitadel client secret for app 356671706259064302
+#   OIDC_CLIENT_SECRET    Pocket ID "OpenBao UI" client secret (kv/pocket-id/clients/openbao-ui)
 #
 # Usage:  BAO_ADDR=... BAO_TOKEN=... OIDC_CLIENT_SECRET=... ./bootstrap.sh
 set -euo pipefail
@@ -39,7 +39,7 @@ bao write auth/use1/role/external-secrets \
   bound_service_account_namespaces="external-secrets" \
   token_policies="use1" \
   token_ttl="1h"
-# Break-glass admin (Zitadel-independent): SA openbao-break-glass -> global-admin.
+# Break-glass admin (IdP-independent): SA openbao-break-glass -> global-admin.
 bao write auth/use1/role/break-glass \
   bound_service_account_names="openbao-break-glass" \
   bound_service_account_namespaces="openbao" \
@@ -52,76 +52,71 @@ if [ -z "${OIDC_CLIENT_SECRET:-}" ]; then
   exit 0
 fi
 
-echo "==> OIDC auth (Zitadel)"
+# Human login through Pocket ID (https://id.vngenterprise.com).
+# Clients (Pocket ID admin, OIDC Clients), both restricted to the vault_admins group:
+#   "OpenBao UI"  confidential, browser login. Secret: kv/pocket-id/clients/openbao-ui
+#   "OpenBao CLI" public, device-code grant only (openbao-login.sh, jwt role below)
+# Get the secret for this section with:
+#   OIDC_CLIENT_SECRET="$(bao kv get -field=client_secret kv/pocket-id/clients/openbao-ui)"
+UI_CLIENT_ID="1550a318-bcac-408b-93c1-7478fe57d3ed"
+CLI_CLIENT_ID="118684db-4715-4c61-9220-0076b29e4ded"
+
+echo "==> OIDC auth (Pocket ID)"
 bao auth enable oidc 2>/dev/null || echo "   (already enabled)"
 bao write auth/oidc/config \
-  oidc_discovery_url="https://accounts.vngenterprise.com" \
-  oidc_client_id="356671706259064302" \
+  oidc_discovery_url="https://id.vngenterprise.com" \
+  oidc_client_id="$UI_CLIENT_ID" \
   oidc_client_secret="$OIDC_CLIENT_SECRET" \
   default_role="default"
 
-# Redirect URIs for the browser (UI) OIDC login. The UI builds the callback from
+# Redirect URI for the browser (UI) OIDC login. The UI builds the callback from
 # the 'vault' module prefix (confirmed via server logs): /ui/vault/auth/<mount>/oidc/callback
-# (NOT /ui/auth/... despite rootURL=/ui/). localhost:8250 = CLI client-callback mode.
-# The /v1/auth/oidc/oidc/callback entry is vestigial: `bao login callbackmode=direct` is
-# broken in OpenBao 2.5.5 (CLI emits a malformed redirect_uri), so headless/agent login uses
-# the device-flow wrapper (openbao-login.sh, jwt role below) instead. See the openbao skill.
-# NOTE: these must also be registered as redirect URIs on the Zitadel vault-ui app (356671706259064302).
-REDIRECTS="https://openbao.vngenterprise.com/ui/vault/auth/oidc/oidc/callback,https://openbao.vngenterprise.com/v1/auth/oidc/oidc/callback,http://localhost:8250/oidc/callback,http://127.0.0.1:8250/oidc/callback"
+# (NOT /ui/auth/... despite rootURL=/ui/). It must match the callback URL registered
+# on the Pocket ID "OpenBao UI" client. CLI login does not use a redirect: it goes
+# through the device-flow wrapper (openbao-login.sh, jwt role below). See the openbao skill.
+REDIRECTS="https://openbao.vngenterprise.com/ui/vault/auth/oidc/oidc/callback"
 
-# Per-role bound_claims on `sub` (Zitadel user ID) — an ALLOWLIST so a user can
-# only assume a role they're entitled to (Zitadel's native roles claim is a
-# nested map OpenBao can't bound_claims-match; sub is a flat string that can).
-#
-# MAINTENANCE: update these sub lists when Zitadel grants change. Sources of
-# truth = Zitadel VAULT project grants (users/grants/_search). Roles with no
-# grantees are locked to a sentinel sub that matches nobody.
-# (Scalable alternative: a Zitadel Action that emits a flat `roles` array claim,
-#  then bound_claims on `roles` — auto-syncs with grants. Not set up yet.)
-SUB_FRANK="355717786942637389"   # vault_global_admin, rustlens-admin
-SUB_SEM="355982315320509547"     # rustlens-admin
-SUB_KAPPU="355846454918513997"   # rustlens-admin
-
-oidc_role() { # name  policy  bound_claims_json ("" = open, no sub restriction)
-  python3 - "$1" "$2" "$3" "$REDIRECTS" <<'PY' | bao write "auth/oidc/role/$1" -
+# Access is granted by Pocket ID group membership: with the groups scope, Pocket ID
+# emits a flat `groups` array that bound_claims matches directly. A group that does
+# not exist in Pocket ID matches nobody.
+oidc_role() { # name  policy  group ("" = open, no group restriction)
+  python3 - "$1" "$2" "$3" "$REDIRECTS" "$UI_CLIENT_ID" <<'PY' | bao write "auth/oidc/role/$1" -
 import json, sys
-name, policy, bc, redirects = sys.argv[1:5]
+name, policy, group, redirects, aud = sys.argv[1:6]
 body = {
   "user_claim": "sub",
-  "oidc_scopes": ["openid", "profile", "email"],
-  "bound_audiences": ["356671706259064302"],
+  "oidc_scopes": ["openid", "profile", "email", "groups"],
+  "bound_audiences": [aud],
   "allowed_redirect_uris": redirects.split(","),
   "token_policies": [policy],
   "token_ttl": 28800,
   "role_type": "oidc",
   "verbose_oidc_logging": False,
 }
-if bc:
-  body["bound_claims"] = {"sub": json.loads(bc)}
+if group:
+  body["bound_claims"] = {"groups": [group]}
 print(json.dumps(body))
 PY
 }
-# default: open (any authenticated Zitadel user) but maps to the no-access
-# `default` policy — used as the OIDC default_role fallback.
+# default: open (any user the Pocket ID client admits) but maps to the no-access
+# `default` policy. Used as the OIDC default_role fallback.
 oidc_role default         default                ""
-oidc_role global-admin    vault-global-admin     "[\"$SUB_FRANK\"]"
-oidc_role rustlens-admin  vault-rustlens-admin   "[\"$SUB_FRANK\",\"$SUB_SEM\",\"$SUB_KAPPU\"]"
-oidc_role global-readonly vault-global-readonly  "[\"__no-grantees__\"]"
+oidc_role global-admin    vault-global-admin     vault_admins
+oidc_role rustlens-admin  vault-rustlens-admin   vault_rustlens_admins
+oidc_role global-readonly vault-global-readonly  vault_readonly
 
 # CLI/agent login roles (role_type=jwt): headless device-flow login via
-# openbao-login.sh. The wrapper drives the Zitadel Device Authorization Grant on
-# the dedicated PUBLIC app 'openbao-cli' (client 382833937707238909, native/PKCE,
-# device grant, no secret) and posts the id_token here. Audience = that client id.
-# (bao's native OIDC login helper is broken in 2.5.5, hence this path — see skill.)
-CLI_CLIENT_ID="382833937707238909"
-jwt_role() { # name  policy  sub
+# openbao-login.sh, which drives the Pocket ID device authorization grant on the
+# public "OpenBao CLI" client and posts the id_token here. Audience = that client id.
+# (bao's native OIDC login helper is broken in 2.5.5, hence this path. See skill.)
+jwt_role() { # name  policy  group
   python3 - "$1" "$2" "$3" "$CLI_CLIENT_ID" <<'PY' | bao write "auth/oidc/role/$1" -
 import json,sys
-name,policy,sub,aud=sys.argv[1:5]
+name,policy,group,aud=sys.argv[1:5]
 print(json.dumps({"role_type":"jwt","user_claim":"sub","bound_audiences":[aud],
- "bound_claims":{"sub":[sub]},"token_policies":[policy],"token_ttl":28800,"token_type":"service"}))
+ "bound_claims":{"groups":[group]},"token_policies":[policy],"token_ttl":28800,"token_type":"service"}))
 PY
 }
-jwt_role cli-global-admin vault-global-admin "$SUB_FRANK"
+jwt_role cli-global-admin vault-global-admin vault_admins
 
 echo "==> Done. Verify: bao policy list ; bao auth list"

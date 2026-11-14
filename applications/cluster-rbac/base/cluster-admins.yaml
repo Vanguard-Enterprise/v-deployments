@@ -7,7 +7,7 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
 subjects:
-  # Zitadel `groups` claim value, prefixed by the apiserver --oidc-groups-prefix=oidc:
+  # Pocket ID `groups` claim value, prefixed by the apiserver --oidc-groups-prefix=oidc:
   - kind: Group
-    name: oidc:k8s_cluster_admins
+    name: oidc:USE1_Cluster_Access
     apiGroup: rbac.authorization.k8s.io

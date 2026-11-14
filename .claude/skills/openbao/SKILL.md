@@ -12,14 +12,14 @@ KV-v2 mount = `kv/`. kubectl context = `use1-oidc`.
 
 ## Which login do I want?
 
-- **Acting as the human user (Frank / a Zitadel identity)** → OIDC direct-mode login. Use this when the
+- **Acting as the human user (Frank / a Pocket ID identity)** → OIDC device-flow login. Use this when the
   task is "log in as me", or needs a real person's grants. Requires the user to click **Approve** once.
 - **Machine / automation / cluster ops (no human)** → break-glass k8s login. No browser. Use for raft
   repair, policy edits, or anything an agent must do unattended.
 
 ## 1. Human login — device flow, click-approve, NO localhost paste
 
-Use the wrapper `applications/openbao/config/openbao-login.sh`. It runs the Zitadel **Device
+Use the wrapper `applications/openbao/config/openbao-login.sh`. It runs the Pocket ID **Device
 Authorization Grant** and exchanges the resulting id_token for an OpenBao token via a jwt-type role — so
 the user just clicks **Approve** in the browser; there is no localhost callback and nothing to paste back.
 
@@ -28,24 +28,24 @@ applications/openbao/config/openbao-login.sh [role]      # role defaults to cli-
 ```
 
 To ask the user for a login: run it (in the background so you can read its output), then relay the printed
-`https://accounts.vngenterprise.com/device?user_code=XXXX-XXXX` URL and **wait**. When they approve, the
-wrapper caches the token (`bao token lookup` then works). The Zitadel device code expires in ~5 min, so ask
+`https://id.vngenterprise.com/device?user_code=XXXXXXXX` URL and **wait**. When they approve, the
+wrapper caches the token (`bao token lookup` then works). The device code expires in ~5 min, so ask
 them to approve promptly; if it lapses (`expired_token`), just re-run.
 
-jwt login roles (bound to the caller's Zitadel `sub`; add more mirroring the `oidc` roles as needed):
-- `cli-global-admin` → `vault-global-admin` (Frank only). Others (`global-admin`/`rustlens-admin`/... ) are
+jwt login roles (bound to the caller's Pocket ID `groups` claim; add more mirroring the `oidc` roles as needed):
+- `cli-global-admin` → `vault-global-admin` (members of the Pocket ID `vault_admins` group). Others (`global-admin`/`rustlens-admin`/... ) are
   `role_type=oidc` for the browser UI, NOT usable with this wrapper.
 
-Under the hood: dedicated **public** Zitadel app `openbao-cli` (client `382833937707238909`, native/PKCE,
-device grant, no secret) → id_token → `bao write auth/oidc/login role=cli-global-admin jwt=<id_token>`
-against a `role_type=jwt` role whose `bound_audiences=[382833937707238909]`, `bound_claims.sub=<user>`.
+Under the hood: dedicated **public** Pocket ID client "OpenBao CLI" (client `118684db-4715-4c61-9220-0076b29e4ded`,
+device grant, no secret, restricted to `vault_admins`) → id_token → `bao write auth/oidc/login role=cli-global-admin jwt=<id_token>`
+against a `role_type=jwt` role whose `bound_audiences=[118684db-4715-4c61-9220-0076b29e4ded]`, `bound_claims.groups=[vault_admins]`.
 
 Do NOT use `bao login -method=oidc callbackmode=direct|device` — both are broken in OpenBao 2.5.5 (device
 = `no state returned`; direct = the CLI builds a malformed redirect_uri). The wrapper exists because of this.
 
 ## 2. Machine / break-glass login (unattended)
 
-Zitadel-independent admin via k8s auth. SA `openbao-break-glass` (ns `openbao`) → `vault-global-admin`,
+IdP-independent admin via k8s auth. SA `openbao-break-glass` (ns `openbao`) → `vault-global-admin`,
 15m TTL. Run from a host with kubectl access to `use1-oidc`:
 
 ```bash

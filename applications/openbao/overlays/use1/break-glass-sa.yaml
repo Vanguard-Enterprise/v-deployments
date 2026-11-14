@@ -1,5 +1,5 @@
 # Break-glass admin: a dedicated ServiceAccount bound (via OpenBao k8s auth role
-# "break-glass") to the vault-global-admin policy. Zitadel-independent recovery
+# "break-glass") to the vault-global-admin policy. IdP-independent recovery
 # path for when OIDC is unavailable.
 #   kubectl -n openbao create token openbao-break-glass --duration=15m \
 #     | xargs -I{} bao write auth/use1/login role=break-glass jwt={}

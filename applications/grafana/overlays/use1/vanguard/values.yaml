@@ -25,16 +25,16 @@ grafana.ini:
     enabled: true
     name: "VANGUARD SSO"
     allow_sign_up: true
-    client_id: "356670791548470770"
-    auth_url: https://accounts.vngenterprise.com/oauth/v2/authorize
-    token_url: https://accounts.vngenterprise.com/oauth/v2/token
-    api_url: https://accounts.vngenterprise.com/oidc/v1/userinfo
+    client_id: "bc7403cd-f361-4d21-b104-de38ff6b4800"
+    auth_url: https://id.vngenterprise.com/authorize
+    token_url: https://id.vngenterprise.com/api/oidc/token
+    api_url: https://id.vngenterprise.com/api/oidc/userinfo
     role_attribute_path: "contains(groups[*], 'monitoring_admin') && 'GrafanaAdmin' || contains(groups[*], 'monitoring_editor') && 'Editor' || 'Viewer'"
     allow_assign_grafana_admin: true
     role_attribute_strict: true
-    email_attribute_name: "email:primary"
+    email_attribute_name: "email"
     email_attribute_path: "email"
-    scopes: "openid email profile offline_access roles"
+    scopes: "openid email profile groups offline_access"
     auto_login: true
     use_pkce: true
     use_refresh_token: true

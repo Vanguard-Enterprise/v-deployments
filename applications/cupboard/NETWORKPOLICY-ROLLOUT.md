@@ -158,7 +158,7 @@ survive a pod restart, so treat it as a rehearsal tool rather than a rollout sta
   above stays the source of truth. Decision I explicitly carries this conditional
   block so PR7 does not retro-break PR6.
 - **Non-cupboard namespaces stay unpoliced this phase.** Locking down rustlens,
-  grafana, zitadel, openbao and the rest is deferred (see the phase 7 plan's
+  grafana, openbao and the rest is deferred (see the phase 7 plan's
   "Deferred" section). The CNI makes it possible; it is not a Phase 7 deliverable.
 - **Production (decision M).** The prod overlay tree gets its own copies of these
   files against `cupboard-prod-*` namespaces, plus one rule staging does not need:

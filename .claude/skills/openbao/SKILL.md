@@ -69,6 +69,6 @@ Shell state doesn't persist between separate exec calls; re-login (fresh 10m JWT
 
 ## Cluster / raft ops
 Raft node repair (diverged member, `tls: unrecognized name`, stale leader redirect causing ESO
-`no route to host` flapping): see the memory note `openbao-raft-node-repair` and
-`applications/openbao/MIGRATION.md`. Standard fix: break-glass login → `bao operator raft remove-peer <id>`
+`no route to host` flapping): see the memory note `openbao-raft-node-repair`.
+Standard fix: break-glass login → `bao operator raft remove-peer <id>`
 → wipe that node's `data-openbao-N` PVC + delete pod → it rejoins fresh and auto-unseals.

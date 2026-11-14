@@ -85,25 +85,8 @@ spec:
     # fleet-agent: public agent, Fleet Desktop and MDM paths.
     - kind: Rule
       priority: 300
-      match: >-
-        Host(`fleet.vngenterprise.com`) && (
-          PathPrefix(`/api/osquery/`) || PathPrefix(`/api/v1/osquery/`) ||
-          PathPrefix(`/api/fleet/orbit/`) || Path(`/api/fleet/device/ping`) ||
-          PathRegexp(`^/api/[^/]+/fleet/device/`) ||
-          PathPrefix(`/device/`) || PathPrefix(`/assets/`) ||
-          Path(`/mdm/apple/scep`) || Path(`/mdm/apple/mdm`) ||
-          PathPrefix(`/api/mdm/acme/`) || Path(`/api/mdm/apple/enroll`) ||
-          PathPrefix(`/api/mdm/apple/psso/`) || Path(`/.well-known/apple-app-site-association`) ||
-          PathPrefix(`/mdm/sso`) ||
-          PathRegexp(`^/api/[^/]+/fleet/mdm/(sso|setup/eula|bootstrap)(/|$)`) ||
-          Path(`/enroll`) ||
-          PathRegexp(`^/api/[^/]+/fleet/(enrollment_profiles/ota|ota_enrollment)(/|$)`) ||
-          PathRegexp(`^/api/[^/]+/fleet/software/titles/[^/]+/in_house_app`) ||
-          PathPrefix(`/api/mdm/apple/account_driven_enroll`) ||
-          PathPrefix(`/mdm/apple/account_driven_enroll/sso`) ||
-          PathPrefix(`/mdm/apple/service_discovery`) ||
-          PathPrefix(`/api/mdm/microsoft/`)
-        )
+      # One line on purpose: Traefik's rule parser rejects line breaks.
+      match: 'Host(`fleet.vngenterprise.com`) && (PathPrefix(`/api/osquery/`) || PathPrefix(`/api/v1/osquery/`) || PathPrefix(`/api/fleet/orbit/`) || Path(`/api/fleet/device/ping`) || PathRegexp(`^/api/[^/]+/fleet/device/`) || PathPrefix(`/device/`) || PathPrefix(`/assets/`) || Path(`/mdm/apple/scep`) || Path(`/mdm/apple/mdm`) || PathPrefix(`/api/mdm/acme/`) || Path(`/api/mdm/apple/enroll`) || PathPrefix(`/api/mdm/apple/psso/`) || Path(`/.well-known/apple-app-site-association`) || PathPrefix(`/mdm/sso`) || PathRegexp(`^/api/[^/]+/fleet/mdm/(sso|setup/eula|bootstrap)(/|$)`) || Path(`/enroll`) || PathRegexp(`^/api/[^/]+/fleet/(enrollment_profiles/ota|ota_enrollment)(/|$)`) || PathRegexp(`^/api/[^/]+/fleet/software/titles/[^/]+/in_house_app`) || PathPrefix(`/api/mdm/apple/account_driven_enroll`) || PathPrefix(`/mdm/apple/account_driven_enroll/sso`) || PathPrefix(`/mdm/apple/service_discovery`) || PathPrefix(`/api/mdm/microsoft/`))'
       middlewares:
         - name: cloudflare-only
       services:

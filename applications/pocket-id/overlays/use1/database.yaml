@@ -1,6 +1,5 @@
 # Pocket ID's database. Same shape as grafana-db (cnpg-grafana), minus backups:
-# there is no off-cluster backup yet. Add a barmanObjectStore + ScheduledBackup
-# before moving real logins off Zitadel.
+# there is no off-cluster backup yet. Add a barmanObjectStore + ScheduledBackup.
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:

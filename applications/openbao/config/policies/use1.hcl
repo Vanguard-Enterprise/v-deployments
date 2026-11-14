@@ -2,9 +2,6 @@ path "kv/metadata/*" {
   capabilities = ["read", "list"]
 }
 
-path "kv/data/zitadel/*" {
-  capabilities = ["read"]
-}
 path "kv/data/cert-manager/cloudflare-token" {
   capabilities = ["read"]
 }

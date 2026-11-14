@@ -14,6 +14,13 @@ resources:
 fleet:
   secretName: fleet-server
   autoApplySQLMigrations: true
+  # Windows MDM identity (WSTEP) pair, from kv/fleet/use1. Fleet also encrypts
+  # escrowed BitLocker recovery keys with it: replacing the pair makes every
+  # escrowed key unrecoverable.
+  mdm:
+    windows:
+      wstepIdentityCertKey: wstep-cert
+      wstepIdentityKeyKey: wstep-key
   tls:
     enabled: false   # Traefik terminates TLS
   logging:

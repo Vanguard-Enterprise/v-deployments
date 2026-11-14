@@ -1,10 +1,11 @@
-# kube-apiserver OIDC integration with Zitadel (issuer https://accounts.vngenterprise.com).
+# kube-apiserver OIDC integration with Pocket ID (issuer https://id.vngenterprise.com).
 #
 # NOTE: This is NOT applied by ArgoCD. Talos machine config is node-level and applied
 # out-of-band with `talosctl`. This file is version-controlled only as the source of record.
 #
-# Apply canary-style (one control plane at a time), replacing <KUBECTL_CLIENT_ID> with the
-# Zitadel "kubectl" OIDC application's Client ID:
+# Apply canary-style (one control plane at a time). The client ID is the Pocket ID "kubectl"
+# public client (device-code grant, restricted to the USE1_Cluster_Access group). Users
+# must have a verified email in Pocket ID, because the username claim is `email`:
 #
 #   talosctl -n 10.1.50.31 patch mc -p @cluster/talos/use1/oidc-apiserver.patch.yaml
 #   # verify apiserver healthy on that node, then:
@@ -15,8 +16,8 @@
 - op: add
   path: /cluster/apiServer/extraArgs
   value:
-    oidc-issuer-url: https://accounts.vngenterprise.com
-    oidc-client-id: "379128889202443581"
+    oidc-issuer-url: https://id.vngenterprise.com
+    oidc-client-id: "a5b9bb55-8f5f-4630-b9e0-011f76318ee5"
     oidc-username-claim: email
     oidc-username-prefix: "oidc:"
     oidc-groups-claim: groups

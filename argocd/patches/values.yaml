@@ -141,15 +141,15 @@ configs:
     kustomize.buildOptions: --enable-helm
     statusbadge.enabled: "true"
     oidc.config: |
-      name: Zitadel
-      issuer: https://accounts.vngenterprise.com
-      clientID: "356128038108333174"
+      name: Pocket ID
+      issuer: https://id.vngenterprise.com
+      clientID: "fbecc916-dd03-4512-a664-87c3d53d4cb1"
       requestedScopes:
         - openid
         - profile
         - email
         - groups
-      logoutURL: https://accounts.vngenterprise.com/oidc/v1/end_session
+      logoutURL: https://id.vngenterprise.com/api/oidc/end-session
       enablePKCEAuthentication: true
 
   rbac:

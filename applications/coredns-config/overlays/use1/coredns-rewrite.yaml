@@ -43,7 +43,7 @@ data:
         # name LAN and NetBird clients use, so its certificate verifies everywhere.
         # Outside the cluster the name resolves to the MetalLB address 10.1.50.177
         # (NetBird DNS zone).
-        rewrite name smtp.vngenterprise.com smtp-relay.smtp-relay.svc.cluster.local
+        rewrite name smtp-relay.vngenterprise.com smtp-relay.smtp-relay.svc.cluster.local
         log . {
             class error
         }

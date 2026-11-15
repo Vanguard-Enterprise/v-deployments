@@ -1,0 +1,78 @@
+# Default-deny (ingress AND egress) for smtp-relay plus the allows the relay needs.
+# Same shape as applications/pocket-id/overlays/use1/networkpolicy.yaml. Keep the
+# default-deny and all of its allows in this ONE file.
+#   Watch:    hubble observe --verdict DROPPED --namespace smtp-relay --follow
+#
+# INGRESS on 587 (every client must still log in with its own SASL user):
+#   - app namespaces that send mail: grafana, pocket-id. A new app namespace needs
+#     a line here as well as a login.
+#   - netbird-client: NetBird peers (laptops, remote hosts) reach 10.1.50.177
+#     through the in-cluster routing peers, so they arrive from those pods.
+#   - LAN hosts (Proxmox, Docker hosts) via the MetalLB address. kube-proxy keeps
+#     the client address when the pod is on the receiving node and SNATs to the
+#     node otherwise, so allow both the LAN range and the node entities.
+# INGRESS on 9154: alloy-metrics scraping the postfix exporter.
+#
+# EGRESS: cluster DNS (with the L7 dns rule toFQDNs needs; Postfix also resolves
+# recipient domains for reject_unknown_recipient_domain) and the Google Workspace
+# SMTP relay on 587. Nothing else, so the relay cannot deliver anywhere directly.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: smtp-relay-netpol
+spec:
+  description: "Default-deny both directions for smtp-relay with the SMTP client and Google relay allow set."
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: grafana
+        - matchLabels:
+            io.kubernetes.pod.namespace: pocket-id
+        - matchLabels:
+            io.kubernetes.pod.namespace: netbird-client
+      toPorts:
+        - ports:
+            - port: "587"
+              protocol: TCP
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "587"
+              protocol: TCP
+    - fromCIDRSet:
+        - cidr: 10.1.0.0/16
+      toPorts:
+        - ports:
+            - port: "587"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: alloy-metrics
+      toPorts:
+        - ports:
+            - port: "9154"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toFQDNs:
+        - matchName: "smtp-relay.gmail.com"
+      toPorts:
+        - ports:
+            - port: "587"
+              protocol: TCP

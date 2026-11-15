@@ -5,6 +5,7 @@ resources:
   - grafana.vngenterprise.com.yaml
   - monitoring.yaml
   - external-secret-admin.yaml
+  - external-secret-smtp.yaml
   - ./alerts
   - ./dashboards
 helmCharts:

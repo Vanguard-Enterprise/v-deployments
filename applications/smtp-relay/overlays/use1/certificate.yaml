@@ -1,0 +1,17 @@
+# Inbound STARTTLS certificate. Clients verify smtp.vngenterprise.com, which
+# resolves to this relay inside the cluster (CoreDNS rewrite) and on NetBird.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: smtp-relay-tls
+spec:
+  secretName: smtp-relay-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+    - smtp.vngenterprise.com
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always

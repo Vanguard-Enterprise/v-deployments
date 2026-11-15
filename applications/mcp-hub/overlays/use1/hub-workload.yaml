@@ -1,16 +1,16 @@
-# NetBird MCP server (github.com/Vanguard-Enterprise/mcp-hub, servers/netbird):
-# read-only MCP tools over the NetBird Management API, Streamable HTTP, and
-# OAuth resource server for Pocket ID access tokens (RFC 9728 metadata, RFC 9068
-# JWT validation against the Pocket ID JWKS).
+# MCP hub (github.com/Vanguard-Enterprise/mcp-hub, hub/): one MCP endpoint and one
+# Pocket ID login for every self-hosted MCP server. Backends are sections; the access
+# policy (access-policy.json, generated into a ConfigMap) maps Pocket ID groups to
+# read or write access per section, resolved per request from Pocket ID's userinfo.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mcp-netbird
+  name: mcp-hub
 spec:
   replicas: 1
-  # Zero-downtime rollouts: the new pod must pass its readiness probe (OIDC
-  # discovery loaded) before the old one is removed. Surge is cheap here (10m CPU
-  # request), unlike the Recreate apps elsewhere in this cluster.
+  # Zero-downtime rollouts: the new pod must pass its readiness probe (OIDC discovery
+  # loaded) before the old one is removed. The policy ConfigMap name carries a content
+  # hash, so editing access-policy.json rolls the pods the same way.
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,11 +20,11 @@ spec:
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: mcp-netbird
+      app: mcp-hub
   template:
     metadata:
       labels:
-        app: mcp-netbird
+        app: mcp-hub
     spec:
       automountServiceAccountToken: false
       imagePullSecrets:
@@ -36,26 +36,26 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: mcp-netbird
-          image: ghcr.io/vanguard-enterprise/mcp-netbird:main
+        - name: mcp-hub
+          image: ghcr.io/vanguard-enterprise/mcp-hub:main
           ports:
             - name: http
               containerPort: 8080
           env:
             - name: PORT
               value: "8080"
-            # Public identity of this MCP endpoint (RFC 8707 resource). Must match the
-            # API registered in Pocket ID (Administration -> APIs) and the IngressRoute host.
+            # Public identity of the hub (RFC 8707 resource). Must match the Pocket ID
+            # API "MCP Hub" and the IngressRoute host. Its public client "MCP Hub" is
+            # cfbdf773-de04-40c7-917f-316e689e00ae, restricted to the mcp_* groups.
             - name: MCP_PUBLIC_URL
-              value: https://mcp-netbird.vngenterprise.com/mcp
+              value: https://mcp.vngenterprise.com/mcp
             - name: OIDC_ISSUER
               value: https://id.vngenterprise.com
-            # Accepted token audience: only the resource above. MCP clients request
-            # tokens with resource=<MCP_PUBLIC_URL>, so Pocket ID stamps it as aud; plain
-            # login tokens (aud = client ID) and ID tokens are refused. The public Pocket
-            # ID client "NetBird MCP" is 85c295f7-930c-4b31-a09a-7234d5fa4d49.
             - name: OAUTH_AUDIENCE
-              value: https://mcp-netbird.vngenterprise.com/mcp
+              value: https://mcp.vngenterprise.com/mcp
+            - name: ACCESS_POLICY_FILE
+              value: /etc/mcp-hub/access-policy.json
+            # netbird section
             - name: NETBIRD_API_URL
               value: https://netbird.vngenterprise.com
             - name: NETBIRD_API_TOKEN
@@ -63,6 +63,10 @@ spec:
                 secretKeyRef:
                   name: mcp-netbird
                   key: NETBIRD_API_TOKEN
+          volumeMounts:
+            - name: access-policy
+              mountPath: /etc/mcp-hub
+              readOnly: true
           startupProbe:
             httpGet:
               path: /healthz
@@ -92,14 +96,18 @@ spec:
               memory: 64Mi
             limits:
               memory: 128Mi
+      volumes:
+        - name: access-policy
+          configMap:
+            name: mcp-hub-access-policy
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mcp-netbird
+  name: mcp-hub
 spec:
   selector:
-    app: mcp-netbird
+    app: mcp-hub
   ports:
     - name: http
       port: 8080

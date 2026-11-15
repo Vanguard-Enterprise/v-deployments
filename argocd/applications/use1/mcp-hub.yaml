@@ -8,9 +8,9 @@ metadata:
     # Images are built by github.com/Vanguard-Enterprise/mcp-hub CI on every
     # push to main and tagged :main. Image Updater follows the :main digest and
     # writes it back to the overlay kustomization (same pattern as rooted-in-pages).
-    argocd-image-updater.argoproj.io/image-list: netbird=ghcr.io/vanguard-enterprise/mcp-netbird:main
-    argocd-image-updater.argoproj.io/netbird.update-strategy: digest
-    argocd-image-updater.argoproj.io/netbird.pull-secret: pullsecret:argocd/ghcr-image-updater
+    argocd-image-updater.argoproj.io/image-list: hub=ghcr.io/vanguard-enterprise/mcp-hub:main
+    argocd-image-updater.argoproj.io/hub.update-strategy: digest
+    argocd-image-updater.argoproj.io/hub.pull-secret: pullsecret:argocd/ghcr-image-updater
     argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git
     argocd-image-updater.argoproj.io/write-back-target: kustomization
     argocd-image-updater.argoproj.io/git-branch: main

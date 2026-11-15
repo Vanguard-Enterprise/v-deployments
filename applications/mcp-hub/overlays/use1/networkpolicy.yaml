@@ -35,7 +35,7 @@ spec:
     - fromEntities:
         - host
         - remote-node
-    # The mcp-*.vngenterprise.com IngressRoutes on internal Traefik.
+    # The mcp.vngenterprise.com IngressRoute on internal Traefik.
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: traefik

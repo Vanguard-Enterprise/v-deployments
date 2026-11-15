@@ -88,31 +88,37 @@ kubectl --context use1-oidc -n pocket-id logs deploy/pocket-id
 
 ## MCP hub
 
-`argocd/applications/use1/mcp-hub.yaml` deploys the self-hosted MCP servers from
+`argocd/applications/use1/mcp-hub.yaml` deploys the MCP hub from
 [Vanguard-Enterprise/mcp-hub](https://github.com/Vanguard-Enterprise/mcp-hub)
-into the `mcp-hub` namespace (overlay `applications/mcp-hub/overlays/use1`).
-The first server is `mcp-netbird` at `https://mcp-netbird.vngenterprise.com/mcp`:
-read tools for every NetBird object type plus create, update, and delete tools
-for groups, policies, routes, setup keys, DNS, and peers. Write tools are
-annotated as mutating (`readOnlyHint: false`, deletes and updates
-`destructiveHint: true`); whether a client asks before running them is the
-client's approval policy, so keep write tools out of any auto-approve list.
-Each write is logged with the caller's Pocket ID subject (NetBird's own log
-only sees the PAT owner).
+into the `mcp-hub` namespace (overlay `applications/mcp-hub/overlays/use1`):
+one endpoint, `https://mcp.vngenterprise.com/mcp`, and one Pocket ID login for
+every self-hosted MCP server. Backends are sections of the hub; today there is
+`netbird` (read tools for every NetBird object type, create/update/delete for
+groups, policies, routes, setup keys, DNS, and peers).
 
-Routes sit on internal Traefik (10.1.50.176) and are reached over the LAN or
-NetBird; the A records live in the NetBird DNS zone `vngenterprise.com`. There
-is no Traefik auth middleware: each server is an OAuth resource server that
-validates Pocket ID access tokens (JWKS of `https://id.vngenterprise.com`) and
-answers `401` with RFC 9728 resource metadata, so MCP clients such as Claude Code
-run the PKCE login themselves. Pocket ID holds the public client "NetBird MCP"
-(callback `http://localhost/callback`, any port) restricted to the `mcp_users`
-group, and the API resource `https://mcp-netbird.vngenterprise.com/mcp`.
+Access is per section and per Pocket ID group, set in
+`applications/mcp-hub/overlays/use1/access-policy.json`: `read` groups get the
+section's read tools, `write` groups get read and write tools, everyone else
+gets nothing from it. The hub reads the caller's groups from Pocket ID's
+userinfo endpoint (cached for a minute), so adding or removing someone from
+`mcp_netbird_read` or `mcp_netbird_write` in Pocket ID is all it takes. The
+policy is generated into a ConfigMap with a content hash, so editing it rolls
+the Deployment. `hub_whoami` shows a caller their groups and access.
 
-Images are `ghcr.io/vanguard-enterprise/mcp-<server>:main`, built by the mcp-hub
-CI on every push to `main`; Argo CD Image Updater pins the digest in the overlay
-kustomization. Deployments use RollingUpdate with `maxUnavailable: 0`, and a pod
-is ready only after OIDC discovery against Pocket ID succeeded.
+The route sits on internal Traefik (10.1.50.176) and is reached over the LAN or
+NetBird; the A record lives in the NetBird DNS zone `vngenterprise.com`. There
+is no Traefik auth middleware: the hub is an OAuth resource server for Pocket ID
+access tokens and answers `401` with RFC 9728 resource metadata, so MCP clients
+such as Claude Code run the PKCE login themselves. Pocket ID holds the public
+client "MCP Hub" (callback `http://localhost/callback`, any port) restricted to
+the `mcp_*` groups, and the API resource `https://mcp.vngenterprise.com/mcp`.
+Write tools are annotated as mutating and force a confirmation prompt in Claude
+Code; each write is logged with the caller's Pocket ID subject.
+
+The image is `ghcr.io/vanguard-enterprise/mcp-hub:main`, built by the mcp-hub CI
+on every push to `main`; Argo CD Image Updater pins the digest in the overlay
+kustomization. The Deployment uses RollingUpdate with `maxUnavailable: 0`, and a
+pod is ready only after OIDC discovery against Pocket ID succeeded.
 
 Secrets come from OpenBao through External Secrets: `kv/mcp-hub/netbird` key
 `netbird_api_token` (a NetBird Personal Access Token) feeds `NETBIRD_API_TOKEN`.
@@ -121,5 +127,6 @@ The `use1` policy grants ESO read on `kv/data/mcp-hub/*`.
 ```bash
 kubectl --context use1-oidc -n argocd get application mcp-hub
 kubectl --context use1-oidc -n mcp-hub get pods,externalsecrets,ingressroute
-kubectl --context use1-oidc -n mcp-hub logs deploy/mcp-netbird
+kubectl --context use1-oidc -n mcp-hub logs deploy/mcp-hub
 ```
+

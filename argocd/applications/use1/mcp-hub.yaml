@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mcp-hub
+  namespace: argocd
+  annotations:
+    # Images are built by github.com/Vanguard-Enterprise/mcp-hub CI on every
+    # push to main and tagged :main. Image Updater follows the :main digest and
+    # writes it back to the overlay kustomization (same pattern as rooted-in-pages).
+    argocd-image-updater.argoproj.io/image-list: netbird=ghcr.io/vanguard-enterprise/mcp-netbird:main
+    argocd-image-updater.argoproj.io/netbird.update-strategy: digest
+    argocd-image-updater.argoproj.io/netbird.pull-secret: pullsecret:argocd/ghcr-image-updater
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+    argocd-image-updater.argoproj.io/git-branch: main
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/mcp-hub/overlays/use1
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mcp-hub
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

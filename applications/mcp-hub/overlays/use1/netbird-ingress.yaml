@@ -1,0 +1,24 @@
+# Internal-only route, like mcp-grafana: reachable over the LAN and NetBird via
+# internal Traefik (10.1.50.176). The NetBird DNS zone vngenterprise.com holds
+# the A record mcp-netbird.vngenterprise.com -> 10.1.50.176 (managed with the
+# netbird skill, not in this repo). No Traefik auth middleware: the server
+# validates Pocket ID OAuth access tokens itself and answers 401 with the
+# RFC 9728 resource metadata that MCP clients use to start the login.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mcp-netbird
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`mcp-netbird.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: mcp-netbird
+          port: 8080
+  tls:
+    store:
+      name: default
+      namespace: traefik

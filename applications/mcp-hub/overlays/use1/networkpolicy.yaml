@@ -1,0 +1,74 @@
+# Default-deny (ingress AND egress) for the mcp-hub namespace, plus every allow
+# the MCP servers need. Same shape as applications/pocket-id/overlays/use1/networkpolicy.yaml.
+#
+# The default-deny and ALL of its allows live in this ONE file so a single
+# apply/delete flips the namespace atomically. Never split them across files.
+#   Watch:    hubble observe --verdict DROPPED --namespace mcp-hub --follow
+#   Rollback: kubectl -n mcp-hub delete ciliumnetworkpolicy mcp-hub-netpol
+#             (and disable Argo self-heal first, or it comes straight back)
+#
+# WHAT THIS ALLOWS
+#   Ingress: the node (kubelet probes) and internal Traefik on :8080.
+#   Egress: cluster DNS (with the L7 rule toFQDNs needs); Pocket ID at
+#     id.vngenterprise.com for OIDC discovery and JWKS (public DNS -> Cloudflare,
+#     so a toFQDNs rule); and the NetBird Management API at
+#     netbird.vngenterprise.com, which CoreDNS rewrites to the in-cluster Traefik
+#     service (applications/coredns-config), so that one is a toEndpoints rule to
+#     the Traefik pods: toFQDNs/toCIDR rules never match in-cluster identities.
+#
+# FQDN FOOTGUN: toFQDNs only works if Cilium can SEE the DNS answers, so the DNS
+# rule carries an L7 `rules: dns: matchPattern: "*"` block that sends this
+# namespace's lookups through the Cilium DNS proxy. Deleting that block does not
+# break DNS, it silently breaks every toFQDNs rule underneath it.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcp-hub-netpol
+spec:
+  description: "Default-deny both directions for mcp-hub with the MCP server allow set."
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    # Kubelet probes (/healthz, /readyz on :8080).
+    - fromEntities:
+        - host
+        - remote-node
+    # The mcp-*.vngenterprise.com IngressRoutes on internal Traefik.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    # Cluster DNS, WITH the L7 dns visibility rule that the toFQDNs rules need.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    # Pocket ID: OIDC discovery and JWKS for access-token validation.
+    - toFQDNs:
+        - matchName: "id.vngenterprise.com"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # NetBird Management API. CoreDNS rewrites netbird.vngenterprise.com to the
+    # Traefik service, so the destination identity is the Traefik pods. Port
+    # unconstrained: the Service maps 443 to Traefik's container port and that
+    # mapping is Traefik's business, not ours.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik

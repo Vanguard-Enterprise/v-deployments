@@ -216,8 +216,11 @@ app fails to log in until it is restarted again.
 
 Expect a short window (the two rollouts, about a minute) where the app and some
 relay replicas hold different passwords. Submissions in that window are refused
-at login, not queued: Grafana retries failed notifications, other apps may not.
-Rotate when nothing important is due to send, or check the app's logs afterwards.
+at login, not queued. Grafana retries a failed notification only while its
+process keeps running, and it restarts last in this order, so a refused alert can
+wait for its next repeat interval or be lost if it resolves first. Other apps may
+not retry at all. Rotate when nothing important is due to send, and check the
+app's logs afterwards.
 
 ## Operating
 

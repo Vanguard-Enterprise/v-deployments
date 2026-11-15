@@ -3,6 +3,10 @@
     "netbird": {
       "read": ["mcp_netbird_read"],
       "write": ["mcp_netbird_write"]
+    },
+    "pocketid": {
+      "read": ["mcp_pocketid_read"],
+      "write": ["mcp_pocketid_write"]
     }
   }
 }

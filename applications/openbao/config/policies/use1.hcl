@@ -41,3 +41,6 @@ path "kv/data/rooted-in-pages/*" {
 path "kv/data/mcp-hub/*" {
   capabilities = ["read"]
 }
+path "kv/data/smtp-relay/*" {
+  capabilities = ["read"]
+}

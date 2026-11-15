@@ -20,6 +20,9 @@ data:
             settings:
               addresses: alerts@vngenterprise.com
               singleEmail: true
+              # Text templates in templates.configmap.yaml.
+              subject: '{{ template "email.subject" . }}'
+              message: '{{ template "email.message" . }}'
 
     # Slack contact points provisioned earlier. A contact point dropped from the
     # list above stays in Grafana, so these remove them. Safe to delete this

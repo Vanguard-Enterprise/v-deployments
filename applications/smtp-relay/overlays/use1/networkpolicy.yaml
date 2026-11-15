@@ -8,9 +8,10 @@
 #     a line here as well as a login.
 #   - netbird-client: NetBird peers (laptops, remote hosts) reach 10.1.50.177
 #     through the in-cluster routing peers, so they arrive from those pods.
-#   - LAN hosts (Proxmox, Docker hosts) via the MetalLB address. kube-proxy keeps
-#     the client address when the pod is on the receiving node and SNATs to the
-#     node otherwise, so allow both the LAN range and the node entities.
+#   - LAN hosts (Proxmox, Docker hosts) via the MetalLB address. The Service uses
+#     externalTrafficPolicy: Local, so the client's own 10.1.x.x address arrives
+#     and matches the LAN CIDR rule. (With Cluster, kube-proxy SNATs it to a
+#     pod-CIDR node address that Cilium labels "world" and the policy drops.)
 # INGRESS on 9154: alloy-metrics scraping the postfix exporter.
 #
 # EGRESS: cluster DNS (with the L7 dns rule toFQDNs needs; Postfix also resolves

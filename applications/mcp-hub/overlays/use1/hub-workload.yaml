@@ -69,6 +69,15 @@ spec:
                 secretKeyRef:
                   name: mcp-pocketid
                   key: POCKETID_API_KEY
+            # argocd section (read-only). argocd.vngenterprise.com resolves to internal
+            # Traefik through the CoreDNS rewrite in applications/coredns-config.
+            - name: ARGOCD_URL
+              value: https://argocd.vngenterprise.com
+            - name: ARGOCD_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-argocd
+                  key: ARGOCD_API_TOKEN
           volumeMounts:
             - name: access-policy
               mountPath: /etc/mcp-hub

@@ -7,6 +7,9 @@
     "pocketid": {
       "read": ["mcp_pocketid_read"],
       "write": ["mcp_pocketid_write"]
+    },
+    "argocd": {
+      "read": ["mcp_argocd_read"]
     }
   }
 }

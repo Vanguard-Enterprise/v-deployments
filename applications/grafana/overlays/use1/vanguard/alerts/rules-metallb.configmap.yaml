@@ -33,7 +33,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "MetalLB on {{ $labels.pod }} has not loaded a valid config"
+              summary: |-
+                MetalLB has no valid configuration
+              description: |-
+                MetalLB gives services their LAN addresses (10.1.50.x, for example Traefik and the email relay). {{ $labels.pod }} cannot load its config, so those addresses may stop being announced and the services become unreachable from the LAN.
+              action: |-
+                kubectl -n metallb-system logs {{ $labels.pod }} shows the config error. Check recent git changes to the IPAddressPool and L2Advertisement.
 
           - uid: metallb-pool-exhausted
             title: MetalLBAddressPoolExhausted
@@ -54,7 +59,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "MetalLB address pool {{ $labels.pool }} is exhausted"
+              summary: |-
+                MetalLB address pool {{ $labels.pool }} is full
+              description: |-
+                Every LAN address in this pool is in use. A new LoadBalancer service will not get an address and stays Pending.
+              action: |-
+                Remove an unused LoadBalancer service, or add addresses to the pool in git.
 
           - uid: metallb-pool-high
             title: MetalLBAddressPoolHigh
@@ -75,4 +85,9 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "MetalLB address pool {{ $labels.pool }} is >=90% allocated"
+              summary: |-
+                MetalLB address pool {{ $labels.pool }} is {{ humanizePercentage $values.A.Value }} used
+              description: |-
+                The pool of LAN addresses for services is nearly full. Once it is full, new LoadBalancer services cannot get an address.
+              action: |-
+                Plan to free an unused address or add addresses to the pool in git.

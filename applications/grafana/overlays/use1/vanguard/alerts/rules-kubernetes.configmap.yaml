@@ -33,7 +33,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} restarting frequently"
+              summary: |-
+                Pod {{ $labels.namespace }}/{{ $labels.pod }} keeps restarting
+              description: |-
+                Its {{ $labels.container }} container restarted more than 5 times in 15 minutes. It is probably failing on startup or being killed for using too much memory, so the app is down or flapping.
+              action: |-
+                kubectl -n {{ $labels.namespace }} logs {{ $labels.pod }} -c {{ $labels.container }} --previous shows why the last run ended. kubectl -n {{ $labels.namespace }} describe pod {{ $labels.pod }} shows OOMKilled and other reasons.
 
           - uid: kubernetes-pod-pending
             title: PodPending
@@ -54,7 +59,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} pending >10m"
+              summary: |-
+                Pod {{ $labels.namespace }}/{{ $labels.pod }} cannot start
+              description: |-
+                It has been waiting for a node for over 10 minutes. Usually no node has enough free memory or CPU, or its storage volume cannot attach. The app is missing this copy.
+              action: |-
+                kubectl -n {{ $labels.namespace }} describe pod {{ $labels.pod }}. The Events at the bottom say why.
 
           - uid: kubernetes-ds-rollout-incomplete
             title: DaemonSetRolloutIncomplete
@@ -75,7 +85,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} not fully rolled out"
+              summary: |-
+                {{ $labels.namespace }}/{{ $labels.daemonset }} is not running on every node
+              description: |-
+                This DaemonSet should have a ready pod on each node, but some have not been ready for 15 minutes. Nodes without it lose what it provides (for example networking, storage or log collection).
+              action: |-
+                kubectl -n {{ $labels.namespace }} get pods -o wide | grep {{ $labels.daemonset }} to find the pod that is not ready, then describe it.
 
           - uid: kubernetes-deploy-replicas-mismatch
             title: DeploymentReplicasMismatch
@@ -96,7 +111,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Deployment {{ $labels.namespace }}/{{ $labels.deployment }} replicas mismatch"
+              summary: |-
+                {{ $labels.namespace }}/{{ $labels.deployment }} does not have the right number of pods
+              description: |-
+                For 15 minutes this deployment has had a different number of pods than it should. Usually a rollout is stuck or a pod cannot be scheduled. The app may be running with fewer copies than normal, or partly on an old version.
+              action: |-
+                kubectl -n {{ $labels.namespace }} rollout status deploy/{{ $labels.deployment }} and kubectl -n {{ $labels.namespace }} get pods.
 
           - uid: kubernetes-pvc-usage-high
             title: PVCUsageHigh
@@ -117,4 +137,9 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "PVC {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} >90% full"
+              summary: |-
+                Volume {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is {{ humanizePercentage $values.A.Value }} full
+              description: |-
+                When it fills up, the app using it (often a database or log store) can no longer write and usually crashes.
+              action: |-
+                Delete data that is not needed, or grow the volume: raise the PVC size in git (Longhorn volumes grow without downtime).

@@ -33,7 +33,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "cert-manager is down; new certificates cannot be issued or renewed"
+              summary: |-
+                cert-manager is not running
+              description: |-
+                Nothing has reported cert-manager metrics for 10 minutes, so it is probably down. Existing certificates keep working, but nothing new is issued or renewed. Renewals start 30 days before expiry, so there is time, but sites fail once a certificate expires.
+              action: |-
+                kubectl -n cert-manager get pods, then read the logs of the pod that is not running.
 
           - uid: certmanager-cert-expiring-soon
             title: CertManagerCertExpiringSoon
@@ -54,7 +59,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Certificate {{ $labels.name }} in {{ $labels.exported_namespace }} expires in <7d"
+              summary: |-
+                Certificate {{ $labels.name }} ({{ $labels.exported_namespace }}) expires within 7 days
+              description: |-
+                cert-manager normally renews 30 days before expiry, so renewal has been failing for weeks. When it expires, browsers and apps refuse to connect to whatever uses it.
+              action: |-
+                kubectl -n {{ $labels.exported_namespace }} describe certificate {{ $labels.name }}, then follow its CertificateRequest, Order and Challenge to the error. A Cloudflare DNS-01 challenge is the usual place it gets stuck.
 
           - uid: certmanager-cert-not-ready
             title: CertManagerCertNotReady
@@ -75,4 +85,9 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Certificate {{ $labels.name }} in {{ $labels.exported_namespace }} is not Ready"
+              summary: |-
+                Certificate {{ $labels.name }} ({{ $labels.exported_namespace }}) is not ready
+              description: |-
+                cert-manager has not been able to issue or renew this certificate for 10 minutes. A brand-new certificate can take about 30 minutes (Cloudflare caches the challenge lookup), so this can be normal right after adding one. Otherwise the site using it may have an old or missing certificate.
+              action: |-
+                kubectl -n {{ $labels.exported_namespace }} describe certificate {{ $labels.name }}, then follow its CertificateRequest, Order and Challenge to the error. A Cloudflare DNS-01 challenge is the usual place it gets stuck.

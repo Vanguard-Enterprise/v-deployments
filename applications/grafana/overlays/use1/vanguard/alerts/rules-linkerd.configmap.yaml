@@ -46,7 +46,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Linkerd identity issuer expires in under 30 days; rotate it (manual, the trust anchor key is in OpenBao only)"
+              summary: |-
+                Linkerd mesh certificate expires in {{ humanizeDuration $values.A.Value }}
+              description: |-
+                The Linkerd identity issuer certificate is renewed by hand on purpose (its signing key is kept only in OpenBao). When it expires, meshed services (cupboard) can no longer talk to each other.
+              action: |-
+                Schedule the rotation in the next few weeks using the runbook below.
               runbook_url: "https://github.com/Vanguard-Enterprise/v-deployments/blob/main/cluster/talos/use1/linkerd-cert-rotation.md"
 
           # 7 days: at this point the mesh is close to a full outage.
@@ -69,7 +74,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Linkerd identity issuer expires in under 7 days; when it lapses ALL meshed traffic fails"
+              summary: |-
+                Linkerd mesh certificate expires in {{ humanizeDuration $values.A.Value }}: rotate it now
+              description: |-
+                When it expires, ALL meshed traffic fails and the cupboard services stop working.
+              action: |-
+                Rotate it now using the runbook below.
               runbook_url: "https://github.com/Vanguard-Enterprise/v-deployments/blob/main/cluster/talos/use1/linkerd-cert-rotation.md"
 
           # The identity controller itself. If this is down, no workload can get
@@ -93,5 +103,10 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "linkerd-identity has zero ready replicas; workloads cannot obtain or renew mesh certificates"
+              summary: |-
+                Linkerd identity service is down
+              description: |-
+                linkerd-identity has had no ready pods for 5 minutes. Meshed pods cannot get or renew their certificates: new pods cannot start talking, and running ones fail within about a day as their certificates expire.
+              action: |-
+                kubectl -n linkerd get pods and kubectl -n linkerd logs deploy/linkerd-identity -c identity. An expired issuer certificate is a common cause (runbook below).
               runbook_url: "https://github.com/Vanguard-Enterprise/v-deployments/blob/main/cluster/talos/use1/linkerd-cert-rotation.md"

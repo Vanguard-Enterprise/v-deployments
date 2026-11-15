@@ -33,4 +33,9 @@ data:
               severity: info
               team: platform
             annotations:
-              summary: "Monitoring pipeline heartbeat: if this email arrives weekly, alerting works"
+              summary: |-
+                Weekly check-in: alert emails are working
+              description: |-
+                This alert fires on purpose, all the time. It is emailed once a week so you know Grafana, the email relay and Google are all delivering alerts.
+              action: |-
+                Nothing. If a week passes without this email, alerting is broken: check Grafana and the smtp-relay app.

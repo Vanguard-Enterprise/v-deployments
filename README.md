@@ -93,9 +93,12 @@ kubectl --context use1-oidc -n pocket-id logs deploy/pocket-id
 into the `mcp-hub` namespace (overlay `applications/mcp-hub/overlays/use1`).
 The first server is `mcp-netbird` at `https://mcp-netbird.vngenterprise.com/mcp`:
 read tools for every NetBird object type plus create, update, and delete tools
-for groups, policies, routes, setup keys, DNS, and peers. Writes are marked
-non-read-only so MCP clients confirm them, and each is logged with the
-caller's Pocket ID subject (NetBird's own log only sees the PAT owner).
+for groups, policies, routes, setup keys, DNS, and peers. Write tools are
+annotated as mutating (`readOnlyHint: false`, deletes and updates
+`destructiveHint: true`); whether a client asks before running them is the
+client's approval policy, so keep write tools out of any auto-approve list.
+Each write is logged with the caller's Pocket ID subject (NetBird's own log
+only sees the PAT owner).
 
 Routes sit on internal Traefik (10.1.50.176) and are reached over the LAN or
 NetBird; the A records live in the NetBird DNS zone `vngenterprise.com`. There

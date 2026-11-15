@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vn-server
+  namespace: vanguard-nexus
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`nexus.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: vn-server
+          port: 8080
+  tls:
+    store:
+      name: default
+      namespace: traefik

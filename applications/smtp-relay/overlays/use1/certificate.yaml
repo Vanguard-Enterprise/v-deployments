@@ -1,8 +1,9 @@
 # Inbound STARTTLS certificate. Clients verify smtp-relay.vngenterprise.com, which
 # resolves to this relay inside the cluster (CoreDNS rewrite) and on NetBird.
-# Not smtp.vngenterprise.com: Cloudflare never serves a TXT record at
-# _acme-challenge.smtp.vngenterprise.com (even a hand-made one), so DNS-01 for
-# that name can never complete.
+# First issuance can take up to ~30 minutes: cert-manager looks the challenge
+# name up before creating the record, and Cloudflare's nameservers then serve the
+# cached "no record" answer for up to the zone's negative TTL (SOA minimum, 1800s).
+# Deleting the Challenge restarts that wait, so leave it alone.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:

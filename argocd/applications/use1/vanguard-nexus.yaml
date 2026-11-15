@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vanguard-nexus
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: server=ghcr.io/vanguard-enterprise/vn-server,agent=ghcr.io/vanguard-enterprise/vn-agent
+    argocd-image-updater.argoproj.io/server.update-strategy: newest-build
+    argocd-image-updater.argoproj.io/agent.update-strategy: newest-build
+    argocd-image-updater.argoproj.io/server.allow-tags: regexp:^sha-[0-9a-f]{40}$
+    argocd-image-updater.argoproj.io/agent.allow-tags: regexp:^sha-[0-9a-f]{40}$
+    argocd-image-updater.argoproj.io/server.pull-secret: pullsecret:argocd/ghcr-image-updater
+    argocd-image-updater.argoproj.io/agent.pull-secret: pullsecret:argocd/ghcr-image-updater
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+    argocd-image-updater.argoproj.io/git-branch: main
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vanguard-Enterprise/v-deployments
+    path: applications/vanguard-nexus/overlays/use1
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vanguard-nexus
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

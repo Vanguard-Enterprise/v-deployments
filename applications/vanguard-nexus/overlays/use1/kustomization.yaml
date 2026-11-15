@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# No `namespace:` here: the server lives in vanguard-nexus and the agent in vn-agent,
+# so every resource names its own namespace.
+resources:
+  - namespace.yaml
+  - database.yaml
+  - secrets.yaml
+  - server.yaml
+  - ingress.yaml
+  - agent.yaml
+images:
+  - name: ghcr.io/vanguard-enterprise/vn-server
+    newTag: sha-015ceff4a181d8ea57ea9f49ecac341095f57883
+  - name: ghcr.io/vanguard-enterprise/vn-agent
+    newTag: sha-015ceff4a181d8ea57ea9f49ecac341095f57883

@@ -137,3 +137,49 @@ kubectl --context use1-oidc -n mcp-hub get pods,externalsecrets,ingressroute
 kubectl --context use1-oidc -n mcp-hub logs deploy/mcp-hub
 ```
 
+
+## Vanguard Nexus
+
+`argocd/applications/use1/vanguard-nexus.yaml` deploys the
+[Vanguard Nexus](https://github.com/Vanguard-Enterprise/v-nexus) demo at
+`https://nexus.vngenterprise.com` through internal Traefik, so it is reachable over
+NetBird and the LAN only. The NetBird `vngenterprise.com` DNS zone holds the
+`nexus` A record (10.1.50.176). Its overlay is `applications/vanguard-nexus/overlays/use1`.
+This is an early build, not a release.
+
+The `vanguard-nexus` namespace holds the server (one replica, Recreate) and the
+CloudNativePG cluster `vn-db`, whose generated `vn-db-app` Secret supplies the database
+URL. The server applies its migrations at startup. The agent challenge key is
+generated in the cluster by an External Secrets `Password` generator and never
+rotated; it signs only one-minute challenges, so it needs no backup. The database has
+one instance and no backup schedule: treat its data as disposable.
+
+Sign-in uses the Pocket ID public client `Vanguard Nexus (use1)` (PKCE, no secret),
+limited to the `vn-admins` group, whose members also get the VN installation admin
+role.
+
+The `vn-agent` namespace runs the agent, which inventories use1 itself with a
+read-only ClusterRole (nodes, namespaces, deployments, statefulsets, daemonsets; no
+pods, Secrets, or ConfigMaps). It talks to the server over the in-cluster Service.
+Its enrollment token is single-use and kept out of Git. To enroll (or re-enroll after
+revoking the agent), register the cluster in the VN UI, copy the token, then:
+
+```bash
+kubectl --context use1-oidc -n vn-agent create secret generic vn-agent-enrollment \
+  --from-file=token=<file holding the token> \
+  --dry-run=client -o yaml | kubectl --context use1-oidc apply --server-side --force-conflicts -f -
+kubectl --context use1-oidc -n vn-agent delete secret vn-agent-identity --ignore-not-found
+kubectl --context use1-oidc -n vn-agent rollout restart deployment/vn-agent
+```
+
+Until a token is present the agent pod restarts. After it enrolls it keeps its
+identity in `vn-agent-identity`, which it creates itself.
+
+Argo CD Image Updater moves both images to the newest `sha-<commit>` tag that v-nexus
+CI publishes from main.
+
+```bash
+kubectl --context use1-oidc -n argocd get application vanguard-nexus
+kubectl --context use1-oidc -n vanguard-nexus get pods,clusters,externalsecrets
+kubectl --context use1-oidc -n vn-agent logs deployment/vn-agent
+```

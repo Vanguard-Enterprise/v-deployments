@@ -222,6 +222,41 @@ wait for its next repeat interval or be lost if it resolves first. Other apps ma
 not retry at all. Rotate when nothing important is due to send, and check the
 app's logs afterwards.
 
+## Certificate issuance
+
+`smtp-relay.vngenterprise.com` uses a Let's Encrypt DNS-01 certificate through
+Cloudflare. A new certificate can sit at "Waiting for DNS-01 challenge
+propagation" for up to about 30 minutes: cert-manager looks the challenge name up
+before creating the TXT record, and Cloudflare's nameservers keep serving that
+negative answer for the zone's negative TTL (1800s). It clears on its own.
+Deleting the Challenge only restarts the wait. The relay pods stay in
+ContainerCreating until the certificate Secret exists.
+
+If it is still pending after about 35 minutes, the cause is something else:
+
+```bash
+kubectl -n smtp-relay get challenge \
+  -o jsonpath='{.items[?(@.spec.dnsName=="smtp-relay.vngenterprise.com")].spec.key}{"\n"}'  # expected TXT value
+kubectl -n smtp-relay describe challenge                                       # Reason / Presented
+# Full responses, so the status (NOERROR / NXDOMAIN / SERVFAIL) is visible:
+dig TXT _acme-challenge.smtp-relay.vngenterprise.com @kellen.ns.cloudflare.com +noall +comments +answer
+dig TXT _acme-challenge.smtp-relay.vngenterprise.com @1.1.1.1 +noall +comments +answer
+kubectl -n cert-manager logs deploy/cert-manager --since=30m | grep -i smtp-relay
+```
+
+How to read it:
+
+- Compare any TXT value with the Challenge `spec.key`. A different value is a
+  leftover record, not the current challenge.
+- SERVFAIL from 1.1.1.1 is a resolver or DNSSEC problem, not a cache.
+- NOERROR with no answer, or NXDOMAIN, is a negative answer. If Cloudflare's
+  nameserver returns the right value but 1.1.1.1 does not, the resolver cached a
+  negative answer. If neither returns it, the record is missing or still
+  negatively cached at Cloudflare.
+- For timeouts in the cert-manager log, check which endpoint the error names:
+  DNS servers (1.1.1.1 / 9.9.9.9, the only ones it uses) mean DNS is
+  unreachable; the Let's Encrypt API means an ACME problem.
+
 ## Operating
 
 ```bash

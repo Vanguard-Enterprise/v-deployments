@@ -62,8 +62,6 @@ envValueFrom:
       name: grafana-smtp
       key: password
       optional: true
-envFromSecrets:
-  - name: grafana-alerting
 # Datasources mounted directly by the chart so they exist at Grafana startup
 # (sidecar discovery races with provisioning init).
 datasources:

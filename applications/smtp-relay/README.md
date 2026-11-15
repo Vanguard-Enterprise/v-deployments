@@ -12,7 +12,7 @@ delivers it. No app holds a Google credential and no app needs a Google license.
                                          smtp-relay (Postfix StatefulSet x2, queue on Longhorn)
                                            - each login may only send as its own address
                                            - Google 5.7.x refusals are queued, not bounced
-                                           - metrics -> Mimir, JSON logs -> Loki, alerts -> Slack
+                                           - metrics -> Mimir, JSON logs -> Loki, alerts -> email
                                                                             │ 587, TLS verified
                                                                             ▼ from our public IP
                                          smtp-relay.gmail.com (authorizes us by that IP)
@@ -180,7 +180,8 @@ authentication" is clicked, Google signs relayed mail with its default key
 ### When our public IP changes
 
 Mail waits in the queue (Google's refusal is turned into a temporary error), and
-`SmtpRelayDeferredQueue` fires in Slack after 20 minutes.
+`SmtpRelayDeferredQueue` fires in Grafana after 20 minutes. Its alert email waits
+in the same queue, so it only arrives after the fix; check Grafana instead.
 
 1. https://admin.google.com/ac/apps/gmail/routing > SMTP relay service > edit the
    rule: add the new IP **and remove the old one** (Verizon will give the old IP to

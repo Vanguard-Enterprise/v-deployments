@@ -8,85 +8,10 @@ metadata:
 data:
   contact-points.yaml: |
     apiVersion: 1
+    # Email is the only alert channel. It goes through smtp-relay to the Google
+    # Workspace relay, and alerts@ is a Google Group, so who receives alerts is
+    # managed in Google Groups.
     contactPoints:
-      # One Slack app / bot token ($SLACK_BOT_TOKEN) posts to every channel below.
-      # The bot must be invited to each channel. Channel names are not secrets, so
-      # they are set inline; only the token comes from Vault via the grafana-alerting secret.
-
-      # ---- platform ----
-      - orgId: 1
-        name: slack-platform-critical
-        receivers:
-          - uid: slack-platform-critical
-            type: slack
-            settings:
-              token: $SLACK_BOT_TOKEN
-              recipient: "#alerts-platform-critical"
-              username: Grafana
-              mentionChannel: here
-              title: '{{ template "slack.title" . }}'
-              text: '{{ template "slack.text" . }}'
-              color: '{{ template "slack.color" . }}'
-
-      - orgId: 1
-        name: slack-platform-warning
-        receivers:
-          - uid: slack-platform-warning
-            type: slack
-            settings:
-              token: $SLACK_BOT_TOKEN
-              recipient: "#alerts-platform-warning"
-              username: Grafana
-              title: '{{ template "slack.title" . }}'
-              text: '{{ template "slack.text" . }}'
-              color: '{{ template "slack.color" . }}'
-
-      # ---- vanguard ----
-      - orgId: 1
-        name: slack-vanguard-critical
-        receivers:
-          - uid: slack-vanguard-critical
-            type: slack
-            settings:
-              token: $SLACK_BOT_TOKEN
-              recipient: "#alerts-vanguard-critical"
-              username: Grafana
-              mentionChannel: here
-              title: '{{ template "slack.title" . }}'
-              text: '{{ template "slack.text" . }}'
-              color: '{{ template "slack.color" . }}'
-
-      - orgId: 1
-        name: slack-vanguard-warning
-        receivers:
-          - uid: slack-vanguard-warning
-            type: slack
-            settings:
-              token: $SLACK_BOT_TOKEN
-              recipient: "#alerts-vanguard-warning"
-              username: Grafana
-              title: '{{ template "slack.title" . }}'
-              text: '{{ template "slack.text" . }}'
-              color: '{{ template "slack.color" . }}'
-
-      # ---- shared low-priority / heartbeat ----
-      - orgId: 1
-        name: slack-info
-        receivers:
-          - uid: slack-info
-            type: slack
-            settings:
-              token: $SLACK_BOT_TOKEN
-              recipient: "#alerts-info"
-              username: Grafana
-              title: '{{ template "slack.title" . }}'
-              text: '{{ template "slack.text" . }}'
-              color: '{{ template "slack.color" . }}'
-
-      # ---- email (through smtp-relay -> Google Workspace) ----
-      # alerts@ is a Google Group, so who gets these is managed in Google Groups.
-      # Not routed by any notification policy yet; send a test from
-      # Alerting > Contact points to check the mail path end to end.
       - orgId: 1
         name: email-alerts
         receivers:
@@ -95,3 +20,22 @@ data:
             settings:
               addresses: alerts@vngenterprise.com
               singleEmail: true
+
+    # Slack contact points provisioned earlier. A contact point dropped from the
+    # list above stays in Grafana, so these remove them. Safe to delete this
+    # block once Grafana no longer lists them.
+    deleteContactPoints:
+      - orgId: 1
+        uid: slack-platform-critical
+      - orgId: 1
+        uid: slack-platform-warning
+      - orgId: 1
+        uid: slack-vanguard-critical
+      - orgId: 1
+        uid: slack-vanguard-warning
+      - orgId: 1
+        uid: slack-info
+      - orgId: 1
+        uid: slack-rustlens-critical
+      - orgId: 1
+        uid: slack-rustlens-warning

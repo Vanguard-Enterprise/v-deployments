@@ -17,20 +17,24 @@ data:
           # Note: OpenBao does not currently export core/seal telemetry to Mimir, so the
           # OpenBaoSealed and OpenBaoHighErrorRate alerts from the old CR could not be migrated.
           # Only target-up coverage is available. Re-add seal alerting once bao_* telemetry exists.
+          # Was paused (538362a) because the scrape failed and up was always 0. The
+          # scrape works now (up == 1 on every pod, no down hours over 6 days).
           - uid: openbao-not-ready
             title: OpenBaoNotReady
             condition: A
-            isPaused: true
+            isPaused: false
             data:
               - refId: A
                 relativeTimeRange: { from: 600, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'up{job="openbao"} == 0'
+                  expr: 'up{job="openbao"} == bool 0'
                   instant: true
                   range: false
                   refId: A
-            noDataState: OK
+            # No series at all means every OpenBao target vanished from scraping,
+            # which for the secrets backend is itself worth an alert.
+            noDataState: Alerting
             for: 5m
             labels:
               severity: critical

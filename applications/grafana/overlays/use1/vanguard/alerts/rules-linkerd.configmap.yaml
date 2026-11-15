@@ -83,7 +83,7 @@ data:
                 relativeTimeRange: { from: 600, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'kube_deployment_status_replicas_available{namespace="linkerd",deployment="linkerd-identity"} == 0'
+                  expr: 'kube_deployment_status_replicas_available{namespace="linkerd",deployment="linkerd-identity"} == bool 0'
                   instant: true
                   range: false
                   refId: A

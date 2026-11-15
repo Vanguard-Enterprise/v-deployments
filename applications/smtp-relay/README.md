@@ -206,11 +206,18 @@ kubectl -n grafana annotate externalsecret grafana-smtp force-sync="$(date +%s)"
 kubectl -n smtp-relay get externalsecret smtp-relay-users -o jsonpath='{.status.refreshTime}{"\n"}'
 kubectl -n grafana get externalsecret grafana-smtp -o jsonpath='{.status.refreshTime}{"\n"}'
 kubectl -n smtp-relay rollout restart statefulset smtp-relay
+kubectl -n smtp-relay rollout status statefulset smtp-relay
 kubectl -n grafana rollout restart deployment grafana
+kubectl -n grafana rollout status deployment grafana
 ```
 
 Restarting before the secrets refresh leaves the old password in place, and the
 app fails to log in until it is restarted again.
+
+Expect a short window (the two rollouts, about a minute) where the app and some
+relay replicas hold different passwords. Submissions in that window are refused
+at login, not queued: Grafana retries failed notifications, other apps may not.
+Rotate when nothing important is due to send, or check the app's logs afterwards.
 
 ## Operating
 

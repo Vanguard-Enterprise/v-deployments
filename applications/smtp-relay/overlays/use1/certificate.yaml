@@ -1,5 +1,8 @@
-# Inbound STARTTLS certificate. Clients verify smtp.vngenterprise.com, which
+# Inbound STARTTLS certificate. Clients verify smtp-relay.vngenterprise.com, which
 # resolves to this relay inside the cluster (CoreDNS rewrite) and on NetBird.
+# Not smtp.vngenterprise.com: Cloudflare never serves a TXT record at
+# _acme-challenge.smtp.vngenterprise.com (even a hand-made one), so DNS-01 for
+# that name can never complete.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -10,7 +13,7 @@ spec:
     name: letsencrypt-production
     kind: ClusterIssuer
   dnsNames:
-    - smtp.vngenterprise.com
+    - smtp-relay.vngenterprise.com
   privateKey:
     algorithm: ECDSA
     size: 256

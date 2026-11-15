@@ -6,7 +6,7 @@ delivers it. No app holds a Google credential and no app needs a Google license.
 
 ```
  Grafana, Pocket ID, ...  (pods)  ─┐
- Proxmox, Docker hosts    (LAN)   ─┼─ 587 STARTTLS + per-app login ─► smtp.vngenterprise.com
+ Proxmox, Docker hosts    (LAN)   ─┼─ 587 STARTTLS + per-app login ─► smtp-relay.vngenterprise.com
  NetBird peers                    ─┘                                        │
                                                                             ▼
                                          smtp-relay (Postfix StatefulSet x2, queue on Longhorn)
@@ -26,16 +26,16 @@ delivers it. No app holds a Google credential and no app needs a Google license.
 | Logins (one per app) | OpenBao `kv/smtp-relay/use1`, `overlays/use1/external-secret.yaml` |
 | Which login may send as which address | `overlays/use1/policy.configmap.yaml` |
 | Who may connect | `overlays/use1/networkpolicy.yaml` |
-| TLS certificate (`smtp.vngenterprise.com`) | `overlays/use1/certificate.yaml` |
+| TLS certificate (`smtp-relay.vngenterprise.com`) | `overlays/use1/certificate.yaml` |
 | In-cluster name | CoreDNS rewrite in `applications/coredns-config` |
-| LAN / NetBird name | NetBird DNS zone record `smtp.vngenterprise.com` -> `10.1.50.177` |
+| LAN / NetBird name | NetBird DNS zone record `smtp-relay.vngenterprise.com` -> `10.1.50.177` |
 | Alerts | `applications/grafana/overlays/use1/vanguard/alerts/rules-smtp-relay.configmap.yaml` |
 
 ## Connection settings for any app
 
 | Setting | Value |
 |---|---|
-| Host | `smtp.vngenterprise.com` |
+| Host | `smtp-relay.vngenterprise.com` |
 | Port | `587` |
 | Encryption | STARTTLS, required (the relay refuses to authenticate without it) |
 | Certificate | Let's Encrypt, verify it normally (no "skip verify") |
@@ -95,7 +95,7 @@ Application Configuration > Email:
 
 | Field | Value |
 |---|---|
-| SMTP Host | `smtp.vngenterprise.com` |
+| SMTP Host | `smtp-relay.vngenterprise.com` |
 | SMTP Port | `587` |
 | SMTP From | `identity@vngenterprise.com` |
 | SMTP User | `identity@vngenterprise.com` |
@@ -108,10 +108,10 @@ Then send the test email from the same page, and turn on the emails you want
 
 ### Proxmox VE (Datacenter > Notifications > Add > SMTP)
 
-Server `smtp.vngenterprise.com`, Encryption `STARTTLS`, Port `587`, Authenticate
+Server `smtp-relay.vngenterprise.com`, Encryption `STARTTLS`, Port `587`, Authenticate
 on, Username `proxmox@vngenterprise.com`, Password from OpenBao, From Address
 `proxmox@vngenterprise.com`. Add the login first (see "Adding an app"). The host must
-resolve `smtp.vngenterprise.com` to `10.1.50.177` (NetBird DNS, a UniFi local DNS
+resolve `smtp-relay.vngenterprise.com` to `10.1.50.177` (NetBird DNS, a UniFi local DNS
 record, or `/etc/hosts`).
 
 ### Docker Compose (standalone hosts)
@@ -123,7 +123,7 @@ services:
   app:
     image: example/app
     environment:
-      SMTP_HOST: smtp.vngenterprise.com
+      SMTP_HOST: smtp-relay.vngenterprise.com
       SMTP_PORT: "587"
       SMTP_SECURITY: starttls
       SMTP_USERNAME: app@vngenterprise.com
@@ -132,7 +132,7 @@ services:
     secrets: [smtp_password]
     # Only if the host cannot resolve the name itself:
     extra_hosts:
-      - "smtp.vngenterprise.com:10.1.50.177"
+      - "smtp-relay.vngenterprise.com:10.1.50.177"
 secrets:
   smtp_password:
     file: ./smtp_password   # chmod 600, not committed
@@ -145,7 +145,7 @@ Install msmtp and point it at the relay:
 ```
 # /etc/msmtprc
 account default
-host smtp.vngenterprise.com
+host smtp-relay.vngenterprise.com
 port 587
 tls on
 tls_starttls on
@@ -250,7 +250,7 @@ with `status=sent|deferred|bounced`).
 ## Testing procedure
 
 After any change to the relay or the Google rule. `./smtp-test.py` works from any
-host that resolves smtp.vngenterprise.com; it prompts for the password (or reads
+host that resolves smtp-relay.vngenterprise.com; it prompts for the password (or reads
 `SMTP_PASSWORD`, set from `bao kv get -field=<app> kv/smtp-relay/use1`).
 
 | # | Case | Expect |

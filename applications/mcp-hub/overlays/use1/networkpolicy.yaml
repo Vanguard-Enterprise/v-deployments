@@ -15,6 +15,8 @@
 #     netbird.vngenterprise.com, which CoreDNS rewrites to the in-cluster Traefik
 #     service (applications/coredns-config), so that one is a toEndpoints rule to
 #     the Traefik pods: toFQDNs/toCIDR rules never match in-cluster identities.
+#     The Argo CD API at argocd.vngenterprise.com takes the same rule: CoreDNS
+#     rewrites it to the internal Traefik service, whose pods carry the same label.
 #
 # FQDN FOOTGUN: toFQDNs only works if Cilium can SEE the DNS answers, so the DNS
 # rule carries an L7 `rules: dns: matchPattern: "*"` block that sends this
@@ -65,8 +67,10 @@ spec:
         - ports:
             - port: "443"
               protocol: TCP
-    # NetBird Management API. CoreDNS rewrites netbird.vngenterprise.com to the
-    # Traefik service, so the destination identity is the Traefik pods. Port
+    # NetBird Management API and Argo CD API. CoreDNS rewrites
+    # netbird.vngenterprise.com to the Traefik service and argocd.vngenterprise.com
+    # to the internal Traefik service, so the destination identity is the Traefik
+    # pods (both Deployments carry app.kubernetes.io/name=traefik). Port
     # unconstrained: the Service maps 443 to Traefik's container port and that
     # mapping is Traefik's business, not ours.
     - toEndpoints:

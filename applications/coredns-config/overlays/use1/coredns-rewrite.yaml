@@ -44,6 +44,10 @@ data:
         # Outside the cluster the name resolves to the MetalLB address 10.1.50.177
         # (NetBird DNS zone).
         rewrite name smtp-relay.vngenterprise.com smtp-relay.smtp-relay.svc.cluster.local
+        # The MCP hub's argocd section calls the Argo CD API. The name only
+        # exists in NetBird DNS (internal Traefik), so pods cannot resolve it;
+        # send it to internal Traefik with the Host header and TLS name unchanged.
+        rewrite name argocd.vngenterprise.com traefik-internal.traefik.svc.cluster.local
         log . {
             class error
         }

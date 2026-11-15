@@ -236,15 +236,18 @@ If it is still pending after about 35 minutes, the cause is something else:
 
 ```bash
 kubectl -n smtp-relay describe challenge          # Reason / Presented
-dig +short TXT _acme-challenge.smtp-relay.vngenterprise.com @kellen.ns.cloudflare.com
-dig +short TXT _acme-challenge.smtp-relay.vngenterprise.com @1.1.1.1
+# Full response, so the status (NOERROR / NXDOMAIN / SERVFAIL) is visible:
+dig TXT _acme-challenge.smtp-relay.vngenterprise.com @kellen.ns.cloudflare.com +noall +comments +answer
+dig TXT _acme-challenge.smtp-relay.vngenterprise.com @1.1.1.1 +noall +comments +answer
 kubectl -n cert-manager logs deploy/cert-manager --since=30m | grep -i smtp-relay
 ```
 
-An answer from Cloudflare's nameserver but not from 1.1.1.1 means a resolver
-cache; no answer from either means the record is missing or still cached at
-Cloudflare; timeouts in the cert-manager log mean it cannot reach its DNS
-servers (it uses 1.1.1.1 and 9.9.9.9 only).
+Read the `status:` line first. SERVFAIL from 1.1.1.1 is a resolver or DNSSEC
+problem, not a cache. With NOERROR: an answer from Cloudflare's nameserver but
+none from 1.1.1.1 means a resolver cache; no answer from either means the record
+is missing or still negatively cached at Cloudflare. Timeouts in the
+cert-manager log mean it cannot reach its DNS servers (it uses 1.1.1.1 and
+9.9.9.9 only).
 
 ## Operating
 

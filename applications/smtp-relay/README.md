@@ -222,6 +222,16 @@ wait for its next repeat interval or be lost if it resolves first. Other apps ma
 not retry at all. Rotate when nothing important is due to send, and check the
 app's logs afterwards.
 
+## Certificate issuance
+
+`smtp-relay.vngenterprise.com` uses a Let's Encrypt DNS-01 certificate through
+Cloudflare. A new certificate can sit at "Waiting for DNS-01 challenge
+propagation" for up to about 30 minutes: cert-manager looks the challenge name up
+before creating the TXT record, and Cloudflare's nameservers keep serving that
+negative answer for the zone's negative TTL (1800s). It clears on its own.
+Deleting the Challenge only restarts the wait. The relay pods stay in
+ContainerCreating until the certificate Secret exists.
+
 ## Operating
 
 ```bash

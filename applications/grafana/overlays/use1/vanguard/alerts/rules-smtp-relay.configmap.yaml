@@ -25,7 +25,9 @@ data:
                 relativeTimeRange: { from: 300, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'kube_statefulset_status_replicas_ready{namespace="smtp-relay", statefulset="smtp-relay"} < 1'
+                  # `bool` so the result is 1 (down) or 0 (up). A plain `< 1` keeps the
+                  # sample at value 0, which Grafana evaluates as Normal.
+                  expr: 'kube_statefulset_status_replicas_ready{namespace="smtp-relay", statefulset="smtp-relay"} < bool 1'
                   instant: true
                   range: false
                   refId: A

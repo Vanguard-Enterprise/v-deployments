@@ -10,37 +10,25 @@ data:
     apiVersion: 1
     policies:
       - orgId: 1
-        # Fallback: anything unmatched (e.g. team=platform + severity=warning, or no team) lands here.
-        receiver: slack-platform-warning
+        # Every alert goes to email. The routes below only change how often it
+        # is sent: warnings (and anything unlabeled) repeat every 12h.
+        receiver: email-alerts
         group_by: [alertname, cluster, namespace]
         group_wait: 30s
         group_interval: 5m
         repeat_interval: 12h
         routes:
-          # 1) All info/heartbeat alerts (any team) go to one low-noise channel. Matched first so
-          #    info short-circuits before the team routes.
-          - receiver: slack-info
+          # Info, including WeeklyHeartbeat (always firing): one mail a week.
+          # Matched first so info never takes the critical timings.
+          - receiver: email-alerts
             object_matchers:
               - [severity, "=", info]
             group_by: [alertname]
-            repeat_interval: 24h
+            repeat_interval: 168h
             continue: false
 
-          # 2) team=vanguard: warning here, critical to its own channel.
-          - receiver: slack-vanguard-warning
-            object_matchers:
-              - [team, "=", vanguard]
-            continue: false
-            routes:
-              - receiver: slack-vanguard-critical
-                object_matchers:
-                  - [severity, "=", critical]
-                group_wait: 15s
-                repeat_interval: 4h
-                continue: false
-
-          # 3) Everything else that is critical (team=platform or unlabeled) -> platform critical.
-          - receiver: slack-platform-critical
+          # Critical: sent faster and repeated every 4h while it fires.
+          - receiver: email-alerts
             object_matchers:
               - [severity, "=", critical]
             group_wait: 15s

@@ -33,4 +33,4 @@ data:
               severity: info
               team: platform
             annotations:
-              summary: "Monitoring pipeline heartbeat — if you see this on Discord weekly, alerting works"
+              summary: "Monitoring pipeline heartbeat: if this email arrives weekly, alerting works"

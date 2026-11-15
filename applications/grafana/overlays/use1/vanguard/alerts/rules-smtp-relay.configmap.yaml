@@ -6,8 +6,10 @@ metadata:
   labels:
     grafana_alert: "1"
 data:
-  # The smtp-relay app (applications/smtp-relay). These route to Slack, never to
-  # email, so they still arrive when the mail path is what is broken.
+  # The smtp-relay app (applications/smtp-relay). Alerts are sent by email through
+  # this same relay: queue and auth alerts still arrive (the queue delivers once
+  # fixed), but SmtpRelayDown cannot be mailed while no replica runs, so it only
+  # shows in Grafana under Alerting > Alert rules.
   rules-smtp-relay.yaml: |
     apiVersion: 1
     groups:

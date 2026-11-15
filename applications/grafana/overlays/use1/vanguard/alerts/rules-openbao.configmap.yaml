@@ -32,7 +32,9 @@ data:
                   instant: true
                   range: false
                   refId: A
-            noDataState: OK
+            # No series at all means every OpenBao target vanished from scraping,
+            # which for the secrets backend is itself worth an alert.
+            noDataState: Alerting
             for: 5m
             labels:
               severity: critical

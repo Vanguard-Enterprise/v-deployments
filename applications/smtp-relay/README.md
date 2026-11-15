@@ -235,7 +235,8 @@ ContainerCreating until the certificate Secret exists.
 If it is still pending after about 35 minutes, the cause is something else:
 
 ```bash
-kubectl -n smtp-relay get challenge -o jsonpath='{.items[0].spec.key}{"\n"}'   # expected TXT value
+kubectl -n smtp-relay get challenge \
+  -o jsonpath='{.items[?(@.spec.dnsName=="smtp-relay.vngenterprise.com")].spec.key}{"\n"}'  # expected TXT value
 kubectl -n smtp-relay describe challenge                                       # Reason / Presented
 # Full responses, so the status (NOERROR / NXDOMAIN / SERVFAIL) is visible:
 dig TXT _acme-challenge.smtp-relay.vngenterprise.com @kellen.ns.cloudflare.com +noall +comments +answer

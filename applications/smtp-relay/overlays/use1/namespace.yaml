@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: smtp-relay
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+    # Keep the namespace (and its queue volumes) if the app is removed.
+    argocd.argoproj.io/sync-options: Prune=false
+  labels:
+    # Postfix's master process runs as root and drops privileges itself, which
+    # restricted does not allow. Baseline still forbids privileged pods, host
+    # namespaces and capabilities outside the default set.
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/audit: restricted

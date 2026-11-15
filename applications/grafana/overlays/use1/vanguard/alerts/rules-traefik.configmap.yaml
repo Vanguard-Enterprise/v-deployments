@@ -33,7 +33,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Traefik 5xx rate >1% over 5m"
+              summary: |-
+                {{ humanizePercentage $values.A.Value }} of web requests are failing
+              description: |-
+                Traefik, the web entry point, has returned server errors (5xx) on more than 1% of all requests for 5 minutes. A site or app behind it is broken or down.
+              action: |-
+                Find the service in Grafana Explore: sum by (service) (rate(traefik_service_requests_total{code=~"5.."}[5m])), then check that app's pods.
 
           - uid: traefik-cert-expiry
             title: TraefikCertExpiry
@@ -54,7 +59,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Cert {{ $labels.sans }} expires in <7d"
+              summary: |-
+                Certificate for {{ $labels.sans }} expires in {{ printf "%.0f" $values.A.Value }} day(s)
+              description: |-
+                Traefik is serving a certificate that expires within 7 days, so renewal is not working. When it expires, browsers show a security error for that site.
+              action: |-
+                kubectl get certificate -A to find the matching cert-manager Certificate, then describe it.
 
           - uid: traefik-4xx-rate
             title: TraefikHigh4xxRate
@@ -75,4 +85,9 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Traefik service {{ $labels.service }} 4xx rate >5% over 5m"
+              summary: |-
+                {{ printf "%.0f" $values.A.Value }}% of requests to {{ $labels.service }} are rejected
+              description: |-
+                Over 5% of requests to this service got a 4xx response (not found, unauthorized, forbidden) for 5 minutes. Often harmless (bots, scanners, expired logins), but after a change it can mean a broken link or login setup.
+              action: |-
+                Look at the service's access logs in Grafana Explore (Loki) to see which paths and clients get the errors.

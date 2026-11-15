@@ -33,7 +33,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "ArgoCD app {{ $labels.name }} out of sync >30m"
+              summary: |-
+                Argo CD app {{ $labels.name }} does not match git
+              description: |-
+                For over 30 minutes the cluster has differed from what git says this app should be. A recent change may not have deployed, or something was changed by hand. Nothing is necessarily broken yet.
+              action: |-
+                Open https://argocd.vngenterprise.com/applications/argocd/{{ $labels.name }} and look at the diff and the last sync result. A failed sync shows its error there.
 
           - uid: argocd-app-degraded
             title: ArgoCDAppDegraded
@@ -54,7 +59,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "ArgoCD app {{ $labels.name }} Degraded"
+              summary: |-
+                Argo CD app {{ $labels.name }} is unhealthy
+              description: |-
+                Argo CD has reported part of this app as Degraded for 10 minutes. Usually a pod keeps crashing, a rollout failed, or a volume is missing. The app may be fully or partly down.
+              action: |-
+                Open https://argocd.vngenterprise.com/applications/argocd/{{ $labels.name }}, find the resource marked Degraded, and read its events and pod logs.
 
           - uid: argocd-redis-sentinel-high-cpu
             title: ArgoCDRedisSentinelHighCPU
@@ -75,4 +85,9 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "ArgoCD Redis Sentinel {{ $labels.pod }} on {{ $labels.node }} is using >0.2 CPU cores for 10m"
+              summary: |-
+                Argo CD Redis Sentinel {{ $labels.pod }} is using too much CPU
+              description: |-
+                The Sentinel container on {{ $labels.node }} has used more than 0.2 CPU cores for 10 minutes. It has done this before when stuck in a reconnect loop. It wastes CPU on the node, but Argo CD keeps working.
+              action: |-
+                Restart it: kubectl -n argocd delete pod {{ $labels.pod }}. If it comes back, read the sentinel container logs.

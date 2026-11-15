@@ -33,7 +33,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Mimir appears down"
+              summary: |-
+                Mimir (metrics storage) is down
+              description: |-
+                Mimir pod {{ $labels.pod }} has failed its health check for 5 minutes. Most alerts depend on Mimir, so while it is down they cannot fire, and dashboards show gaps.
+              action: |-
+                kubectl -n mimir get pods and read the failing pod's logs. A full disk or a corrupted WAL has caused this before.
 
           - uid: monitoring-loki-down
             title: LokiDown
@@ -54,7 +59,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Loki appears down"
+              summary: |-
+                Loki (log storage) is down
+              description: |-
+                Loki pod {{ $labels.pod }} has failed its health check for 5 minutes. Logs are not being stored or searchable, and log-based alerts (such as the Mimir storage errors alert) cannot fire.
+              action: |-
+                kubectl -n loki get pods and read the failing pod's logs.
 
           - uid: monitoring-alloy-dropped-samples
             title: AlloyDroppedSamples
@@ -75,7 +85,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Alloy is dropping samples on remote_write"
+              summary: |-
+                Metrics are being dropped before they reach Mimir
+              description: |-
+                Alloy, the metrics collector, has failed to send some metrics to Mimir for 10 minutes. Dashboards have gaps and some alerts may miss problems.
+              action: |-
+                Check the alloy-metrics and Mimir logs. Mimir being down or rejecting data (too many series) is the usual cause.
 
           # Mimir watching itself is blind: on 2026-11-07 its disk filled, it
           # stopped storing samples, every rule above went NoData -> OK, and
@@ -103,7 +118,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Mimir has stored no new samples for 10m (or cannot be queried). Metrics-based alerts are blind."
+              summary: |-
+                No new metrics for 10 minutes: most alerts are blind
+              description: |-
+                Mimir has stored no new node metrics for 10 minutes, or cannot be queried. Almost every other alert depends on these metrics, so problems elsewhere would go unnoticed right now.
+              action: |-
+                kubectl -n mimir get pods and kubectl -n alloy-metrics get pods. Fix whichever is not running.
 
           - uid: monitoring-mimir-errors-in-logs
             title: MimirErrorsInLogs
@@ -124,4 +144,9 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Mimir is logging storage errors (disk full, WAL corruption, or TSDB failing to open)"
+              summary: |-
+                Mimir is reporting storage errors
+              description: |-
+                Mimir's logs show disk-full, WAL corruption or database-open errors. In November 2026 this lost several days of metrics. New metrics may not be stored.
+              action: |-
+                Find the error in Grafana Explore (Loki): {namespace="mimir"} |~ "no space left|corruption|WAL|TSDB". Check the Mimir volume's free space.

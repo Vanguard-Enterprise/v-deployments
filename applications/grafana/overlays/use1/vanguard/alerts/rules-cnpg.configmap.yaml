@@ -33,7 +33,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "CNPG replication lag >60s for {{ $labels.namespace }}/{{ $labels.cluster }}"
+              summary: |-
+                Database {{ $labels.namespace }}/{{ $labels.cluster }}: a replica is over a minute behind
+              description: |-
+                A standby copy of this Postgres database has been more than 60 seconds behind the primary for 10 minutes. The app keeps working, but a failover right now would lose the most recent changes.
+              action: |-
+                kubectl -n {{ $labels.namespace }} get pods -l cnpg.io/cluster={{ $labels.cluster }}. Look for a replica that is restarting or a slow disk.
 
           - uid: cnpg-not-ready-instances
             title: CNPGNoReadyInstances
@@ -54,7 +59,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "CNPG cluster {{ $labels.namespace }}/{{ $labels.cluster }} has no ready instances"
+              summary: |-
+                Database {{ $labels.namespace }}/{{ $labels.cluster }} has no working instance
+              description: |-
+                No instance of this Postgres database has been up and serving for 5 minutes. The app that uses it is probably down.
+              action: |-
+                kubectl -n {{ $labels.namespace }} get pods -l cnpg.io/cluster={{ $labels.cluster }}, then read the logs and events of those pods.
 
           - uid: cnpg-instance-down
             title: CNPGInstanceDown
@@ -75,7 +85,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "CNPG instance {{ $labels.pod }} ({{ $labels.namespace }}) collector is down"
+              summary: |-
+                Database pod {{ $labels.pod }} ({{ $labels.namespace }}) is down
+              description: |-
+                This Postgres pod has not reported for 2 minutes, which usually means Postgres is down or restarting there. If it was the primary, the database fails over to a replica if it has one. If not, the app using it is down.
+              action: |-
+                kubectl -n {{ $labels.namespace }} get pod {{ $labels.pod }} and kubectl -n {{ $labels.namespace }} logs {{ $labels.pod }}.
 
           - uid: cnpg-backup-failed
             title: CNPGBackupFailed
@@ -96,4 +111,9 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "CNPG cluster {{ $labels.namespace }}/{{ $labels.cluster }} last backup failed"
+              summary: |-
+                Database {{ $labels.namespace }}/{{ $labels.cluster }}: the last backup failed
+              description: |-
+                The newest backup of this Postgres database failed and none has succeeded since. Nothing is down, but a restore could only go back to the last good backup.
+              action: |-
+                kubectl -n {{ $labels.namespace }} get backups, then describe the newest failed one. Bucket credentials or a full bucket are the usual causes.

@@ -33,7 +33,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Longhorn volume {{ $labels.volume }} is degraded"
+              summary: |-
+                Storage volume {{ $labels.volume }} has lost a copy
+              description: |-
+                Longhorn keeps several copies of each volume on different nodes. This one is missing at least one, usually because a node is down or a copy is rebuilding. The data is still available, but if the remaining copies are lost the volume fails.
+              action: |-
+                It usually fixes itself once the node is back and the rebuild finishes. If it lasts more than an hour, check the volume in the Longhorn UI.
 
           - uid: longhorn-volume-faulted
             title: LonghornVolumeFaulted
@@ -54,7 +59,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Longhorn volume {{ $labels.volume }} FAULTED"
+              summary: |-
+                Storage volume {{ $labels.volume }} has FAILED
+              description: |-
+                Longhorn has no healthy copy of this volume. The app using it cannot read or write its data and is down.
+              action: |-
+                Check the volume in the Longhorn UI. Do not edit replica files by hand. If it reports no replicas to salvage, a node disk is too full: free space first. Otherwise restore it from the latest backup.
 
           - uid: longhorn-node-down
             title: LonghornNodeDown
@@ -75,7 +85,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "One or more Longhorn nodes are offline"
+              summary: |-
+                {{ printf "%.0f" $values.A.Value }} Longhorn storage node(s) offline
+              description: |-
+                Volumes with copies on the missing node are running with fewer copies, and nothing new can be placed on it.
+              action: |-
+                kubectl get nodes and kubectl -n longhorn-system get nodes.longhorn.io to see which node and why.
 
           - uid: longhorn-backup-failed
             title: LonghornBackupFailed
@@ -96,4 +111,9 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "More than 3 Longhorn backups are in Error state — check the backup target and recurring jobs"
+              summary: |-
+                Longhorn backups are failing
+              description: |-
+                {{ printf "%.0f" $values.A.Value }} volume backups are in the Error state, so volumes are not being backed up off the cluster. A lost volume could not be fully restored.
+              action: |-
+                In the Longhorn UI under Backup, check the backup target (bucket and credentials) and the recurring backup jobs.

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mcp-hub
+resources:
+  - namespace.yaml
+  - networkpolicy.yaml
+  - pull-secret.yaml
+  - netbird-secrets.yaml
+  - netbird-workload.yaml
+  - netbird-ingress.yaml
+# Argo CD Image Updater pins the :main digest here (see argocd/applications/use1/mcp-hub.yaml).
+images:
+  - name: ghcr.io/vanguard-enterprise/mcp-netbird
+    newTag: main

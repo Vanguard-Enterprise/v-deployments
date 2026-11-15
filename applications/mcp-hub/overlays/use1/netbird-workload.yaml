@@ -1,0 +1,106 @@
+# NetBird MCP server (github.com/Vanguard-Enterprise/mcp-hub, servers/netbird):
+# read-only MCP tools over the NetBird Management API, Streamable HTTP, and
+# OAuth resource server for Pocket ID access tokens (RFC 9728 metadata, RFC 9068
+# JWT validation against the Pocket ID JWKS).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-netbird
+spec:
+  replicas: 1
+  # Zero-downtime rollouts: the new pod must pass its readiness probe (OIDC
+  # discovery loaded) before the old one is removed. Surge is cheap here (10m CPU
+  # request), unlike the Recreate apps elsewhere in this cluster.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  minReadySeconds: 5
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: mcp-netbird
+  template:
+    metadata:
+      labels:
+        app: mcp-netbird
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mcp-netbird
+          image: ghcr.io/vanguard-enterprise/mcp-netbird:main
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            # Public identity of this MCP endpoint (RFC 8707 resource). Must match the
+            # API registered in Pocket ID (Administration -> APIs) and the IngressRoute host.
+            - name: MCP_PUBLIC_URL
+              value: https://mcp-netbird.vngenterprise.com/mcp
+            - name: OIDC_ISSUER
+              value: https://id.vngenterprise.com
+            # Accepted token audience: only the resource above. MCP clients request
+            # tokens with resource=<MCP_PUBLIC_URL>, so Pocket ID stamps it as aud; plain
+            # login tokens (aud = client ID) and ID tokens are refused. The public Pocket
+            # ID client "NetBird MCP" is 85c295f7-930c-4b31-a09a-7234d5fa4d49.
+            - name: OAUTH_AUDIENCE
+              value: https://mcp-netbird.vngenterprise.com/mcp
+            - name: NETBIRD_API_URL
+              value: https://netbird.vngenterprise.com
+            - name: NETBIRD_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-netbird
+                  key: NETBIRD_API_TOKEN
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            failureThreshold: 24
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 20
+          # Ready only once OIDC discovery against Pocket ID succeeded, so a pod that
+          # cannot validate tokens never receives traffic during a rollout.
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-netbird
+spec:
+  selector:
+    app: mcp-netbird
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

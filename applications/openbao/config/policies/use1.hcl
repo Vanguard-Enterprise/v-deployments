@@ -38,3 +38,6 @@ path "kv/data/pocket-id/*" {
 path "kv/data/rooted-in-pages/*" {
   capabilities = ["read"]
 }
+path "kv/data/mcp-hub/*" {
+  capabilities = ["read"]
+}

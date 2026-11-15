@@ -1,0 +1,23 @@
+# Internal-only route on internal Traefik (10.1.50.176), reached over the LAN and
+# NetBird. The NetBird DNS zone vngenterprise.com holds the A record
+# mcp.vngenterprise.com -> 10.1.50.176 (managed with the netbird skill). No Traefik
+# auth middleware: the hub validates Pocket ID access tokens itself and answers 401
+# with the RFC 9728 resource metadata that MCP clients use to start the login.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mcp-hub
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`mcp.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: mcp-hub
+          port: 8080
+  tls:
+    store:
+      name: default
+      namespace: traefik

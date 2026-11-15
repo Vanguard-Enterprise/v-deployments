@@ -6,10 +6,15 @@ resources:
   - networkpolicy.yaml
   - pull-secret.yaml
   - netbird-secrets.yaml
-  - netbird-workload.yaml
-  - netbird-ingress.yaml
+  - hub-workload.yaml
+  - hub-ingress.yaml
+# Which Pocket ID groups get read or write access to each hub section. The generated
+# name carries a content hash, so a policy change rolls the Deployment.
+configMapGenerator:
+  - name: mcp-hub-access-policy
+    files:
+      - access-policy.json
 # Argo CD Image Updater pins the :main digest here (see argocd/applications/use1/mcp-hub.yaml).
 images:
-  - name: ghcr.io/vanguard-enterprise/mcp-netbird
+  - name: ghcr.io/vanguard-enterprise/mcp-hub
     newTag: main
-    digest: sha256:f04f23e179a3303d0deb3759e24d09771f878fd93639e2882f31ec625f04bc3c

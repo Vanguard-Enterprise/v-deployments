@@ -1,0 +1,8 @@
+{
+  "sections": {
+    "netbird": {
+      "read": ["mcp_netbird_read"],
+      "write": ["mcp_netbird_write"]
+    }
+  }
+}

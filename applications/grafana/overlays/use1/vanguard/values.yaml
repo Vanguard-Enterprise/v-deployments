@@ -38,11 +38,30 @@ grafana.ini:
     auto_login: true
     use_pkce: true
     use_refresh_token: true
+  # Email through the in-cluster smtp-relay (applications/smtp-relay), which hands
+  # it to Google Workspace. smtp.vngenterprise.com resolves to the relay through
+  # the CoreDNS rewrite, and its certificate is valid for that name.
+  smtp:
+    enabled: true
+    host: smtp.vngenterprise.com:587
+    user: grafana@vngenterprise.com
+    from_address: grafana@vngenterprise.com
+    from_name: Grafana
+    ehlo_identity: grafana.vngenterprise.com
+    startTLS_policy: MandatoryStartTLS
+    skip_verify: false
 envValueFrom:
   GF_DATABASE_PASSWORD:
     secretKeyRef:
       name: grafana-db-app
       key: password
+  # Relay login password (OpenBao kv/smtp-relay/use1 -> grafana). Optional so a
+  # missing secret only breaks email, never Grafana itself.
+  GF_SMTP_PASSWORD:
+    secretKeyRef:
+      name: grafana-smtp
+      key: password
+      optional: true
 envFromSecrets:
   - name: grafana-alerting
 # Datasources mounted directly by the chart so they exist at Grafana startup

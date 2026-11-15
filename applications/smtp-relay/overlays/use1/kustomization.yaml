@@ -1,0 +1,43 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: smtp-relay
+resources:
+  - namespace.yaml
+  - networkpolicy.yaml
+  - external-secret.yaml
+  - certificate.yaml
+  - policy.configmap.yaml
+helmCharts:
+  - name: mail
+    repo: https://bokysan.github.io/docker-postfix/
+    version: "5.2.1"
+    releaseName: smtp-relay
+    namespace: smtp-relay
+    valuesFile: values.yaml
+patches:
+  # The chart gives the exporter sidecar no securityContext. It only reads the
+  # showq socket (needs the postdrop group, gid 103 in the image) and mail.log.
+  - target:
+      kind: StatefulSet
+      name: smtp-relay
+    patch: |-
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: smtp-relay
+      spec:
+        template:
+          spec:
+            containers:
+              - name: exporter
+                imagePullPolicy: IfNotPresent
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 65534
+                  runAsGroup: 103
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities:
+                    drop: [ALL]
+                  seccompProfile:
+                    type: RuntimeDefault

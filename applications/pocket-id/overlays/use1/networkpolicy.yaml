@@ -24,7 +24,10 @@
 # POCKET ID INTERNET EGRESS is limited to:
 #   api.github.com   the admin "update available" check (VERSION_CHECK_DISABLED)
 #   cdn.jsdelivr.net the client-logo icon library (ICON_LIBRARY_URL default)
-# Everything else is denied on purpose: no SMTP, LDAP, SCIM, GeoLite, back-channel
+# EMAIL goes only to the in-cluster smtp-relay (smtp.vngenterprise.com, which
+# CoreDNS rewrites to the relay Service) on 587, never to the internet.
+#
+# Everything else is denied on purpose: no LDAP, SCIM, GeoLite, back-channel
 # logout or client metadata documents are configured today. Turning one of those on
 # needs a rule here, and so does "logo from URL" for any host but jsDelivr. Keeping
 # the identity provider off the rest of the internet and the LAN closes off SSRF
@@ -113,6 +116,15 @@ spec:
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+    # Login codes and sign-in notifications through the smtp-relay (see the header).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: smtp-relay
+            app.kubernetes.io/name: mail
+      toPorts:
+        - ports:
+            - port: "587"
               protocol: TCP
     # Pocket ID's version check and icon library (see the header).
     - toFQDNs:

@@ -1,0 +1,164 @@
+# Vanguard Nexus agent for use1, from deploy/kubernetes/vn-agent.yaml in v-nexus.
+# Changes from upstream: the namespace lives in namespace.yaml, the image is pulled
+# with github-pull-secret and pinned by kustomization.yaml, and the server URL is the
+# in-cluster Service instead of a key in vn-agent-enrollment.
+#
+# The enrollment token is not in Git. vn-agent-enrollment (key `token`) is created by
+# hand with a single-use token from the VN UI; see the README. After the agent enrolls
+# it keeps its identity in the vn-agent-identity Secret, which it creates itself.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vn-agent
+  namespace: vn-agent
+  labels:
+    app.kubernetes.io/name: vn-agent
+    app.kubernetes.io/part-of: vanguard-nexus
+---
+# Cluster-wide, read-only access to the resources the agent inventories.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: vn-agent
+  labels:
+    app.kubernetes.io/name: vn-agent
+    app.kubernetes.io/part-of: vanguard-nexus
+rules:
+  # Nodes and namespaces: listed and watched for the v1/nodes and v1/namespaces
+  # inventory collections. `get` on namespaces also covers the one-time read of the
+  # kube-system namespace, whose UID is the cluster fingerprint sent at enrollment.
+  - apiGroups: [""]
+    resources: [nodes, namespaces]
+    verbs: [get, list, watch]
+  # Workloads: listed and watched for the apps/v1 deployments, statefulsets, and
+  # daemonsets inventory collections. No access to pods, Secrets, or ConfigMaps.
+  - apiGroups: [apps]
+    resources: [deployments, statefulsets, daemonsets]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vn-agent
+  labels:
+    app.kubernetes.io/name: vn-agent
+    app.kubernetes.io/part-of: vanguard-nexus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: vn-agent
+subjects:
+  - kind: ServiceAccount
+    name: vn-agent
+    namespace: vn-agent
+---
+# Access to the agent's own Secrets, in this namespace only.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vn-agent
+  namespace: vn-agent
+  labels:
+    app.kubernetes.io/name: vn-agent
+    app.kubernetes.io/part-of: vanguard-nexus
+rules:
+  # Read and rewrite the stored identity (agent ID, key, and server URL) in the
+  # vn-agent-identity Secret. Limited to that one Secret by name.
+  - apiGroups: [""]
+    resources: [secrets]
+    resourceNames: [vn-agent-identity]
+    verbs: [get, update]
+  # Create vn-agent-identity after the first enrollment. Kubernetes cannot restrict
+  # `create` by resource name, so this allows creating any Secret, but only in this
+  # namespace. It does not allow reading or changing Secrets the agent did not create.
+  - apiGroups: [""]
+    resources: [secrets]
+    verbs: [create]
+  # Read the enrollment settings (server URL and token) in vn-agent-enrollment. The
+  # Deployment also passes them in as environment variables.
+  - apiGroups: [""]
+    resources: [secrets]
+    resourceNames: [vn-agent-enrollment]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vn-agent
+  namespace: vn-agent
+  labels:
+    app.kubernetes.io/name: vn-agent
+    app.kubernetes.io/part-of: vanguard-nexus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vn-agent
+subjects:
+  - kind: ServiceAccount
+    name: vn-agent
+    namespace: vn-agent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vn-agent
+  namespace: vn-agent
+  labels:
+    app.kubernetes.io/name: vn-agent
+    app.kubernetes.io/part-of: vanguard-nexus
+spec:
+  # One agent per cluster. Recreate stops the old pod before starting a new one, so two
+  # pods never hold the same identity or race to enroll.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vn-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vn-agent
+        app.kubernetes.io/part-of: vanguard-nexus
+    spec:
+      serviceAccountName: vn-agent
+      imagePullSecrets:
+        - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        # The distroless nonroot user the image runs as.
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: vn-agent
+          image: ghcr.io/vanguard-enterprise/vn-agent:latest
+          env:
+            - name: VN_SERVER_URL
+              value: http://vn-server.vanguard-nexus.svc.cluster.local:8080
+            # Needed only until the agent has enrolled and stored its identity.
+            - name: VN_ENROLLMENT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vn-agent-enrollment
+                  key: token
+                  optional: true
+            # Tells the agent to keep its identity in a Secret in this namespace.
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: RUST_LOG
+              value: info
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 256Mi

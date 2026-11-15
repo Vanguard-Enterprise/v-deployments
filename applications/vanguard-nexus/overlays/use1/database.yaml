@@ -1,0 +1,27 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: vn-db
+  namespace: vanguard-nexus
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  instances: 1
+  # Single instance: the operator PDB (minAvailable 1 on the primary) can never be
+  # satisfied, so it blocks every node drain forever. Drains restart the DB once.
+  enablePDB: false
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1-system-trixie
+  bootstrap:
+    initdb:
+      database: vn
+      owner: vn
+  storage:
+    size: 5Gi
+    storageClass: longhorn
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 1Gi

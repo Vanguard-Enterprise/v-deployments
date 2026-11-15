@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vn-server-config
+  namespace: vanguard-nexus
+data:
+  vn.yaml: |
+    version: 1
+    server:
+      listen: 0.0.0.0:8080
+      static_dir: /usr/share/vn/web
+      # Pod CIDR (Cilium cluster pool). Requests reach VN through traefik-internal,
+      # whose pods get addresses from this range, so VN reads the client address
+      # from X-Forwarded-For for rate limiting and audit records.
+      trusted_proxies: [10.245.0.0/16]
+    database:
+      url_env: VN_DATABASE_URL
+      max_connections: 10
+    auth:
+      issuer_url: https://id.vngenterprise.com
+      # Pocket ID public client "Vanguard Nexus (use1)": PKCE only, no secret.
+      # Restricted to the vn-admins group.
+      client_id: "7442908f-ff28-44f7-81e9-faf025261575"
+      public_url: https://nexus.vngenterprise.com
+      scopes: [openid, profile, email, groups]
+      admin:
+        claim: groups
+        values: [vn-admins]
+    agents:
+      challenge_key_env: VN_AGENT_CHALLENGE_KEY
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vn-server
+  namespace: vanguard-nexus
+spec:
+  replicas: 1
+  # USE1 has no spare requested CPU for surge pods.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: vn-server
+  template:
+    metadata:
+      labels:
+        app: vn-server
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: github-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: server
+          image: ghcr.io/vanguard-enterprise/vn-server:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: VN_CONFIG
+              value: /etc/vn/vn.yaml
+            - name: VN_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: vn-db-app
+                  key: uri
+            - name: VN_AGENT_CHALLENGE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vn-agent-challenge-key
+                  key: key
+            - name: RUST_LOG
+              value: info
+          volumeMounts:
+            - name: config
+              mountPath: /etc/vn
+              readOnly: true
+          # /api/v1/health also checks the database. The server applies migrations
+          # at startup before it listens.
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: config
+          configMap:
+            name: vn-server-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vn-server
+  namespace: vanguard-nexus
+spec:
+  selector:
+    app: vn-server
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

@@ -33,7 +33,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Node {{ $labels.node }} is not Ready"
+              summary: |-
+                Kubernetes node {{ $labels.node }} is down
+              description: |-
+                The node has not been Ready for 5 minutes. Pods on it are not running or not reachable. They move to other nodes after a few minutes if there is room.
+              action: |-
+                Check the VM in Proxmox, then talosctl -n <node IP> dmesg. Proxmox host problems (pve1a, pve1b) have caused this before.
 
           - uid: platform-node-mem-pressure
             title: NodeMemoryPressure
@@ -54,7 +59,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Node {{ $labels.node }} under memory pressure"
+              summary: |-
+                Node {{ $labels.node }} is running out of memory
+              description: |-
+                Kubernetes reports memory pressure on this node, so it starts evicting pods to free memory, which restarts apps.
+              action: |-
+                kubectl describe node {{ $labels.node }} and check the node's memory in Grafana to find the largest pods.
 
           - uid: platform-node-disk-pressure
             title: NodeDiskPressure
@@ -75,7 +85,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Node {{ $labels.node }} under disk pressure"
+              summary: |-
+                Node {{ $labels.node }} is running out of disk
+              description: |-
+                Kubernetes reports disk pressure on this node, so it removes unused images and evicts pods, which restarts apps.
+              action: |-
+                kubectl describe node {{ $labels.node }} and check the node's disk in Grafana.
 
           - uid: platform-fs-usage-high
             title: FilesystemUsageHigh
@@ -96,7 +111,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is >85% used"
+              summary: |-
+                Disk {{ $labels.mountpoint }} on {{ $labels.instance }} is {{ humanizePercentage $values.A.Value }} full
+              description: |-
+                Over 85% used. If it fills up, writes fail there (logs, container images, volumes) and Kubernetes starts evicting pods.
+              action: |-
+                Clean up data that is not needed, or grow the disk.
 
           - uid: platform-kubelet-down
             title: KubeletDown
@@ -117,7 +137,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "Kubelet on {{ $labels.node }} is down"
+              summary: |-
+                Node {{ $labels.node }} is not responding
+              description: |-
+                The kubelet (the agent that runs pods on the node) has not answered for 5 minutes. The node is probably down or overloaded.
+              action: |-
+                Check the VM in Proxmox, then talosctl -n <node IP> dmesg. Proxmox host problems (pve1a, pve1b) have caused this before.
 
           # CPU steal on a node VM means the Proxmox host is starving the guest of CPU
           # (host oversubscription / noisy neighbour). This is the guest-side proof metric
@@ -141,4 +166,9 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Node VM {{ $labels.instance }} is losing >5% CPU to steal (Proxmox host contention)"
+              summary: |-
+                Node VM {{ $labels.instance }} is being starved of CPU by Proxmox
+              description: |-
+                It is losing {{ humanizePercentage $values.A.Value }} of its CPU time to other VMs on the same Proxmox host. In July 2026 this made etcd unstable, which can take the whole cluster down.
+              action: |-
+                Check that Proxmox host's CPU use. Move or limit busy VMs on it.

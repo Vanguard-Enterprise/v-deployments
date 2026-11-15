@@ -36,30 +36,45 @@ data:
           {{- else }} {{ .CommonLabels.alertname }} ({{ if .Alerts.Firing }}{{ len .Alerts.Firing }} firing{{ end }}{{ if and .Alerts.Firing .Alerts.Resolved }}, {{ end }}{{ if .Alerts.Resolved }}{{ len .Alerts.Resolved }} resolved{{ end }}){{ end }}
           {{- end }}
 
+          {{ define "email.when" }}{{ . | tz "America/New_York" | date "Mon Jan 2, 3:04 PM MST" }}{{ end }}
+
           {{ define "email.alert" -}}
-          {{ template "email.icon" . }} {{ template "email.what" . }}
-          {{ if eq .Status "resolved" }}Resolved{{ else }}{{ template "email.severity" . }}{{ end }} · {{ .Labels.alertname }}
-          {{- $first := true }}
-          {{- range .Labels.SortedPairs }}{{ if not (match "^(alertname|severity|team|grafana_folder|__.*)$" .Name) }}{{ if $first }}
-          Where: {{ else }} · {{ end }}{{ $first = false }}{{ .Name }} {{ .Value }}{{ end }}{{ end }}
-          Since: {{ .StartsAt | tz "America/New_York" | date "Mon Jan 2, 3:04 PM MST" }}
-          {{- if eq .Status "resolved" }} · Resolved: {{ .EndsAt | tz "America/New_York" | date "Mon Jan 2, 3:04 PM MST" }}{{ end }}
+          {{ template "email.icon" . }} {{ if eq .Status "resolved" }}Resolved: {{ end }}{{ template "email.what" . }}
+          {{- if eq .Status "resolved" }}
+
+          Was firing from {{ template "email.when" .StartsAt }} until {{ template "email.when" .EndsAt }}. Nothing to do.
+          {{- else }}
           {{- if .Annotations.description }}
-          {{ .Annotations.description }}{{ end }}
+
+          What's happening: {{ .Annotations.description }}{{ end }}
+          {{- if .Annotations.action }}
+
+          What to do: {{ .Annotations.action }}{{ end }}
           {{- if .Annotations.runbook_url }}
           Runbook: {{ .Annotations.runbook_url }}{{ end }}
+
+          Started {{ template "email.when" .StartsAt }}
+          {{- end }}
           {{- if .GeneratorURL }}
-          Open in Grafana (to silence too): {{ .GeneratorURL }}{{ end }}
+          Open in Grafana: {{ .GeneratorURL }}{{ end }}
+          Details: {{ .Labels.alertname }}, {{ .Labels.severity }}
+          {{- range .Labels.SortedPairs }}{{ if match "^(namespace|exported_namespace|pod|container|node|deployment|daemonset|statefulset|persistentvolumeclaim|volume|pool|mountpoint|sans)$" .Name }}, {{ .Name }} {{ .Value }}{{ end }}{{ end }}
           {{- end }}
 
           {{ define "email.message" -}}
           {{ range $i, $a := .Alerts.Firing }}{{ if $i }}
 
+          ────────────
+
           {{ end }}{{ template "email.alert" $a }}{{ end }}
           {{- if and .Alerts.Firing .Alerts.Resolved }}
 
+          ────────────
+
           {{ end }}
           {{- range $i, $a := .Alerts.Resolved }}{{ if $i }}
+
+          ────────────
 
           {{ end }}{{ template "email.alert" $a }}{{ end }}
           {{- end }}

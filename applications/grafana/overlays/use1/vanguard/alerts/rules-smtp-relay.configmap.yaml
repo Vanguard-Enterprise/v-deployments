@@ -39,8 +39,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "No smtp-relay replica is ready: apps cannot send email"
-              description: "kubectl -n smtp-relay get pods; kubectl -n smtp-relay logs smtp-relay-0 -c mail"
+              summary: |-
+                The email relay is down
+              description: |-
+                No smtp-relay pod is ready, so Grafana, Pocket ID and other apps cannot send email. You will usually only see this in Grafana, because this email needs the relay too.
+              action: |-
+                kubectl -n smtp-relay get pods and kubectl -n smtp-relay logs smtp-relay-0 -c mail.
 
           - uid: smtp-relay-deferred-queue
             title: SmtpRelayDeferredQueue
@@ -61,8 +65,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "{{ $values.A.Value }} email(s) waiting in the smtp-relay queue for 20m+"
-              description: "Most often Google refusing our public IP: update it at https://admin.google.com/ac/apps/gmail/routing (SMTP relay service). Reason per message: kubectl -n smtp-relay exec smtp-relay-0 -c mail -- mailq. Mail is kept 5 days and retried every 15 minutes."
+              summary: |-
+                {{ printf "%.0f" $values.A.Value }} email(s) waiting to be sent
+              description: |-
+                The relay has held mail for over 20 minutes because Google will not take it. Usually our public IP changed and Google's relay settings still have the old one. Mail is kept for 5 days and retried every 15 minutes, so nothing is lost yet.
+              action: |-
+                Update the IP at https://admin.google.com/ac/apps/gmail/routing (SMTP relay service). The reason for each message: kubectl -n smtp-relay exec smtp-relay-0 -c mail -- mailq
 
           - uid: smtp-relay-deferred-queue-stuck
             title: SmtpRelayDeferredQueueStuck
@@ -83,8 +91,12 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "smtp-relay has held email for 6h+; it bounces after 5 days"
-              description: "See SmtpRelayDeferredQueue. After fixing the cause, flush with: kubectl -n smtp-relay exec smtp-relay-0 -c mail -- postqueue -f (repeat for smtp-relay-1)."
+              summary: |-
+                Email has been stuck for over 6 hours
+              description: |-
+                The relay has held mail for 6 hours. It is sent back as undeliverable after 5 days.
+              action: |-
+                Fix the cause (see the waiting-email alert: usually the IP in Google's relay settings), then send the queue now: kubectl -n smtp-relay exec smtp-relay-0 -c mail -- postqueue -f (and again for smtp-relay-1).
 
           - uid: smtp-relay-auth-failures
             title: SmtpRelayAuthFailures
@@ -106,8 +118,12 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "Repeated failed logins on smtp-relay (wrong app password or probing)"
-              description: 'Loki: {namespace="smtp-relay"} |= "authentication failed"'
+              summary: |-
+                Repeated failed logins to the email relay
+              description: |-
+                More than 10 failed logins in 15 minutes. Usually an app has the wrong relay password (for example after a rotation). It can also be something on the network guessing passwords.
+              action: |-
+                Find the login in Grafana Explore (Loki): {namespace="smtp-relay"} |= "authentication failed"
 
           - uid: smtp-relay-rejected
             title: SmtpRelayRejectedMessages
@@ -128,5 +144,9 @@ data:
               severity: warning
               team: platform
             annotations:
-              summary: "smtp-relay refused a message (sender not owned by the login, or bad recipient)"
-              description: 'Loki: {namespace="smtp-relay"} |= "reject:"'
+              summary: |-
+                The email relay refused a message
+              description: |-
+                An app tried to send mail the relay will not accept, usually a From address that does not match its login (each app may only send as its own address) or a bad recipient. That email was not sent.
+              action: |-
+                Find it in Grafana Explore (Loki): {namespace="smtp-relay"} |= "reject:"

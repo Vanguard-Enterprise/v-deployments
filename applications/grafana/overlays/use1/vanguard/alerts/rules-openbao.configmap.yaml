@@ -40,4 +40,9 @@ data:
               severity: critical
               team: platform
             annotations:
-              summary: "OpenBao instance {{ $labels.instance }} is not ready to serve requests"
+              summary: |-
+                OpenBao (secrets store) server {{ $labels.pod }} is down
+              description: |-
+                This OpenBao server has not answered for 5 minutes. If the others are healthy, secrets keep working. If all are down, apps cannot fetch or refresh secrets and new pods that need them may not start.
+              action: |-
+                kubectl -n openbao get pods, then check whether it is sealed or has dropped out of the raft cluster (bao operator raft list-peers).

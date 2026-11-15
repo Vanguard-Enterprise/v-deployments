@@ -50,11 +50,12 @@ spec:
               value: https://mcp-netbird.vngenterprise.com/mcp
             - name: OIDC_ISSUER
               value: https://id.vngenterprise.com
-            # Accepted token audiences: the resource above (tokens requested with
-            # resource=...) and the public Pocket ID client "NetBird MCP" (plain login
-            # tokens from clients that send no resource parameter).
+            # Accepted token audience: only the resource above. MCP clients request
+            # tokens with resource=<MCP_PUBLIC_URL>, so Pocket ID stamps it as aud; plain
+            # login tokens (aud = client ID) and ID tokens are refused. The public Pocket
+            # ID client "NetBird MCP" is 85c295f7-930c-4b31-a09a-7234d5fa4d49.
             - name: OAUTH_AUDIENCE
-              value: https://mcp-netbird.vngenterprise.com/mcp,85c295f7-930c-4b31-a09a-7234d5fa4d49
+              value: https://mcp-netbird.vngenterprise.com/mcp
             - name: NETBIRD_API_URL
               value: https://netbird.vngenterprise.com
             - name: NETBIRD_API_TOKEN

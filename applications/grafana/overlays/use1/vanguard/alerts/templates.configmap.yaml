@@ -8,9 +8,65 @@ metadata:
 data:
   templates.yaml: |
     apiVersion: 1
-    # Email uses Grafana's built-in template. These removed the Slack message
-    # templates provisioned earlier; delete this file once Grafana no longer
-    # lists them under Alerting > Contact points > Notification templates.
+    # Alert email text, used by the email-alerts contact point (subject and
+    # message). With a message set, Grafana's email keeps its header and footer
+    # and shows these lines instead of its own alert table. The email layout
+    # escapes HTML and turns each line into a line break, so this is plain text.
+    templates:
+      - orgId: 1
+        name: email
+        template: |
+          {{ define "email.icon" -}}
+          {{ if eq .Status "resolved" }}✅{{ else if eq .Labels.severity "critical" }}🔴{{ else if eq .Labels.severity "warning" }}🟠{{ else }}🔵{{ end }}
+          {{- end }}
+
+          {{ define "email.severity" -}}
+          {{ if eq .Labels.severity "critical" }}Critical{{ else if eq .Labels.severity "warning" }}Warning{{ else if eq .Labels.severity "info" }}Info{{ else }}Alert{{ end }}
+          {{- end }}
+
+          {{ define "email.what" -}}
+          {{ if .Annotations.summary }}{{ .Annotations.summary }}{{ else }}{{ .Labels.alertname }}{{ end }}
+          {{- end }}
+
+          {{ define "email.subject" -}}
+          {{ $a := index .Alerts 0 -}}
+          {{ if .Alerts.Firing }}{{ $a = index .Alerts.Firing 0 }}{{ end -}}
+          {{ if not .Alerts.Firing }}✅ Resolved{{ else }}{{ template "email.icon" $a }} {{ template "email.severity" $a }}{{ end }}:
+          {{- if eq (len .Alerts) 1 }} {{ template "email.what" $a }}
+          {{- else }} {{ .CommonLabels.alertname }} ({{ if .Alerts.Firing }}{{ len .Alerts.Firing }} firing{{ end }}{{ if and .Alerts.Firing .Alerts.Resolved }}, {{ end }}{{ if .Alerts.Resolved }}{{ len .Alerts.Resolved }} resolved{{ end }}){{ end }}
+          {{- end }}
+
+          {{ define "email.alert" -}}
+          {{ template "email.icon" . }} {{ template "email.what" . }}
+          {{ if eq .Status "resolved" }}Resolved{{ else }}{{ template "email.severity" . }}{{ end }} · {{ .Labels.alertname }}
+          {{- $first := true }}
+          {{- range .Labels.SortedPairs }}{{ if not (match "^(alertname|severity|team|grafana_folder|__.*)$" .Name) }}{{ if $first }}
+          Where: {{ else }} · {{ end }}{{ $first = false }}{{ .Name }} {{ .Value }}{{ end }}{{ end }}
+          Since: {{ .StartsAt | tz "America/New_York" | date "Mon Jan 2, 3:04 PM MST" }}
+          {{- if eq .Status "resolved" }} · Resolved: {{ .EndsAt | tz "America/New_York" | date "Mon Jan 2, 3:04 PM MST" }}{{ end }}
+          {{- if .Annotations.description }}
+          {{ .Annotations.description }}{{ end }}
+          {{- if .Annotations.runbook_url }}
+          Runbook: {{ .Annotations.runbook_url }}{{ end }}
+          {{- if .GeneratorURL }}
+          Open in Grafana (to silence too): {{ .GeneratorURL }}{{ end }}
+          {{- end }}
+
+          {{ define "email.message" -}}
+          {{ range $i, $a := .Alerts.Firing }}{{ if $i }}
+
+          {{ end }}{{ template "email.alert" $a }}{{ end }}
+          {{- if and .Alerts.Firing .Alerts.Resolved }}
+
+          {{ end }}
+          {{- range $i, $a := .Alerts.Resolved }}{{ if $i }}
+
+          {{ end }}{{ template "email.alert" $a }}{{ end }}
+          {{- end }}
+
+    # Templates provisioned earlier for Slack and, before that, Discord. A
+    # template dropped from the list above stays in Grafana, so these remove them.
+    # Safe to delete this block once Grafana no longer lists them.
     deleteTemplates:
       - orgId: 1
         name: slack.title
@@ -20,3 +76,9 @@ data:
         name: slack.alert
       - orgId: 1
         name: slack.text
+      - orgId: 1
+        name: discord.title
+      - orgId: 1
+        name: discord.alert
+      - orgId: 1
+        name: discord.message

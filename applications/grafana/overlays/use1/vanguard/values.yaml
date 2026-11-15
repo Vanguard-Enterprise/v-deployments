@@ -39,11 +39,11 @@ grafana.ini:
     use_pkce: true
     use_refresh_token: true
   # Email through the in-cluster smtp-relay (applications/smtp-relay), which hands
-  # it to Google Workspace. smtp.vngenterprise.com resolves to the relay through
+  # it to Google Workspace. smtp-relay.vngenterprise.com resolves to the relay through
   # the CoreDNS rewrite, and its certificate is valid for that name.
   smtp:
     enabled: true
-    host: smtp.vngenterprise.com:587
+    host: smtp-relay.vngenterprise.com:587
     user: grafana@vngenterprise.com
     from_address: grafana@vngenterprise.com
     from_name: Grafana

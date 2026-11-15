@@ -24,7 +24,7 @@
 # POCKET ID INTERNET EGRESS is limited to:
 #   api.github.com   the admin "update available" check (VERSION_CHECK_DISABLED)
 #   cdn.jsdelivr.net the client-logo icon library (ICON_LIBRARY_URL default)
-# EMAIL goes only to the in-cluster smtp-relay (smtp.vngenterprise.com, which
+# EMAIL goes only to the in-cluster smtp-relay (smtp-relay.vngenterprise.com, which
 # CoreDNS rewrites to the relay Service) on 587, never to the internet.
 #
 # Everything else is denied on purpose: no LDAP, SCIM, GeoLite, back-channel

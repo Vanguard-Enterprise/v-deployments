@@ -85,3 +85,35 @@ kubectl --context use1-oidc -n argocd get application pocket-id
 kubectl --context use1-oidc -n pocket-id get pods,clusters,externalsecrets
 kubectl --context use1-oidc -n pocket-id logs deploy/pocket-id
 ```
+
+## MCP hub
+
+`argocd/applications/use1/mcp-hub.yaml` deploys the self-hosted MCP servers from
+[Vanguard-Enterprise/mcp-hub](https://github.com/Vanguard-Enterprise/mcp-hub)
+into the `mcp-hub` namespace (overlay `applications/mcp-hub/overlays/use1`).
+The first server is `mcp-netbird` at `https://mcp-netbird.vngenterprise.com/mcp`,
+read-only tools over the NetBird Management API.
+
+Routes sit on internal Traefik (10.1.50.176) and are reached over the LAN or
+NetBird; the A records live in the NetBird DNS zone `vngenterprise.com`. There
+is no Traefik auth middleware: each server is an OAuth resource server that
+validates Pocket ID access tokens (JWKS of `https://id.vngenterprise.com`) and
+answers `401` with RFC 9728 resource metadata, so MCP clients such as Claude Code
+run the PKCE login themselves. Pocket ID holds the public client "NetBird MCP"
+(callback `http://localhost/callback`, any port) restricted to the `mcp_users`
+group, and the API resource `https://mcp-netbird.vngenterprise.com/mcp`.
+
+Images are `ghcr.io/vanguard-enterprise/mcp-<server>:main`, built by the mcp-hub
+CI on every push to `main`; Argo CD Image Updater pins the digest in the overlay
+kustomization. Deployments use RollingUpdate with `maxUnavailable: 0`, and a pod
+is ready only after OIDC discovery against Pocket ID succeeded.
+
+Secrets come from OpenBao through External Secrets: `kv/mcp-hub/netbird` key
+`netbird_api_token` (a NetBird Personal Access Token) feeds `NETBIRD_API_TOKEN`.
+The `use1` policy grants ESO read on `kv/data/mcp-hub/*`.
+
+```bash
+kubectl --context use1-oidc -n argocd get application mcp-hub
+kubectl --context use1-oidc -n mcp-hub get pods,externalsecrets,ingressroute
+kubectl --context use1-oidc -n mcp-hub logs deploy/mcp-netbird
+```

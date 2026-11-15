@@ -23,7 +23,7 @@ data:
                 relativeTimeRange: { from: 600, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'metallb_k8s_client_config_loaded_bool == 0'
+                  expr: 'metallb_k8s_client_config_loaded_bool == bool 0'
                   instant: true
                   range: false
                   refId: A

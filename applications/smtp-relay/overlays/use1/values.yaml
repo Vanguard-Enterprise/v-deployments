@@ -15,7 +15,7 @@ serviceAccount:
   create: true
 
 # LoadBalancer so LAN and NetBird clients (Proxmox, Docker hosts) reach the same
-# relay as the pods. smtp.vngenterprise.com points at this address (NetBird DNS
+# relay as the pods. smtp-relay.vngenterprise.com points at this address (NetBird DNS
 # zone for clients, CoreDNS rewrite inside the cluster).
 service:
   type: LoadBalancer
@@ -46,7 +46,7 @@ config:
     ALLOWED_SENDER_DOMAINS: vngenterprise.com
     LOG_FORMAT: json
   postfix:
-    myhostname: smtp.vngenterprise.com
+    myhostname: smtp-relay.vngenterprise.com
     # Nothing is trusted by address: every client must log in, including localhost.
     mynetworks: 127.0.0.0/8
 

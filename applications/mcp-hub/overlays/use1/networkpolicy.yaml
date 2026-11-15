@@ -10,8 +10,8 @@
 # WHAT THIS ALLOWS
 #   Ingress: the node (kubelet probes) and internal Traefik on :8080.
 #   Egress: cluster DNS (with the L7 rule toFQDNs needs); Pocket ID at
-#     id.vngenterprise.com for OIDC discovery and JWKS (public DNS -> Cloudflare,
-#     so a toFQDNs rule); and the NetBird Management API at
+#     id.vngenterprise.com for OIDC discovery, JWKS, userinfo, and the pocketid
+#     section's admin API (public DNS -> Cloudflare, so a toFQDNs rule); and the NetBird Management API at
 #     netbird.vngenterprise.com, which CoreDNS rewrites to the in-cluster Traefik
 #     service (applications/coredns-config), so that one is a toEndpoints rule to
 #     the Traefik pods: toFQDNs/toCIDR rules never match in-cluster identities.
@@ -57,7 +57,8 @@ spec:
           rules:
             dns:
               - matchPattern: "*"
-    # Pocket ID: OIDC discovery and JWKS for access-token validation.
+    # Pocket ID: OIDC discovery, JWKS, and userinfo for access tokens, and the
+    # admin API for the pocketid section.
     - toFQDNs:
         - matchName: "id.vngenterprise.com"
       toPorts:

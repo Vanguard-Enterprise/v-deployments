@@ -63,6 +63,12 @@ spec:
                 secretKeyRef:
                   name: mcp-netbird
                   key: NETBIRD_API_TOKEN
+            # pocketid section. POCKETID_URL defaults to OIDC_ISSUER (this same Pocket ID).
+            - name: POCKETID_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-pocketid
+                  key: POCKETID_API_KEY
           volumeMounts:
             - name: access-policy
               mountPath: /etc/mcp-hub

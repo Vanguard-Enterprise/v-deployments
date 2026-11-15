@@ -91,8 +91,11 @@ kubectl --context use1-oidc -n pocket-id logs deploy/pocket-id
 `argocd/applications/use1/mcp-hub.yaml` deploys the self-hosted MCP servers from
 [Vanguard-Enterprise/mcp-hub](https://github.com/Vanguard-Enterprise/mcp-hub)
 into the `mcp-hub` namespace (overlay `applications/mcp-hub/overlays/use1`).
-The first server is `mcp-netbird` at `https://mcp-netbird.vngenterprise.com/mcp`,
-read-only tools over the NetBird Management API.
+The first server is `mcp-netbird` at `https://mcp-netbird.vngenterprise.com/mcp`:
+read tools for every NetBird object type plus create, update, and delete tools
+for groups, policies, routes, setup keys, DNS, and peers. Writes are marked
+non-read-only so MCP clients confirm them, and each is logged with the
+caller's Pocket ID subject (NetBird's own log only sees the PAT owner).
 
 Routes sit on internal Traefik (10.1.50.176) and are reached over the LAN or
 NetBird; the A records live in the NetBird DNS zone `vngenterprise.com`. There

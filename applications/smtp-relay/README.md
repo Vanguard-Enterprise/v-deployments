@@ -46,6 +46,15 @@ delivers it. No app holds a Google credential and no app needs a Google license.
 The From address does not need a mailbox or a Google license. Google accepts any
 `@vngenterprise.com` sender from our IP ("Only addresses in my domains").
 
+## Prerequisite: OpenBao policy
+
+External Secrets reads `kv/smtp-relay/*` with the `use1` policy
+(`applications/openbao/config/policies/use1.hcl`, path `kv/data/smtp-relay/*`).
+Policies are not applied by Argo CD. Before the first deploy, or after changing
+the file, apply it with `bao policy write use1 applications/openbao/config/policies/use1.hcl`
+(or rerun `applications/openbao/config/bootstrap.sh`). Without it
+`smtp-relay-users` and `grafana-smtp` stay unsynced and the relay has no logins.
+
 ## Adding an app
 
 1. Pick its address, e.g. `pelican@vngenterprise.com`.
@@ -182,6 +191,26 @@ Mail waits in the queue (Google's refusal is turned into a temporary error), and
    ```
 
 Mail is kept for 5 days, then bounced.
+
+## Rotating a password
+
+Apps and the relay read passwords at start, and External Secrets only refreshes
+hourly, so do it in this order:
+
+```bash
+bao kv patch kv/smtp-relay/use1 grafana="$(openssl rand -hex 24)"
+# Pull the new value now instead of waiting for the hourly refresh.
+kubectl -n smtp-relay annotate externalsecret smtp-relay-users force-sync="$(date +%s)" --overwrite
+kubectl -n grafana annotate externalsecret grafana-smtp force-sync="$(date +%s)" --overwrite
+# Wait until both report a new refreshTime (and Ready=True) before restarting.
+kubectl -n smtp-relay get externalsecret smtp-relay-users -o jsonpath='{.status.refreshTime}{"\n"}'
+kubectl -n grafana get externalsecret grafana-smtp -o jsonpath='{.status.refreshTime}{"\n"}'
+kubectl -n smtp-relay rollout restart statefulset smtp-relay
+kubectl -n grafana rollout restart deployment grafana
+```
+
+Restarting before the secrets refresh leaves the old password in place, and the
+app fails to log in until it is restarted again.
 
 ## Operating
 

@@ -155,9 +155,16 @@ Admin console, all at the top-level org:
 - Apps > Google Workspace > Gmail > **Authenticate email**: DKIM on (2048-bit,
   selector `google`), TXT record published in Cloudflare.
 - DNS: SPF includes `_spf.google.com`; DMARC record at `_dmarc.vngenterprise.com`.
-- Groups (e.g. `alerts@`): "Who can post" must let the app addresses post. App
-  senders are not Workspace users, so a group limited to members or the
-  organization rejects them.
+- Groups (e.g. `alerts@`): "Who can post" must include **Entire Organization**.
+  Tested: mail from `grafana@` (not a Workspace user) through the relay is accepted
+  by a group with Owners, Managers, Members and Entire Organization posting, and
+  External posting off.
+
+Verified on 2026-11-15 with a message through `smtp-relay.gmail.com`:
+`spf=pass smtp.mailfrom=grafana@vngenterprise.com` (aligned, so DMARC passes on
+SPF). Until the `google._domainkey` record is published and "Start
+authentication" is clicked, Google signs relayed mail with its default key
+(`d=vngenterprise-com.<date>.gappssmtp.com`), which does not align.
 
 ### When our public IP changes
 
@@ -212,5 +219,5 @@ After any change to the relay or the Google rule. `./smtp-test.py` (password in
 | 4 | Login `grafana@`, from `identity@` or `ceo@` | `553 5.7.1 Sender address rejected: not owned by user` |
 | 5 | Login without STARTTLS | AUTH not offered |
 | 6 | Google refusing (remove our IP from the rule) | accepted, then `status=deferred dsn=4.7.x` and SmtpRelayDeferredQueue; restore the IP, flush, `status=sent` |
-| 7 | Mail to `alerts@` | arrives for every group member |
+| 7 | Mail to `alerts@` | arrives for every group member (needs "Entire Organization" posting) |
 | 8 | Delete one relay pod | the other keeps accepting; the deleted pod's queue is delivered when it returns |

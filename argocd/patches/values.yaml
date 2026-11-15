@@ -140,6 +140,10 @@ configs:
     admin.enabled: false
     kustomize.buildOptions: --enable-helm
     statusbadge.enabled: "true"
+    # Read-only API account for the MCP hub's argocd section (applications/mcp-hub).
+    # apiKey only: it cannot log in to the UI. Bound to role:readonly below. Its
+    # token is in OpenBao at kv/mcp-hub/argocd, key argocd_api_token.
+    accounts.mcp-hub: apiKey
     oidc.config: |
       name: Pocket ID
       issuer: https://id.vngenterprise.com
@@ -157,5 +161,6 @@ configs:
     policy.csv: |
       g, argocd_administrators, role:admin
       g, argocd_users, role:readonly
+      g, mcp-hub, role:readonly
     policy.default: ""
     scopes: "[groups]"

@@ -232,6 +232,20 @@ negative answer for the zone's negative TTL (1800s). It clears on its own.
 Deleting the Challenge only restarts the wait. The relay pods stay in
 ContainerCreating until the certificate Secret exists.
 
+If it is still pending after about 35 minutes, the cause is something else:
+
+```bash
+kubectl -n smtp-relay describe challenge          # Reason / Presented
+dig +short TXT _acme-challenge.smtp-relay.vngenterprise.com @kellen.ns.cloudflare.com
+dig +short TXT _acme-challenge.smtp-relay.vngenterprise.com @1.1.1.1
+kubectl -n cert-manager logs deploy/cert-manager --since=30m | grep -i smtp-relay
+```
+
+An answer from Cloudflare's nameserver but not from 1.1.1.1 means a resolver
+cache; no answer from either means the record is missing or still cached at
+Cloudflare; timeouts in the cert-manager log mean it cannot reach its DNS
+servers (it uses 1.1.1.1 and 9.9.9.9 only).
+
 ## Operating
 
 ```bash

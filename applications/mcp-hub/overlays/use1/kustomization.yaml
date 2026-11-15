@@ -19,4 +19,4 @@ configMapGenerator:
 images:
   - name: ghcr.io/vanguard-enterprise/mcp-hub
     newTag: main
-    digest: sha256:db14016dc344a11fb45baed8eddb6b2bd104fefe7ad61bcbd54d69cd42f60857
+    digest: sha256:62e50a49ea3b2ba97fd37cada5d79773ed61b5b6e896fcecebdc28fdc9e52ba8

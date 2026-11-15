@@ -12,3 +12,4 @@ resources:
 images:
   - name: ghcr.io/vanguard-enterprise/mcp-netbird
     newTag: main
+    digest: sha256:34b7583ec98a580b44040fad070959c7da81ee50c606306b91f6b1a4b2ab55b9

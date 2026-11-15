@@ -23,7 +23,7 @@ data:
                 relativeTimeRange: { from: 300, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'kube_node_status_condition{condition="Ready",status="true"} == 0'
+                  expr: 'kube_node_status_condition{condition="Ready",status="true"} == bool 0'
                   instant: true
                   range: false
                   refId: A
@@ -107,7 +107,7 @@ data:
                 relativeTimeRange: { from: 300, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'up{job="kubelet"} == 0'
+                  expr: 'up{job="kubelet"} == bool 0'
                   instant: true
                   range: false
                   refId: A

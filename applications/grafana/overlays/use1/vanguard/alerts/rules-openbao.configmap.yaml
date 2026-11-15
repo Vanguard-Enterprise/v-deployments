@@ -26,7 +26,7 @@ data:
                 relativeTimeRange: { from: 600, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'up{job="openbao"} == 0'
+                  expr: 'up{job="openbao"} == bool 0'
                   instant: true
                   range: false
                   refId: A

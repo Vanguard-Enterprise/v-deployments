@@ -65,7 +65,7 @@ data:
                 relativeTimeRange: { from: 900, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'kube_daemonset_status_number_ready != kube_daemonset_status_desired_number_scheduled'
+                  expr: 'kube_daemonset_status_number_ready != bool kube_daemonset_status_desired_number_scheduled'
                   instant: true
                   range: false
                   refId: A
@@ -86,7 +86,7 @@ data:
                 relativeTimeRange: { from: 900, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'kube_deployment_status_replicas != kube_deployment_spec_replicas'
+                  expr: 'kube_deployment_status_replicas != bool kube_deployment_spec_replicas'
                   instant: true
                   range: false
                   refId: A

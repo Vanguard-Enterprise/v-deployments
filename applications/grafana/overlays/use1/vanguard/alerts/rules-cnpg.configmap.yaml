@@ -65,7 +65,7 @@ data:
                 relativeTimeRange: { from: 300, to: 0 }
                 datasourceUid: mimir
                 model:
-                  expr: 'cnpg_collector_up == 0'
+                  expr: 'cnpg_collector_up == bool 0'
                   instant: true
                   range: false
                   refId: A

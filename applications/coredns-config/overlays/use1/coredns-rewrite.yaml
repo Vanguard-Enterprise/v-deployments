@@ -39,6 +39,11 @@ data:
         # Preserve the original Host header so TLS and IngressRoute matching
         # continues to use the public name.
         rewrite name grafana.vngenterprise.com traefik-internal.traefik.svc.cluster.local
+        # Apps reach the outbound mail relay (applications/smtp-relay) by the same
+        # name LAN and NetBird clients use, so its certificate verifies everywhere.
+        # Outside the cluster the name resolves to the MetalLB address 10.1.50.177
+        # (NetBird DNS zone).
+        rewrite name smtp.vngenterprise.com smtp-relay.smtp-relay.svc.cluster.local
         log . {
             class error
         }

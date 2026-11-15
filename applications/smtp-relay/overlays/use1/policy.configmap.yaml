@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smtp-relay-policy
+data:
+  # Envelope sender -> the login allowed to use it (smtpd_sender_login_maps).
+  # Logins are the app's own address; passwords live in OpenBao kv/smtp-relay/use1.
+  # Adding an app: add its line here AND its login to external-secret.yaml.
+  # Mail from an address that is not listed is rejected, even for a valid login.
+  sender_login_maps: |
+    grafana@vngenterprise.com   grafana@vngenterprise.com
+    identity@vngenterprise.com  identity@vngenterprise.com
+
+  # smtp_reply_filter: Google answers "550 5.7.1 Invalid credentials for relay" (or
+  # "Mail relay denied") when our public IP is not the one registered for the SMTP
+  # relay service. Turning that into a 4xx keeps the mail queued (and retried every
+  # 15 minutes) instead of bouncing it, so nothing is lost while the IP is updated.
+  #
+  # Postfix filters each reply line on its own and takes the status from the LAST
+  # line, and only Google's first line names the cause. So every 5.7.x line is
+  # rewritten. The relay only ever talks to Google, so this only touches Google's
+  # policy rejections; a message Google refuses for another 5.7.x reason waits in
+  # the queue (SmtpRelayDeferredQueue alerts) and bounces after 5 days.
+  smtp_reply_filter.pcre: |
+    /^5(\d\d)([ -])5\.7\.(\d+)(.*)$/ 4${1}${2}4.7.${3}${4}

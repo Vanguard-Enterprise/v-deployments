@@ -82,3 +82,16 @@ data:
               title: '{{ template "slack.title" . }}'
               text: '{{ template "slack.text" . }}'
               color: '{{ template "slack.color" . }}'
+
+      # ---- email (through smtp-relay -> Google Workspace) ----
+      # alerts@ is a Google Group, so who gets these is managed in Google Groups.
+      # Not routed by any notification policy yet; send a test from
+      # Alerting > Contact points to check the mail path end to end.
+      - orgId: 1
+        name: email-alerts
+        receivers:
+          - uid: email-alerts
+            type: email
+            settings:
+              addresses: alerts@vngenterprise.com
+              singleEmail: true

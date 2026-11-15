@@ -17,3 +17,4 @@ resources:
   - rules-metallb.configmap.yaml
   - rules-openbao.configmap.yaml
   - rules-linkerd.configmap.yaml
+  - rules-smtp-relay.configmap.yaml

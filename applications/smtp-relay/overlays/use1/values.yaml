@@ -20,6 +20,11 @@ serviceAccount:
 service:
   type: LoadBalancer
   port: 587
+  # Local keeps the client's real address. With Cluster, kube-proxy SNATs LAN
+  # clients to a node pod-CIDR address that Cilium classifies as "world", so the
+  # network policy dropped them. MetalLB announces only from nodes running a
+  # relay pod, and the relay logs show the real client.
+  externalTrafficPolicy: Local
   annotations:
     metallb.io/loadBalancerIPs: 10.1.50.177
 

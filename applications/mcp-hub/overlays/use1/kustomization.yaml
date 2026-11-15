@@ -6,6 +6,7 @@ resources:
   - networkpolicy.yaml
   - pull-secret.yaml
   - netbird-secrets.yaml
+  - pocketid-secrets.yaml
   - hub-workload.yaml
   - hub-ingress.yaml
 # Which Pocket ID groups get read or write access to each hub section. The generated

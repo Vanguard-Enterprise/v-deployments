@@ -92,16 +92,20 @@ kubectl --context use1-oidc -n pocket-id logs deploy/pocket-id
 [Vanguard-Enterprise/mcp-hub](https://github.com/Vanguard-Enterprise/mcp-hub)
 into the `mcp-hub` namespace (overlay `applications/mcp-hub/overlays/use1`):
 one endpoint, `https://mcp.vngenterprise.com/mcp`, and one Pocket ID login for
-every self-hosted MCP server. Backends are sections of the hub; today there is
-`netbird` (read tools for every NetBird object type, create/update/delete for
-groups, policies, routes, setup keys, DNS, and peers).
+every self-hosted MCP server. Backends are sections of the hub: `netbird` (read
+tools for every NetBird object type, create/update/delete for groups, policies,
+routes, setup keys, DNS, and peers) and `pocketid` (Pocket ID administration:
+users, groups and memberships, OIDC clients and secrets, APIs, sign-up tokens,
+SCIM, the audit log, and the configuration; read tools hide credentials).
 
 Access is per section and per Pocket ID group, set in
 `applications/mcp-hub/overlays/use1/access-policy.json`: `read` groups get the
 section's read tools, `write` groups get read and write tools, everyone else
 gets nothing from it. The hub reads the caller's groups from Pocket ID's
 userinfo endpoint (cached for a minute), so adding or removing someone from
-`mcp_netbird_read` or `mcp_netbird_write` in Pocket ID is all it takes. The
+`mcp_netbird_read`, `mcp_netbird_write`, `mcp_pocketid_read`, or
+`mcp_pocketid_write` in Pocket ID is all it takes. `mcp_pocketid_write` can
+change every group, these included, so keep it to Pocket ID admins. The
 policy is generated into a ConfigMap with a content hash, so editing it rolls
 the Deployment. `hub_whoami` shows a caller their groups and access.
 
@@ -121,7 +125,10 @@ kustomization. The Deployment uses RollingUpdate with `maxUnavailable: 0`, and a
 pod is ready only after OIDC discovery against Pocket ID succeeded.
 
 Secrets come from OpenBao through External Secrets: `kv/mcp-hub/netbird` key
-`netbird_api_token` (a NetBird Personal Access Token) feeds `NETBIRD_API_TOKEN`.
+`netbird_api_token` (a NetBird Personal Access Token) feeds `NETBIRD_API_TOKEN`,
+and `kv/mcp-hub/pocket-id` key `pocketid_api_key` (a Pocket ID admin API key,
+created at `/settings/admin/api-keys`; it expires, so renew it there and update
+OpenBao) feeds `POCKETID_API_KEY`.
 The `use1` policy grants ESO read on `kv/data/mcp-hub/*`.
 
 ```bash

@@ -62,7 +62,9 @@ The From address does not need a mailbox or a Google license. Google accepts any
 4. If the app's namespace has a default-deny CiliumNetworkPolicy, allow egress to
    `io.kubernetes.pod.namespace: smtp-relay` on 587 (see pocket-id's policy).
 5. Give the app its password with its own ExternalSecret that reads only its
-   property (see `applications/grafana/overlays/use1/vanguard/external-secret-smtp.yaml`).
+   property, in sync wave -1 so it exists before the app starts (see
+   `applications/grafana/overlays/use1/vanguard/external-secret-smtp.yaml`).
+   Apps read the password at start, so restart the app after changing it.
 6. Merge, then restart the relay so it loads the new login:
    `kubectl -n smtp-relay rollout restart statefulset smtp-relay`.
 
@@ -208,8 +210,9 @@ with `status=sent|deferred|bounced`).
 
 ## Testing procedure
 
-After any change to the relay or the Google rule. `./smtp-test.py` (password in
-`SMTP_PASSWORD`) works from any host that resolves smtp.vngenterprise.com.
+After any change to the relay or the Google rule. `./smtp-test.py` works from any
+host that resolves smtp.vngenterprise.com; it prompts for the password (or reads
+`SMTP_PASSWORD`, set from `bao kv get -field=<app> kv/smtp-relay/use1`).
 
 | # | Case | Expect |
 |---|---|---|

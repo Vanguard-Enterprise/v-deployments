@@ -18,13 +18,24 @@ data:
         group_interval: 5m
         repeat_interval: 12h
         routes:
-          # Info, including WeeklyHeartbeat (always firing): one mail a week.
-          # Matched first so info never takes the critical timings.
+          # Daily brief: a copy of every firing alert, in one group, sent only
+          # in the 5-minute daily-brief window. group_interval matches the window,
+          # so exactly one flush lands in it each day. DailyBrief always fires,
+          # so there is always something to send. continue: true lets alerts go
+          # on to their normal routes below as well.
+          - receiver: email-brief
+            group_by: [brief_group] # no alert has this label: one group for all
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 12h
+            active_time_intervals: [daily-brief]
+            continue: true
+
+          # Info (DailyBrief and the brief's watch rules): only in the brief.
           - receiver: email-alerts
             object_matchers:
               - [severity, "=", info]
-            group_by: [alertname]
-            repeat_interval: 168h
+            mute_time_intervals: [always]
             continue: false
 
           # Critical: sent faster and repeated every 4h while it fires.

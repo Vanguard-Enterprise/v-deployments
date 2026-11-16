@@ -23,6 +23,17 @@ data:
               # Text templates in templates.configmap.yaml.
               subject: '{{ template "email.subject" . }}'
               message: '{{ template "email.message" . }}'
+      # The daily brief (route in notification-policies.configmap.yaml).
+      - orgId: 1
+        name: email-brief
+        receivers:
+          - uid: email-brief
+            type: email
+            settings:
+              addresses: alerts@vngenterprise.com
+              singleEmail: true
+              subject: '{{ template "brief.subject" . }}'
+              message: '{{ template "brief.message" . }}'
 
     # Slack contact points provisioned earlier. A contact point dropped from the
     # list above stays in Grafana, so these remove them. Safe to delete this

@@ -9,7 +9,8 @@ data:
   templates.yaml: |
     apiVersion: 1
     # Alert email text, used by the email-alerts contact point (subject and
-    # message). With a message set, Grafana's email keeps its header and footer
+    # message). Kept short: what is wrong, since when, where, and a link. The
+    # longer description and action annotations show in Grafana only. With a message set, Grafana's email keeps its header and footer
     # and shows these lines instead of its own alert table. The email layout
     # escapes HTML and turns each line into a line break, so this is plain text.
     templates:
@@ -40,41 +41,21 @@ data:
 
           {{ define "email.alert" -}}
           {{ template "email.icon" . }} {{ if eq .Status "resolved" }}Resolved: {{ end }}{{ template "email.what" . }}
-          {{- if eq .Status "resolved" }}
-
-          Was firing from {{ template "email.when" .StartsAt }} until {{ template "email.when" .EndsAt }}. Nothing to do.
-          {{- else }}
-          {{- if .Annotations.description }}
-
-          What's happening: {{ .Annotations.description }}{{ end }}
-          {{- if .Annotations.action }}
-
-          What to do: {{ .Annotations.action }}{{ end }}
-          {{- if .Annotations.runbook_url }}
-          Runbook: {{ .Annotations.runbook_url }}{{ end }}
-
-          Started {{ template "email.when" .StartsAt }}
-          {{- end }}
-          {{- if .GeneratorURL }}
-          Open in Grafana: {{ .GeneratorURL }}{{ end }}
-          Details: {{ .Labels.alertname }}, {{ .Labels.severity }}
+          {{ if eq .Status "resolved" }}{{ template "email.when" .StartsAt }} to {{ template "email.when" .EndsAt }}{{ else }}Since {{ template "email.when" .StartsAt }}{{ end }}
+          {{ .Labels.alertname }}
           {{- range .Labels.SortedPairs }}{{ if match "^(namespace|exported_namespace|pod|container|node|deployment|daemonset|statefulset|persistentvolumeclaim|volume|pool|mountpoint|sans)$" .Name }}, {{ .Name }} {{ .Value }}{{ end }}{{ end }}
+          {{- if .GeneratorURL }}
+          {{ .GeneratorURL }}{{ end }}
           {{- end }}
 
           {{ define "email.message" -}}
           {{ range $i, $a := .Alerts.Firing }}{{ if $i }}
 
-          ────────────
-
           {{ end }}{{ template "email.alert" $a }}{{ end }}
           {{- if and .Alerts.Firing .Alerts.Resolved }}
 
-          ────────────
-
           {{ end }}
           {{- range $i, $a := .Alerts.Resolved }}{{ if $i }}
-
-          ────────────
 
           {{ end }}{{ template "email.alert" $a }}{{ end }}
           {{- end }}

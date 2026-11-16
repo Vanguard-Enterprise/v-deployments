@@ -50,11 +50,6 @@ grafana.ini:
     ehlo_identity: grafana.vngenterprise.com
     startTLS_policy: MandatoryStartTLS
     skip_verify: false
-  unified_alerting:
-    # Must outlast the longest repeat_interval (168h for info alerts such as
-    # WeeklyHeartbeat). With the 5d default the log entry expires first and the
-    # alert is sent again early.
-    notification_log_retention: 8d
 envValueFrom:
   GF_DATABASE_PASSWORD:
     secretKeyRef:

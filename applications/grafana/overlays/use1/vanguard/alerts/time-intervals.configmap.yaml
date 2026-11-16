@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-time-intervals
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  time-intervals.yaml: |
+    apiVersion: 1
+    muteTimes:
+      # When the daily brief goes out (notification-policies.configmap.yaml).
+      - orgId: 1
+        name: daily-brief
+        time_intervals:
+          - times:
+              - start_time: "08:00"
+                end_time: "08:05"
+            location: America/New_York
+      # Every moment: mutes a route for good.
+      - orgId: 1
+        name: always
+        time_intervals:
+          - weekdays: ["sunday:saturday"]

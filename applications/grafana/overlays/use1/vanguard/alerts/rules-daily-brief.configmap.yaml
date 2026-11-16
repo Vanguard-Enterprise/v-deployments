@@ -1,0 +1,395 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-rules-daily-brief
+  namespace: grafana
+  labels:
+    grafana_alert: "1"
+data:
+  rules-daily-brief.yaml: |
+    apiVersion: 1
+    # The daily brief: one email every morning (route in
+    # notification-policies.configmap.yaml, layout in templates.configmap.yaml).
+    # DailyBrief always fires so the email always goes out. The "watch" rules
+    # flag things running above their usual levels; they never email on their
+    # own, they only show up in the brief. Evaluated hourly: they look at the
+    # last day, and the 5 days before it as the baseline (Mimir caps a query
+    # at 7 days).
+    groups:
+      - orgId: 1
+        name: daily-brief
+        folder: Alerts
+        interval: 1h
+        rules:
+          - uid: daily-brief
+            title: DailyBrief
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'vector(1)'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: heartbeat
+              team: platform
+            annotations:
+              summary: |-
+                Daily brief
+              description: |-
+                Always firing. It makes the daily brief email go out every morning, so a missing brief means alerting is broken: check Grafana and the smtp-relay app.
+
+          - uid: brief-cpu-above-normal
+            title: CPUAboveNormal
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '(sum by (namespace, container) (rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[1d])) > 0.05) / (sum by (namespace, container) (rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5d] offset 1d)) > 0) > 1.5'
+                  instant: true
+                  range: false
+                  refId: A
+              - refId: B
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'sum by (namespace, container) (rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[1d]))'
+                  instant: true
+                  range: false
+                  refId: B
+              - refId: C
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'sum by (namespace, container) (rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5d] offset 1d))'
+                  instant: true
+                  range: false
+                  refId: C
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.namespace }}/{{ $labels.container }} used {{ printf "%.1f" $values.A.Value }}x its usual CPU ({{ printf "%.2f" $values.B.Value }} vs {{ printf "%.2f" $values.C.Value }} cores)
+              description: |-
+                CPU over the last day compared with the 5 days before.
+
+          - uid: brief-memory-above-normal
+            title: MemoryAboveNormal
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '(sum by (namespace, container) (container_memory_working_set_bytes{container!="",container!="POD"}) > 104857600) / (avg_over_time(sum by (namespace, container) (container_memory_working_set_bytes{container!="",container!="POD"})[5d:1h] offset 1d) > 0) > 1.5'
+                  instant: true
+                  range: false
+                  refId: A
+              - refId: B
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'sum by (namespace, container) (container_memory_working_set_bytes{container!="",container!="POD"})'
+                  instant: true
+                  range: false
+                  refId: B
+              - refId: C
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'avg_over_time(sum by (namespace, container) (container_memory_working_set_bytes{container!="",container!="POD"})[5d:1h] offset 1d)'
+                  instant: true
+                  range: false
+                  refId: C
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.namespace }}/{{ $labels.container }} is using {{ printf "%.1f" $values.A.Value }}x its usual memory ({{ humanize1024 $values.B.Value }}B vs {{ humanize1024 $values.C.Value }}B)
+              description: |-
+                Memory now compared with the average over the 5 days before yesterday.
+
+          - uid: brief-memory-near-limit
+            title: MemoryNearLimit
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '100 * max by (namespace, pod, container) (container_memory_working_set_bytes{container!="",container!="POD"}) / max by (namespace, pod, container) (kube_pod_container_resource_limits{resource="memory"}) > 85'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container }}) is at {{ printf "%.0f" $values.A.Value }}% of its memory limit
+              description: |-
+                Past the limit it gets killed and restarted.
+
+          - uid: brief-container-restarts
+            title: ContainerRestarts
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'round(sum by (namespace, container) (increase(kube_pod_container_status_restarts_total[1d]))) >= 3'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.namespace }}/{{ $labels.container }} restarted {{ printf "%.0f" $values.A.Value }} times in the last day
+              description: |-
+                3 or more restarts in the last day, across all pods of this container.
+
+          - uid: brief-oom-killed
+            title: OOMKilled
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'count by (namespace, container) ((kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1) and on (namespace, pod, container) (increase(kube_pod_container_status_restarts_total[1d]) > 0))'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.namespace }}/{{ $labels.container }} ran out of memory and was killed in the last day
+              description: |-
+                Its last restart in the last day was an OOM kill.
+
+          - uid: brief-cpu-throttled
+            title: CPUThrottled
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '100 * sum by (namespace, container) (increase(container_cpu_cfs_throttled_periods_total{container!=""}[1d])) / sum by (namespace, container) (increase(container_cpu_cfs_periods_total{container!=""}[1d])) > 25'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.namespace }}/{{ $labels.container }} was held back by its CPU limit {{ printf "%.0f" $values.A.Value }}% of the time in the last day
+              description: |-
+                Share of CPU periods throttled over the last day.
+
+          - uid: brief-volume-filling
+            title: VolumeFillingUp
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'max by (namespace, persistentvolumeclaim) ((predict_linear(kubelet_volume_stats_available_bytes[1d], 7 * 86400) < 0) and (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes > 0.5))'
+                  instant: true
+                  range: false
+                  refId: A
+              - refId: B
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '100 * max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes)'
+                  instant: true
+                  range: false
+                  refId: B
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                Volume {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} will be full within a week at the last day's rate (now {{ printf "%.0f" $values.B.Value }}% full)
+              description: |-
+                Linear prediction from the last day of usage.
+
+          - uid: brief-node-disk-filling
+            title: NodeDiskFillingUp
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'max by (instance, mountpoint) ((predict_linear(node_filesystem_avail_bytes{fstype=~"ext4|xfs|btrfs"}[1d], 7 * 86400) < 0) and (1 - node_filesystem_avail_bytes / node_filesystem_size_bytes > 0.5)) * on (instance) group_left (nodename) max by (instance, nodename) (node_uname_info)'
+                  instant: true
+                  range: false
+                  refId: A
+              - refId: B
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '100 * max by (instance, mountpoint) (1 - node_filesystem_avail_bytes{fstype=~"ext4|xfs|btrfs"} / node_filesystem_size_bytes) * on (instance) group_left (nodename) max by (instance, nodename) (node_uname_info)'
+                  instant: true
+                  range: false
+                  refId: B
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.nodename }} {{ $labels.mountpoint }} will be full within a week at the last day's rate (now {{ printf "%.0f" $values.B.Value }}% full)
+              description: |-
+                Linear prediction from the last day of usage.
+
+          - uid: brief-node-cpu-above-normal
+            title: NodeCPUAboveNormal
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '((1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1d])) > 0.3) / (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5d] offset 1d))) > 1.5) * on (instance) group_left (nodename) max by (instance, nodename) (node_uname_info)'
+                  instant: true
+                  range: false
+                  refId: A
+              - refId: B
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1d]))) * on (instance) group_left (nodename) max by (instance, nodename) (node_uname_info)'
+                  instant: true
+                  range: false
+                  refId: B
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.nodename }} CPU was {{ printf "%.1f" $values.A.Value }}x its usual over the last day ({{ printf "%.0f" $values.B.Value }}% busy)
+              description: |-
+                Node CPU over the last day compared with the 5 days before.
+
+          - uid: brief-node-memory-high
+            title: NodeMemoryHigh
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: '(100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 80) * on (instance) group_left (nodename) max by (instance, nodename) (node_uname_info)'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ $labels.nodename }} memory is {{ printf "%.0f" $values.A.Value }}% used
+              description: |-
+                Pods that cannot fit stay Pending, and the node may start evicting.
+
+          - uid: brief-web-errors-above-normal
+            title: WebErrorsAboveNormal
+            condition: A
+            isPaused: false
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: mimir
+                model:
+                  expr: 'sum by (exported_service) (increase(traefik_service_requests_total{code=~"5.."}[1d])) >= 20 and sum by (exported_service) (increase(traefik_service_requests_total{code=~"5.."}[1d])) > 2 * sum by (exported_service) (increase(traefik_service_requests_total{code=~"5.."}[5d] offset 1d)) / 5'
+                  instant: true
+                  range: false
+                  refId: A
+            noDataState: OK
+            execErrState: OK
+            for: 0s
+            labels:
+              severity: info
+              brief: watch
+              team: platform
+            annotations:
+              summary: |-
+                {{ reReplaceAll "-[0-9a-f]{20}@.*$" "" $labels.exported_service }} returned {{ printf "%.0f" $values.A.Value }} server errors (5xx) in the last day, over twice its usual
+              description: |-
+                Traefik 5xx responses over the last day compared with the daily average of the 5 days before.
+
+    # Replaced by DailyBrief.
+    deleteRules:
+      - orgId: 1
+        uid: heartbeat-weekly

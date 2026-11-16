@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - templates.configmap.yaml
   - contact-points.configmap.yaml
+  - time-intervals.configmap.yaml
   - notification-policies.configmap.yaml
   - rules-platform.configmap.yaml
   - rules-kubernetes.configmap.yaml
@@ -11,7 +12,7 @@ resources:
   - rules-argocd.configmap.yaml
   - rules-traefik.configmap.yaml
   - rules-monitoring.configmap.yaml
-  - rules-heartbeat.configmap.yaml
+  - rules-daily-brief.configmap.yaml
   - rules-certmanager.configmap.yaml
   - rules-metallb.configmap.yaml
   - rules-openbao.configmap.yaml

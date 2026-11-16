@@ -60,6 +60,34 @@ data:
           {{ end }}{{ template "email.alert" $a }}{{ end }}
           {{- end }}
 
+          {{/* Daily brief. $open and $watch get one "x" per alert, so len counts them. */}}
+          {{ define "brief.subject" -}}
+          {{ $open := "" }}{{ $watch := "" -}}
+          {{ range .Alerts.Firing }}{{ if eq .Labels.brief "watch" }}{{ $watch = printf "%sx" $watch }}{{ else if ne .Labels.severity "info" }}{{ $open = printf "%sx" $open }}{{ end }}{{ end -}}
+          Daily brief: {{ if and (not $open) (not $watch) }}all clear{{ else }}
+          {{- if $open }}{{ len $open }} open {{ if eq (len $open) 1 }}alert{{ else }}alerts{{ end }}{{ end }}
+          {{- if and $open $watch }}, {{ end }}
+          {{- if $watch }}{{ len $watch }} to look at{{ end }}{{ end }}
+          {{- end }}
+
+          {{ define "brief.message" -}}
+          {{ $open := "" }}{{ $watch := "" -}}
+          {{ range .Alerts.Firing }}{{ if eq .Labels.brief "watch" }}{{ $watch = printf "%sx" $watch }}{{ else if ne .Labels.severity "info" }}{{ $open = printf "%sx" $open }}{{ end }}{{ end -}}
+          {{ if $open }}Open alerts
+          {{ range .Alerts.Firing }}{{ if and (ne .Labels.severity "info") (ne .Labels.brief "watch") }}{{ template "email.icon" . }} {{ template "email.what" . }}, since {{ template "email.when" .StartsAt }}
+          {{ end }}{{ end }}
+          {{ end }}
+          {{- if $watch }}Worth a look
+          {{ range .Alerts.Firing }}{{ if eq .Labels.brief "watch" }}• {{ template "email.what" . }}
+          {{ end }}{{ end }}
+          {{ end }}
+          {{- if and (not $open) (not $watch) }}Nothing open, and nothing above its usual levels in the last day.
+
+          {{ end -}}
+          All alerts: https://grafana.vngenterprise.com/alerting/list
+          {{- end }}
+
+
     # Templates provisioned earlier for Slack and, before that, Discord. A
     # template dropped from the list above stays in Grafana, so these remove them.
     # Safe to delete this block once Grafana no longer lists them.

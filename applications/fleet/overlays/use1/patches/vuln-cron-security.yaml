@@ -1,8 +1,0 @@
-- op: add
-  path: /spec/jobTemplate/spec/template/spec/securityContext
-  value:
-    runAsNonRoot: true
-    runAsUser: 3333
-    runAsGroup: 3333
-    seccompProfile:
-      type: RuntimeDefault

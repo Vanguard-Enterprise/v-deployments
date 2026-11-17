@@ -1,0 +1,29 @@
+# n8n's database: workflows, credentials (encrypted with N8N_ENCRYPTION_KEY from
+# OpenBao kv/n8n/use1) and execution history. A restore also needs that key.
+# No off-cluster backup yet: add a barmanObjectStore like pocket-id-db once a
+# Wasabi bucket and key exist.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: n8n-db
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  instances: 1
+  # Single instance: the operator PDB would block every node drain forever.
+  enablePDB: false
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1-system-trixie
+  bootstrap:
+    initdb:
+      database: n8n
+      owner: n8n
+  storage:
+    size: 5Gi
+    storageClass: longhorn
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 512Mi

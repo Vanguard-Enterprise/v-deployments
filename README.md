@@ -183,3 +183,29 @@ kubectl --context use1-oidc -n argocd get application vanguard-nexus
 kubectl --context use1-oidc -n vanguard-nexus get pods,clusters,externalsecrets
 kubectl --context use1-oidc -n vn-agent logs deployment/vn-agent
 ```
+
+## n8n
+
+`argocd/applications/use1/n8n.yaml` deploys [n8n](https://n8n.io) for day-to-day
+automations. Its overlay is `applications/n8n/overlays/use1`. It uses two hosts:
+
+- `https://n8n.vngenterprise.com` is the editor, on internal Traefik (10.1.50.176),
+  reachable over NetBird and the LAN only. The A record is in the NetBird DNS zone
+  `vngenterprise.com`.
+- `https://n8n-hooks.vngenterprise.com` is public through external Traefik and
+  Cloudflare (`cloudflare-only` middleware, record managed by `cloudflare-ddns`).
+  It routes only `/webhook/` (production webhooks). The UI, REST API, test
+  webhooks and forms are not served there.
+
+n8n runs one replica with Recreate in regular mode, so schedules fire once.
+CloudNativePG cluster `n8n-db` stores workflows, credentials and 14 days of
+execution history. External Secrets reads `encryption_key` from OpenBao
+`kv/n8n/use1` into `N8N_ENCRYPTION_KEY`. Keep the key with any database backup,
+because every stored credential is encrypted with it. The database has no
+off-cluster backup yet.
+
+Egress is open to the public internet on 80 and 443 for the APIs workflows call,
+but private ranges (LAN, cluster and NetBird) are blocked, so workflows cannot
+reach internal services. Add a rule to `networkpolicy.yaml` for one that must.
+
+The first visit to the editor creates the owner account.

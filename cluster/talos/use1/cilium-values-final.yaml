@@ -20,14 +20,8 @@ routingMode: tunnel
 tunnelProtocol: vxlan
 tunnelPort: 8472
 
-# PR7 prerequisite (Linkerd): linkerd-cni appends itself to the EXISTING conflist
-# (05-cilium.conflist) rather than dropping its own file. With cni.exclusive true,
-# cilium-agent fsnotify-watches /etc/cni/net.d and regenerates its conflist on any
-# change, which turns that into a write-fight loop and can leave a pod scheduled in
-# the losing window with no proxy redirect. Cilium's own source names disabling the
-# watcher as the accommodation for chained plugins.
-# Safe to turn off HERE specifically because exclusive was doing migration work
-# (evicting flannel's conflist); flannel is deleted and nothing else competes now.
+# exclusive was only needed during the migration (to evict flannel's conflist).
+# Flannel is gone and nothing else writes to /etc/cni/net.d, so it stays off.
 cni:
   customConf: false
   uninstall: false

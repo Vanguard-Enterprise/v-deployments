@@ -55,8 +55,6 @@ spec:
                 secretKeyRef:
                   name: n8n
                   key: N8N_ENCRYPTION_KEY
-            # The editor lives on the internal host; webhook URLs shown in the editor
-            # and registered with third parties use the public hooks host.
             - name: N8N_HOST
               value: n8n.vngenterprise.com
             - name: N8N_PROTOCOL
@@ -64,7 +62,7 @@ spec:
             - name: N8N_EDITOR_BASE_URL
               value: https://n8n.vngenterprise.com/
             - name: WEBHOOK_URL
-              value: https://n8n-hooks.vngenterprise.com/
+              value: https://n8n.vngenterprise.com/
             - name: N8N_PROXY_HOPS
               value: "1"
             - name: GENERIC_TIMEZONE

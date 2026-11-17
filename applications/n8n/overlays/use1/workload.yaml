@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+spec:
+  # Regular (non-queue) mode runs schedules and webhooks in this one process, so a
+  # second replica would fire every schedule twice. Recreate keeps it to one.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: n8n
+          image: docker.io/n8nio/n8n:2.47.7
+          ports:
+            - name: http
+              containerPort: 5678
+          env:
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              value: n8n-db-rw
+            - name: DB_POSTGRESDB_PORT
+              value: "5432"
+            - name: DB_POSTGRESDB_DATABASE
+              value: n8n
+            - name: DB_POSTGRESDB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-app
+                  key: username
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-app
+                  key: password
+            - name: N8N_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: n8n
+                  key: N8N_ENCRYPTION_KEY
+            # The editor lives on the internal host; webhook URLs shown in the editor
+            # and registered with third parties use the public hooks host.
+            - name: N8N_HOST
+              value: n8n.vngenterprise.com
+            - name: N8N_PROTOCOL
+              value: https
+            - name: N8N_EDITOR_BASE_URL
+              value: https://n8n.vngenterprise.com/
+            - name: WEBHOOK_URL
+              value: https://n8n-hooks.vngenterprise.com/
+            - name: N8N_PROXY_HOPS
+              value: "1"
+            - name: GENERIC_TIMEZONE
+              value: America/New_York
+            - name: TZ
+              value: America/New_York
+            - name: N8N_DIAGNOSTICS_ENABLED
+              value: "false"
+            - name: N8N_VERSION_NOTIFICATIONS_ENABLED
+              value: "false"
+            - name: N8N_PERSONALIZATION_ENABLED
+              value: "false"
+            # Keep 14 days of execution history so the database does not grow forever.
+            - name: EXECUTIONS_DATA_PRUNE
+              value: "true"
+            - name: EXECUTIONS_DATA_MAX_AGE
+              value: "336"
+            - name: N8N_SMTP_HOST
+              value: smtp-relay.vngenterprise.com
+            - name: N8N_SMTP_PORT
+              value: "587"
+            - name: N8N_SMTP_SSL
+              value: "false"
+            - name: N8N_SMTP_SENDER
+              value: n8n@vngenterprise.com
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz/readiness
+              port: http
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            # ~/.n8n holds only a generated config file and scratch binary data;
+            # workflows and credentials are in Postgres.
+            - name: home
+              mountPath: /home/node
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: home
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n
+spec:
+  selector:
+    app: n8n
+  ports:
+    - name: http
+      port: 5678
+      targetPort: http

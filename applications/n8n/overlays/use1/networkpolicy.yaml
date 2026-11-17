@@ -1,0 +1,90 @@
+# Default-deny (ingress AND egress) for the n8n namespace plus every allow n8n and
+# its database need. Same shape as applications/pocket-id/overlays/use1/networkpolicy.yaml;
+# keep the default-deny and all allows in this one file.
+#   Watch: hubble observe --verdict DROPPED --namespace n8n --follow
+#
+# Ingress: kubelet probes, the cnpg-operator, alloy-metrics (:9187), both Traefiks
+# on :5678 (internal for the editor, external for /webhook/), intra-namespace.
+# Egress: DNS, kube-apiserver (CNPG instance manager), intra-namespace, the
+# smtp-relay, and the public internet on 80/443 for the APIs workflows call.
+# Private ranges (LAN, pod/service CIDRs, NetBird) are excluded from the internet
+# rule so an HTTP Request node cannot be used to reach internal services.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: n8n-netpol
+spec:
+  description: "Default-deny both directions for n8n with the n8n and CNPG allow set."
+  endpointSelector: {}
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: cnpg-operator
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: n8n
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: alloy-metrics
+      toPorts:
+        - ports:
+            - port: "9187"
+              protocol: TCP
+    # Matches both the external (traefik) and internal (traefik-internal) pods.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: traefik
+            app.kubernetes.io/name: traefik
+      toPorts:
+        - ports:
+            - port: "5678"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: n8n
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: smtp-relay
+            app.kubernetes.io/name: mail
+      toPorts:
+        - ports:
+            - port: "587"
+              protocol: TCP
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 100.64.0.0/10
+            - 169.254.0.0/16
+            - 127.0.0.0/8
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP

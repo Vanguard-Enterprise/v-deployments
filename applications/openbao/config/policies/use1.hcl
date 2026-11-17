@@ -41,3 +41,6 @@ path "kv/data/mcp-hub/*" {
 path "kv/data/smtp-relay/*" {
   capabilities = ["read"]
 }
+path "kv/data/n8n/*" {
+  capabilities = ["read"]
+}

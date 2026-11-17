@@ -1,0 +1,45 @@
+# Two hosts on purpose:
+#   n8n.vngenterprise.com        editor + API, internal Traefik only (LAN/NetBird).
+#                                The NetBird DNS zone holds its A record (10.1.50.176).
+#   n8n-hooks.vngenterprise.com  public, Cloudflare-proxied, and ONLY production
+#                                webhooks (/webhook/). Test webhooks (/webhook-test/),
+#                                forms, the REST API and the UI stay internal.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: n8n
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`n8n.vngenterprise.com`)
+      kind: Rule
+      services:
+        - name: n8n
+          port: 5678
+  tls:
+    store:
+      name: default
+      namespace: traefik
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: n8n-hooks
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`n8n-hooks.vngenterprise.com`) && PathPrefix(`/webhook/`)
+      kind: Rule
+      middlewares:
+        - name: cloudflare-only
+      services:
+        - name: n8n
+          port: 5678
+  tls:
+    store:
+      name: default
+      namespace: traefik

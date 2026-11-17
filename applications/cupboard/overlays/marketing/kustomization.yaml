@@ -1,6 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources: [namespace.yaml, github-pull-secret.yaml, workload.yaml]
-images:
-- name: ghcr.io/vanguard-enterprise/cupboard-marketing
-  digest: sha256:04533584c64daa29c44d32354f98fcfa29b4f1aea58d462428568d90990d86cc

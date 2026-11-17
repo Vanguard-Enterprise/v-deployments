@@ -4,7 +4,7 @@
 # in-cluster Service instead of a key in vn-agent-enrollment.
 #
 # The enrollment token is not in Git. vn-agent-enrollment (key `token`) is created by
-# hand with a single-use token from the VN UI; see the README. After the agent enrolls
+# hand with a single-use token from the VN UI; see https://github.com/Vanguard-Enterprise/v-deployments/wiki/Vanguard-Nexus. After the agent enrolls
 # it keeps its identity in the vn-agent-identity Secret, which it creates itself.
 apiVersion: v1
 kind: ServiceAccount

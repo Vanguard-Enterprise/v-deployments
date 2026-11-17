@@ -33,7 +33,7 @@ wrapper caches the token (`bao token lookup` then works). The device code expire
 them to approve promptly; if it lapses (`expired_token`), just re-run.
 
 jwt login roles (bound to the caller's Pocket ID `groups` claim; add more mirroring the `oidc` roles as needed):
-- `cli-global-admin` → `vault-global-admin` (members of the Pocket ID `vault_admins` group). Others (`global-admin`/`rustlens-admin`/... ) are
+- `cli-global-admin` → `vault-global-admin` (members of the Pocket ID `vault_admins` group). Others (`global-admin`/... ) are
   `role_type=oidc` for the browser UI, NOT usable with this wrapper.
 
 Under the hood: dedicated **public** Pocket ID client "OpenBao CLI" (client `118684db-4715-4c61-9220-0076b29e4ded`,

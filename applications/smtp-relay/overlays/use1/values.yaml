@@ -1,5 +1,5 @@
 # Outbound-only Postfix relay: apps log in here, Postfix forwards to the Google
-# Workspace SMTP relay. See ../../README.md for the design and how to add an app.
+# Workspace SMTP relay. See https://github.com/Vanguard-Enterprise/v-deployments/wiki/SMTP-Relay for the design and how to add an app.
 fullnameOverride: smtp-relay
 # The chart's default stamps `now` into the pod template, which makes every Argo CD
 # render a new rollout. Config checksums still roll the pods when values change.

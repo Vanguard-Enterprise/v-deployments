@@ -10,6 +10,7 @@ data:
   sender_login_maps: |
     grafana@vngenterprise.com   grafana@vngenterprise.com
     identity@vngenterprise.com  identity@vngenterprise.com
+    n8n@vngenterprise.com       n8n@vngenterprise.com
 
   # smtp_reply_filter: Google answers "550 5.7.1 Invalid credentials for relay" (or
   # "Mail relay denied") when our public IP is not the one registered for the SMTP

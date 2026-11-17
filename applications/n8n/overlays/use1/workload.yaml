@@ -84,8 +84,18 @@ spec:
               value: smtp-relay.vngenterprise.com
             - name: N8N_SMTP_PORT
               value: "587"
+            # STARTTLS on 587; the relay rejects logins without TLS.
             - name: N8N_SMTP_SSL
               value: "false"
+            - name: N8N_SMTP_STARTTLS
+              value: "true"
+            - name: N8N_SMTP_USER
+              value: n8n@vngenterprise.com
+            - name: N8N_SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-smtp
+                  key: password
             - name: N8N_SMTP_SENDER
               value: n8n@vngenterprise.com
           startupProbe:

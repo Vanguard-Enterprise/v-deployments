@@ -4,7 +4,7 @@
 #   Watch:    hubble observe --verdict DROPPED --namespace smtp-relay --follow
 #
 # INGRESS on 587 (every client must still log in with its own SASL user):
-#   - app namespaces that send mail: grafana, pocket-id. A new app namespace needs
+#   - app namespaces that send mail: grafana, pocket-id, n8n. A new app namespace needs
 #     a line here as well as a login.
 #   - netbird-client: NetBird peers (laptops, remote hosts) reach 10.1.50.177
 #     through the in-cluster routing peers, so they arrive from those pods.
@@ -33,6 +33,8 @@ spec:
             io.kubernetes.pod.namespace: grafana
         - matchLabels:
             io.kubernetes.pod.namespace: pocket-id
+        - matchLabels:
+            io.kubernetes.pod.namespace: n8n
         - matchLabels:
             io.kubernetes.pod.namespace: netbird-client
       toPorts:

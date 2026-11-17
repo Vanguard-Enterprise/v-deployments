@@ -187,15 +187,15 @@ kubectl --context use1-oidc -n vn-agent logs deployment/vn-agent
 ## n8n
 
 `argocd/applications/use1/n8n.yaml` deploys [n8n](https://n8n.io) for day-to-day
-automations. Its overlay is `applications/n8n/overlays/use1`. It uses two hosts:
+automations at `https://n8n.vngenterprise.com`. Its overlay is
+`applications/n8n/overlays/use1`. The host is split by Traefik:
 
-- `https://n8n.vngenterprise.com` is the editor, on internal Traefik (10.1.50.176),
-  reachable over NetBird and the LAN only. The A record is in the NetBird DNS zone
-  `vngenterprise.com`.
-- `https://n8n-hooks.vngenterprise.com` is public through external Traefik and
-  Cloudflare (`cloudflare-only` middleware, record managed by `cloudflare-ddns`).
-  It routes only `/webhook/` (production webhooks). The UI, REST API, test
-  webhooks and forms are not served there.
+- Internal Traefik (10.1.50.176) serves everything: the editor, the REST API and
+  test webhooks. The NetBird DNS zone `vngenterprise.com` points the host there,
+  so LAN and NetBird clients always get the full app.
+- External Traefik serves the same host publicly through Cloudflare
+  (`cloudflare-only` middleware, record managed by `cloudflare-ddns`), but routes
+  only `/webhook/` (production webhooks). Every other path returns 404.
 
 n8n runs one replica with Recreate in regular mode, so schedules fire once.
 CloudNativePG cluster `n8n-db` stores workflows, credentials and 14 days of

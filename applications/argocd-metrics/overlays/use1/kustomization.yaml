@@ -4,3 +4,4 @@ resources:
   - ../../base
   - services.yaml
   - servicemonitor.yaml
+  - badge-ingress.yaml

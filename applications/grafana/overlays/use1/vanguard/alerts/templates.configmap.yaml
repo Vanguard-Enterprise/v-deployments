@@ -86,23 +86,3 @@ data:
           {{ end -}}
           All alerts: https://grafana.vngenterprise.com/alerting/list
           {{- end }}
-
-
-    # Templates provisioned earlier for Slack and, before that, Discord. A
-    # template dropped from the list above stays in Grafana, so these remove them.
-    # Safe to delete this block once Grafana no longer lists them.
-    deleteTemplates:
-      - orgId: 1
-        name: slack.title
-      - orgId: 1
-        name: slack.color
-      - orgId: 1
-        name: slack.alert
-      - orgId: 1
-        name: slack.text
-      - orgId: 1
-        name: discord.title
-      - orgId: 1
-        name: discord.alert
-      - orgId: 1
-        name: discord.message

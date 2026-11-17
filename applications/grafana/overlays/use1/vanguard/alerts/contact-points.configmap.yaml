@@ -34,22 +34,3 @@ data:
               singleEmail: true
               subject: '{{ template "brief.subject" . }}'
               message: '{{ template "brief.message" . }}'
-
-    # Slack contact points provisioned earlier. A contact point dropped from the
-    # list above stays in Grafana, so these remove them. Safe to delete this
-    # block once Grafana no longer lists them.
-    deleteContactPoints:
-      - orgId: 1
-        uid: slack-platform-critical
-      - orgId: 1
-        uid: slack-platform-warning
-      - orgId: 1
-        uid: slack-vanguard-critical
-      - orgId: 1
-        uid: slack-vanguard-warning
-      - orgId: 1
-        uid: slack-info
-      - orgId: 1
-        uid: slack-rustlens-critical
-      - orgId: 1
-        uid: slack-rustlens-warning

@@ -102,7 +102,6 @@ PY
 # `default` policy. Used as the OIDC default_role fallback.
 oidc_role default         default                ""
 oidc_role global-admin    vault-global-admin     vault_admins
-oidc_role rustlens-admin  vault-rustlens-admin   vault_rustlens_admins
 oidc_role global-readonly vault-global-readonly  vault_readonly
 
 # CLI/agent login roles (role_type=jwt): headless device-flow login via

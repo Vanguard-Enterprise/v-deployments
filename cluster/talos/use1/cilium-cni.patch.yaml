@@ -3,7 +3,7 @@
 # NOTE: This is NOT applied by ArgoCD. Talos machine config is node-level and applied
 # out-of-band with `talosctl`. This file is version-controlled only as the source of
 # record. Execution happens ONLY inside an operator-approved maintenance window, per the
-# runbook in `cilium-migration-runbook.md` (read it first: this patch is one step of a
+# runbook at https://github.com/Vanguard-Enterprise/v-deployments/wiki/Cilium-Migration-Runbook (read it first: this patch is one step of a
 # multi-step LIVE migration, not a standalone apply).
 #
 # This patch keeps kube-proxy for the migration (fewer simultaneous variables; the

@@ -1,6 +1,5 @@
 # Default-deny (ingress AND egress) for the pocket-id namespace, plus every allow
-# Pocket ID and its database need. Same shape as the cupboard policies; see
-# applications/cupboard/NETWORKPOLICY-ROLLOUT.md for the authoring notes.
+# Pocket ID and its database need.
 #
 # The default-deny and ALL of its allows live in this ONE file so a single
 # apply/delete flips the namespace atomically. Never split them across files.

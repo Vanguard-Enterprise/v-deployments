@@ -18,7 +18,8 @@ data:
         { "zone_name": "vngenterprise.com", "record_name": "wings-use1.vngenterprise.com", "ttl": 1, "proxied": true },
         { "zone_name": "vngenterprise.com", "record_name": "edge.vngenterprise.com", "ttl": 1, "proxied": false },
         { "zone_name": "vngenterprise.com", "record_name": "id.vngenterprise.com", "ttl": 1, "proxied": true },
-        { "zone_name": "vngenterprise.com", "record_name": "n8n.vngenterprise.com", "ttl": 1, "proxied": true }
+        { "zone_name": "vngenterprise.com", "record_name": "n8n.vngenterprise.com", "ttl": 1, "proxied": true },
+        { "zone_name": "vngenterprise.com", "record_name": "argocd.vngenterprise.com", "ttl": 1, "proxied": true }
       ]
     }
   updater.py: |

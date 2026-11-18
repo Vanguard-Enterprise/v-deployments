@@ -11,6 +11,6 @@ resources:
   - agent.yaml
 images:
   - name: ghcr.io/vanguard-enterprise/vn-server
-    newTag: sha-015ceff4a181d8ea57ea9f49ecac341095f57883
+    newTag: sha-2de5b6cc82e00147b1f961f0199fe03d22bc95af
   - name: ghcr.io/vanguard-enterprise/vn-agent
-    newTag: sha-015ceff4a181d8ea57ea9f49ecac341095f57883
+    newTag: sha-2de5b6cc82e00147b1f961f0199fe03d22bc95af

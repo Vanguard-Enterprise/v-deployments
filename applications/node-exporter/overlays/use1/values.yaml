@@ -15,9 +15,11 @@ extraArgs:
 tolerations:
   - operator: Exists
 
+# No CPU limit: scrapes are short bursts that hit a 200m cap and were
+# throttled ~44% of periods while averaging only a few millicores.
 resources:
   requests: { cpu: 50m, memory: 64Mi }
-  limits:   { cpu: 200m, memory: 256Mi }
+  limits:   { memory: 256Mi }
 
 service:
   port: 9100

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Configure a fresh OpenBao to match the source Vault: KV-v2 engine, policies,
-# Kubernetes auth (ESO), and OIDC auth (Pocket ID). Idempotent, safe to re-run.
+# Kubernetes auth (ESO), GitHub Actions JWT auth, and OIDC auth (Pocket ID). Idempotent, safe to re-run.
 #
 # Requires:
 #   BAO_ADDR              e.g. https://openbao.vngenterprise.com
@@ -45,6 +45,35 @@ bao write auth/use1/role/break-glass \
   bound_service_account_namespaces="openbao" \
   token_policies="vault-global-admin" \
   token_ttl="15m"
+
+# GitHub Actions OIDC. Each role pins one repository, branch, event, and workflow
+# through bound_claims, so pull requests and other workflows cannot log in.
+echo "==> GitHub Actions JWT auth at github-actions/"
+bao auth enable -path=github-actions jwt 2>/dev/null || echo "   (already enabled)"
+bao write auth/github-actions/config \
+  oidc_discovery_url="https://token.actions.githubusercontent.com" \
+  bound_issuer="https://token.actions.githubusercontent.com"
+github_role() { # name  policy  repository  workflow file
+  python3 - "$1" "$2" "$3" "$4" <<'PY' | bao write "auth/github-actions/role/$1" -
+import json, sys
+name, policy, repo, workflow = sys.argv[1:5]
+print(json.dumps({
+  "role_type": "jwt",
+  "user_claim": "sub",
+  "bound_audiences": ["https://openbao.vngenterprise.com"],
+  "bound_claims": {
+    "sub": f"repo:{repo}:ref:refs/heads/main",
+    "event_name": "push",
+    "workflow_ref": f"{repo}/.github/workflows/{workflow}@refs/heads/main",
+  },
+  "token_policies": [policy],
+  "token_ttl": 300,
+  "token_max_ttl": 300,
+}))
+PY
+}
+# Signs Cupboard machine-agent releases (key: kv/ci/cupboard/agent-release).
+github_role cupboard-agent-release vault-cupboard-agent-release Vanguard-Enterprise/Cupboard check.yml
 
 if [ -z "${OIDC_CLIENT_SECRET:-}" ]; then
   echo "==> OIDC auth: SKIPPED (set OIDC_CLIENT_SECRET to configure human login)"

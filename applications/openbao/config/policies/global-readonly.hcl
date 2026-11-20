@@ -10,6 +10,12 @@ path "kv/metadata/*" {
   capabilities = ["read", "list"]
 }
 
+# CI signing keys (kv/ci/*) are for their workflows only. Read-only humans can
+# still see that they exist through metadata, but never read their values.
+path "kv/data/ci/*" {
+  capabilities = ["deny"]
+}
+
 # List secret engines
 path "sys/mounts" {
   capabilities = ["read"]

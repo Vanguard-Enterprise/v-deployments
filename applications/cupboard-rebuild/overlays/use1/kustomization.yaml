@@ -11,4 +11,4 @@ images:
   - name: ghcr.io/vanguard-enterprise/cupboard-api
     newTag: sha-d546577ff1462e7c2cc6c51d8dbb4030ccf5ae28
   - name: ghcr.io/vanguard-enterprise/cupboard-web
-    newTag: sha-d546577ff1462e7c2cc6c51d8dbb4030ccf5ae28
+    newTag: sha-b3ee36701a0df0e5b6e69f3861e0c0e5a75364e9

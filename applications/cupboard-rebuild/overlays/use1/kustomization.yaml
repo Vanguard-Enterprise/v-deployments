@@ -9,6 +9,6 @@ resources:
   - ingress.yaml
 images:
   - name: ghcr.io/vanguard-enterprise/cupboard-api
-    newTag: sha-369eab874bb6d629702556e3aecb8d25e5619be2
+    newTag: sha-c51bf6d28dc8e599e34497b8257759ea528bcb7c
   - name: ghcr.io/vanguard-enterprise/cupboard-web
-    newTag: sha-369eab874bb6d629702556e3aecb8d25e5619be2
+    newTag: sha-c51bf6d28dc8e599e34497b8257759ea528bcb7c

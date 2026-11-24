@@ -1,15 +1,15 @@
 # pve1.vngenterprise.com: one internal address for the whole PVE1 cluster
-# (pve1a/b/c), load balanced with failover. Served by traefik-internal
+# (pve1a/b/c/d), load balanced with failover. Served by traefik-internal
 # (10.1.50.176), the same as pve1a.vngenterprise.com.
 #
 # The backend is the `pve1` service in the file provider (values.yaml,
 # providers.file.content), not a Kubernetes Service. The CRD provider only allows
 # health checks on single-address ExternalName services, and a weighted
-# TraefikService over three of those keeps sending traffic to a dead node. The file
-# provider's load balancer holds all three nodes and health-checks each of them.
+# TraefikService over several of those keeps sending traffic to a dead node. The file
+# provider's load balancer holds all four nodes and health-checks each of them.
 #
 # Break-glass when Kubernetes is down (this route runs on use1): open a node
-# directly at https://10.1.40.15:8006 (or .16 / .17) and log in with root@pam.
+# directly at https://10.1.40.15:8006 (or .16 / .17 / .18) and log in with root@pam.
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:

@@ -64,7 +64,7 @@ providers:
     content:
       http:
         services:
-          # PVE1 cluster UI/API on all three nodes. Every node serves the whole
+          # PVE1 cluster UI/API on all four nodes. Every node serves the whole
           # cluster, so any healthy one will do; a failed node drops out within
           # about 10s. Sticky because Proxmox keeps OpenID login state on the node
           # that started the login (/var/lib/pve-manager/proxmox-openid-auth-state-*),
@@ -77,6 +77,7 @@ providers:
                 - url: https://10.1.40.15:8006
                 - url: https://10.1.40.16:8006
                 - url: https://10.1.40.17:8006
+                - url: https://10.1.40.18:8006
               healthCheck:
                 path: /
                 interval: 10s

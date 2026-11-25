@@ -23,9 +23,9 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  # Default wave: the API retries while ClickHouse starts, so a slow or failed
+  # start must not hold back a rollout. Only the password Secret comes first.
   name: cupboard-clickhouse
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
 spec:
   serviceName: cupboard-clickhouse
   replicas: 1

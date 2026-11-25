@@ -2,12 +2,12 @@
 # integration needs, so the API never sees half a configuration; the
 # Deployment marks them optional. Staging has its own GitHub App and Discord
 # bot: a Discord bot allows one gateway connection, which development uses.
+# They sync in the default wave beside the workload, never before it: one that
+# cannot be read must not hold back a rollout, only leave its feature off.
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: cupboard-steam
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
 spec:
   refreshInterval: 1h
   secretStoreRef:
@@ -28,8 +28,6 @@ apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: cupboard-sign-in
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
 spec:
   refreshInterval: 1h
   secretStoreRef:
@@ -55,8 +53,6 @@ apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: cupboard-github
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
 spec:
   refreshInterval: 1h
   secretStoreRef:
@@ -81,8 +77,6 @@ apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: cupboard-discord
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
 spec:
   refreshInterval: 1h
   secretStoreRef:

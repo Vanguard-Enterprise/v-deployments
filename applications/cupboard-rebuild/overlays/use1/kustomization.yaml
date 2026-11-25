@@ -5,6 +5,8 @@ resources:
   - namespace.yaml
   - database.yaml
   - secrets.yaml
+  - clickhouse.yaml
+  - integrations.yaml
   - workload.yaml
   - ingress.yaml
 images:

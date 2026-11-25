@@ -21,11 +21,12 @@ spec:
         runAsNonRoot: true
         runAsUser: 65532
         runAsGroup: 65532
+        fsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: api
-          image: ghcr.io/vanguard-enterprise/cupboard-api:sha-c722e5bc73ff9c7f87d31a9272f5bfc3c2ae612e
+          image: ghcr.io/vanguard-enterprise/cupboard-api # tag set in kustomization.yaml
           ports:
             - name: http
               containerPort: 8080
@@ -48,9 +49,45 @@ spec:
               value: https://s3.us-east-2.wasabisys.com
             - name: AWS_REGION
               value: us-east-2
+            # Country and network lookups cache about 90 MB of public data here.
+            - name: CUPBOARD_IP_DATA_DIR
+              value: /var/cache/cupboard/ip-data
+            - name: CUPBOARD_CLICKHOUSE_URL
+              value: http://cupboard-clickhouse:8123
+            - name: CUPBOARD_CLICKHOUSE_USER
+              value: cupboard
+            - name: CUPBOARD_CLICKHOUSE_DATABASE
+              value: cupboard
+            - name: CUPBOARD_CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cupboard-clickhouse
+                  key: password
+            # Sign-in providers return to the page's own origin, so no redirect
+            # base or state prefix is set. Steam only links to existing accounts.
+            - name: CUPBOARD_SIGNIN_STEAM
+              value: "1"
+            # This is the only copy holding the Discord bot's gateway connection.
+            # It does nothing until cupboard-discord exists.
+            - name: CUPBOARD_DISCORD_GATEWAY
+              value: "1"
+          # Each integration is all or nothing: its Secret holds every variable
+          # it needs, and the API starts without it while the Secret is absent.
           envFrom:
             - secretRef:
                 name: cupboard-storage
+            - secretRef:
+                name: cupboard-steam
+                optional: true
+            - secretRef:
+                name: cupboard-sign-in
+                optional: true
+            - secretRef:
+                name: cupboard-github
+                optional: true
+            - secretRef:
+                name: cupboard-discord
+                optional: true
           startupProbe:
             httpGet:
               path: /health/ready
@@ -67,6 +104,9 @@ spec:
               path: /health/ready
               port: http
             periodSeconds: 5
+          volumeMounts:
+            - name: ip-data
+              mountPath: /var/cache/cupboard/ip-data
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -77,6 +117,25 @@ spec:
               memory: 128Mi
             limits:
               memory: 512Mi
+      volumes:
+        - name: ip-data
+          persistentVolumeClaim:
+            claimName: cupboard-ip-data
+---
+# Kept across restarts so a new pod does not download the IP data again.
+# The Recreate strategy lets the single-writer volume move between pods.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cupboard-ip-data
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi
 ---
 apiVersion: v1
 kind: Service
@@ -117,7 +176,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: web
-          image: ghcr.io/vanguard-enterprise/cupboard-web:sha-c722e5bc73ff9c7f87d31a9272f5bfc3c2ae612e
+          image: ghcr.io/vanguard-enterprise/cupboard-web # tag set in kustomization.yaml
           ports:
             - name: http
               containerPort: 3000

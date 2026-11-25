@@ -1,0 +1,116 @@
+# Game server performance readings. Only the API connects, over the cluster
+# network; nothing routes to it from outside. One node is enough for staging.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: cupboard-clickhouse
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: cupboard-clickhouse
+    creationPolicy: Owner
+  data:
+    - secretKey: password
+      remoteRef:
+        key: cupboard/rebuild/staging-clickhouse
+        property: password
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  # Default wave: the API retries while ClickHouse starts, so a slow or failed
+  # start must not hold back a rollout. Only the password Secret comes first.
+  name: cupboard-clickhouse
+spec:
+  serviceName: cupboard-clickhouse
+  replicas: 1
+  # Keep the readings volume when the StatefulSet is deleted or scaled down.
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  selector:
+    matchLabels:
+      app: cupboard-clickhouse
+  template:
+    metadata:
+      labels:
+        app: cupboard-clickhouse
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: clickhouse
+          # Same release line as the development stack (compose.yaml).
+          image: clickhouse/clickhouse-server:26.3.71.3
+          ports:
+            - name: http
+              containerPort: 8123
+          env:
+            # The first start creates this user and database.
+            - name: CLICKHOUSE_USER
+              value: cupboard
+            - name: CLICKHOUSE_DB
+              value: cupboard
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cupboard-clickhouse
+                  key: password
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 20
+            failureThreshold: 6
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/clickhouse
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        annotations:
+          argocd.argoproj.io/sync-options: Prune=false
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cupboard-clickhouse
+spec:
+  selector:
+    app: cupboard-clickhouse
+  ports:
+    - name: http
+      port: 8123
+      targetPort: http

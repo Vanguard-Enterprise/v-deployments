@@ -4,6 +4,8 @@
 # bot: a Discord bot allows one gateway connection, which development uses.
 # They sync in the default wave beside the workload, never before it: one that
 # cannot be read must not hold back a rollout, only leave its feature off.
+# The API reads them only when its pod starts and no reloader runs here: after
+# creating or changing one, restart cupboard-api (see Cupboard docs/staging.md).
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:

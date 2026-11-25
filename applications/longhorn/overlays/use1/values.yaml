@@ -8,6 +8,18 @@ longhornDriver:
     - key: "node.kubernetes.io/disk-pressure"
       operator: "Exists"
       effect: "NoSchedule"
+networkPolicies:
+  # The chart's internal-traffic policy (on by default) only admits Longhorn
+  # pods to longhorn-manager, which blocks Alloy from scraping /metrics on
+  # 9500. Allow just the alloy-metrics pods in.
+  metricsScrapeSources:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: alloy-metrics
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: alloy
+          app.kubernetes.io/instance: alloy-metrics
 defaultBackupStore:
   backupTarget: s3://longhorn-use1@us-east-1/
   backupTargetCredentialSecret: longhorn-backup-storage

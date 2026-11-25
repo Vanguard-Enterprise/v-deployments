@@ -1,0 +1,102 @@
+# Third-party integrations for the API. Each Secret holds every variable its
+# integration needs, so the API never sees half a configuration; the
+# Deployment marks them optional. Staging has its own GitHub App and Discord
+# bot: a Discord bot allows one gateway connection, which development uses.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: cupboard-steam
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: cupboard-steam
+    creationPolicy: Owner
+  data:
+    - secretKey: CUPBOARD_STEAM_API_KEY
+      remoteRef:
+        key: cupboard/rebuild/staging-steam
+        property: web_api_key
+---
+# Google, GitHub, and Discord sign-in. Only the providers whose client is saved
+# appear; the fields use the development path's names (google_client_id, ...).
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: cupboard-sign-in
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: cupboard-sign-in
+    creationPolicy: Owner
+  dataFrom:
+    - extract:
+        key: cupboard/rebuild/staging-sign-in
+      rewrite:
+        - regexp:
+            source: "^(google|github|discord)_client_(id|secret)$"
+            target: "CUPBOARD_SIGNIN_${1}_CLIENT_${2}"
+        - regexp:
+            source: "^sso_private_origins$"
+            target: "CUPBOARD_SSO_PRIVATE_ORIGINS"
+        - transform:
+            template: "{{ .value | upper }}"
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: cupboard-github
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: cupboard-github
+    creationPolicy: Owner
+    template:
+      data:
+        CUPBOARD_GITHUB_APP_ID: "{{ .app_id }}"
+        CUPBOARD_GITHUB_APP_SLUG: "{{ .slug }}"
+        CUPBOARD_GITHUB_CLIENT_ID: "{{ .client_id }}"
+        CUPBOARD_GITHUB_CLIENT_SECRET: "{{ .client_secret }}"
+        CUPBOARD_GITHUB_PRIVATE_KEY: "{{ .private_key }}"
+        CUPBOARD_GITHUB_REDIRECT_URI: https://cupboard-staging.vngenterprise.com/dashboard/organization/integrations/github/callback
+  dataFrom:
+    - extract:
+        key: cupboard/rebuild/staging-github
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: cupboard-discord
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: cupboard-discord
+    creationPolicy: Owner
+    template:
+      data:
+        CUPBOARD_DISCORD_APPLICATION_ID: "{{ .application_id }}"
+        CUPBOARD_DISCORD_BOT_TOKEN: "{{ .bot_token }}"
+        CUPBOARD_DISCORD_CLIENT_SECRET: "{{ .client_secret }}"
+        CUPBOARD_DISCORD_REDIRECT_URI: https://cupboard-staging.vngenterprise.com/dashboard/community/discord/callback
+  dataFrom:
+    - extract:
+        key: cupboard/rebuild/staging-discord

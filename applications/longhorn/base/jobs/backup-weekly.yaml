@@ -4,7 +4,7 @@ metadata:
   name: backup-weekly
   namespace: longhorn-system
 spec:
-  cron: "0 0 * * 0"
+  cron: "30 1 * * 0"
   task: backup
   retain: 8
   concurrency: 2
